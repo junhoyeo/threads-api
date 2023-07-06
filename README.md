@@ -582,4 +582,4 @@ TBD (Add yours by just opening an [pull request](https://github.com/junhoyeo/thr
   <strong>MIT © <a href="https://github.com/junhoyeo">Junho Yeo</a></strong>
 </p>
 
-If you find this project intriguing, **please consider starring it(⭐)** or following me on [GitHub](https://github.com/junhoyeo) (I wouldn't say [Threads](https://www.threads.net/@_junhoyeo)).
+If you find this project intriguing, **please consider starring it(⭐)** or following me on [GitHub](https://github.com/junhoyeo) (I wouldn't say [Threads](https://www.threads.net/@_junhoyeo)). I code 24/7 and ship mind-breaking things on a regular basis, so your support definitely won't be in vain.
