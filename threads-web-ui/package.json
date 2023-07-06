@@ -12,11 +12,16 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "class-variance-authority": "^0.6.1",
+    "clsx": "^1.2.1",
     "emotion-reset": "^3.0.1",
+    "lucide-react": "^0.258.0",
     "next": "^13.4.8",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-is": "^18.2.0",
+    "tailwind-merge": "^1.13.2",
+    "tailwindcss-animate": "^1.0.6",
     "threads-api": "^1.0.3"
   },
   "devDependencies": {

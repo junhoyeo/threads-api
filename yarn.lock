@@ -3055,6 +3055,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"class-variance-authority@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "class-variance-authority@npm:0.6.1"
+  dependencies:
+    clsx: 1.2.1
+  checksum: 9be6b27998489c7af4535399ff00289c3347756209bb5405ca115e51bef7159f057f02532a53132299a3e26925552894ff1018bd8cc10807130b063039e82d8d
+  languageName: node
+  linkType: hard
+
 "clean-stack@npm:^2.0.0":
   version: 2.2.0
   resolution: "clean-stack@npm:2.2.0"
@@ -3086,6 +3095,13 @@ __metadata:
   dependencies:
     mimic-response: ^1.0.0
   checksum: 4e671cac39b11c60aa8ba0a450657194a5d6504df51bca3fac5b3bd0145c4f8e8464898f87c8406b83232e3bc5cca555f51c1f9c8ac023969ebfbf7f6bdabb2e
+  languageName: node
+  linkType: hard
+
+"clsx@npm:1.2.1, clsx@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "clsx@npm:1.2.1"
+  checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
   languageName: node
   linkType: hard
 
@@ -4929,6 +4945,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lucide-react@npm:^0.258.0":
+  version: 0.258.0
+  resolution: "lucide-react@npm:0.258.0"
+  peerDependencies:
+    react: ^16.5.1 || ^17.0.0 || ^18.0.0
+  checksum: e8580e97ebfe74123eb8323af614fd520cd23e7f9f38837658e4203b3f596cfb388193953a04f65ddede03bdda7985802d7370e02172c968298b488fc9dc1b61
+  languageName: node
+  linkType: hard
+
 "make-dir@npm:^3.0.0":
   version: 3.1.0
   resolution: "make-dir@npm:3.1.0"
@@ -6469,6 +6494,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tailwind-merge@npm:^1.13.2":
+  version: 1.13.2
+  resolution: "tailwind-merge@npm:1.13.2"
+  checksum: 8f9de3bd1e6271f5980f863ab85e0103f062bf84d814d3188bf6870af7eb43725ea40493ef0693dedd652b668cbdfcd6544235b16b70d438ed20bca6118a9066
+  languageName: node
+  linkType: hard
+
+"tailwindcss-animate@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "tailwindcss-animate@npm:1.0.6"
+  peerDependencies:
+    tailwindcss: "*"
+  checksum: 01471cb5e64d0936b3dc90bdb1d4b379e8b73b3d285553337d8576e5d458e868ddff99c6db0ae454c1be69ce8f88dc0eed44ea62e4d7bca10d7d2479fc4c8ee0
+  languageName: node
+  linkType: hard
+
 "tailwindcss@npm:^3.3.2":
   version: 3.3.2
   resolution: "tailwindcss@npm:3.3.2"
@@ -6586,14 +6627,19 @@ __metadata:
     "@types/react": ^18.2.14
     "@types/react-dom": ^18.2.6
     autoprefixer: ^10.4.14
+    class-variance-authority: ^0.6.1
+    clsx: ^1.2.1
     emotion-reset: ^3.0.1
+    lucide-react: ^0.258.0
     next: ^13.4.8
     next-composed-plugins: ^1.0.1
     postcss: ^8.4.25
     react: 18.2.0
     react-dom: 18.2.0
     react-is: ^18.2.0
+    tailwind-merge: ^1.13.2
     tailwindcss: ^3.3.2
+    tailwindcss-animate: ^1.0.6
     threads-api: ^1.0.3
     typescript: ^5.1.6
   languageName: unknown
