@@ -21,17 +21,20 @@ export type GetUserProfileThreadsResponse = {
 
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
+  verbose?: boolean;
 };
 
 export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
 
 export class ThreadsAPI {
   fbLSDToken: string = DEFAULT_LSD_TOKEN;
+  verbose: boolean = false;
 
   constructor(options?: ThreadsAPIOptions) {
     if (options?.fbLSDToken) {
       this.fbLSDToken = options.fbLSDToken;
     }
+    this.verbose = options?.verbose || false;
   }
 
   _getDefaultHeaders = (username: string) => ({
@@ -82,12 +85,18 @@ export class ThreadsAPI {
 
     if (!options?.noUpdateLSD && !!lsdToken) {
       this.fbLSDToken = lsdToken;
+      if (this.verbose) {
+        console.debug('[fbLSDToken] UPDATED', this.fbLSDToken);
+      }
     }
 
     return userID;
   };
 
   getUserProfile = async (username: string, userId: string) => {
+    if (this.verbose) {
+      console.debug('[fbLSDToken] USING', this.fbLSDToken);
+    }
     const res = await axios.post<GetUserProfileResponse>(
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
@@ -108,6 +117,9 @@ export class ThreadsAPI {
   };
 
   getUserProfileThreads = async (username: string, userId: string) => {
+    if (this.verbose) {
+      console.debug('[fbLSDToken] USING', this.fbLSDToken);
+    }
     const res = await axios.post<GetUserProfileThreadsResponse>(
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
