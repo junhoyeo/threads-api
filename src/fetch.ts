@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
 
-const fetch = globalThis.fetch
+const fetch = globalThis.fetch;
 
-export { fetch }
+export { fetch };
