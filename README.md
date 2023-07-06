@@ -544,8 +544,12 @@ npm install threads-api
 
 ## 📌 Roadmap
 
-- [x] ✅ Read public data
-  - [ ] 🚧 Threads Pagination
+- [x] ✅ Read public data\
+  - [x] ✅ Fetch UserID(`314216`) via username(`zuck`)
+  - [x] ✅ Read user profile info
+  - [x] ✅ Read list of user Threads
+  - [ ] 🚧 Read list of user repiles
+  - [ ] 🚧 Read single Thread
 - [ ] 🚧 Read private data
 - [ ] 🚧 Write data (i.e. write automated Threads)
 - [x] 🏴‍☠️ Restructure project as an monorepo
