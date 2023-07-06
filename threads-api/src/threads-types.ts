@@ -36,6 +36,31 @@ export interface ThreadItem {
   __typename: string;
 }
 
+export interface QuotedPost {
+  text_post_app_info: TextPostAppInfo3;
+  user: User;
+  pk: string;
+  media_overlay_info: any;
+  code: string;
+  caption: Caption;
+  image_versions2: ImageVersions2;
+  original_width: number;
+  original_height: number;
+  video_versions: any[];
+  carousel_media: any;
+  carousel_media_count: any;
+  has_audio: any;
+  like_count: number;
+  taken_at: number;
+  id: string;
+}
+export interface TextPostAppInfo3 {
+  is_post_unavailable: boolean;
+  share_info: ShareInfo;
+  direct_reply_count: number;
+  link_preview_attachment: any;
+}
+
 export interface Post {
   user: User;
   image_versions2: ImageVersions2;
@@ -82,7 +107,7 @@ export interface TextPostAppInfo {
 }
 
 export interface ShareInfo {
-  quoted_post: any;
+  quoted_post?: QuotedPost;
   reposted_post?: RepostedPost;
 }
 
@@ -124,13 +149,9 @@ export interface VideoVersion {
 
 export interface TextPostAppInfo2 {
   link_preview_attachment: any;
-  share_info: ShareInfo2;
+  share_info: ShareInfo;
   reply_to_author: any;
   is_post_unavailable: boolean;
-}
-
-export interface ShareInfo2 {
-  quoted_post: any;
 }
 
 export interface Caption {
