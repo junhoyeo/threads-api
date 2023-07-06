@@ -6,6 +6,10 @@
 
 ## 🚀 `threads-api` in Action
 
+<p align="center">
+  <img src=".github/cover.jpg" alt="cover" width="500px" />
+</p>
+
 ### Usage
 
 ```ts
