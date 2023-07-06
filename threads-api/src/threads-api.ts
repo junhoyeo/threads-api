@@ -21,14 +21,20 @@ export type GetUserProfileThreadsResponse = {
 
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
+  verbose?: boolean;
 };
+
+export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
+
 export class ThreadsAPI {
-  fbLSDToken: string = 'NjppQDEgONsU_1LCzrmp6q'; // FIXME: Remove default value
+  fbLSDToken: string = DEFAULT_LSD_TOKEN;
+  verbose: boolean = false;
 
   constructor(options?: ThreadsAPIOptions) {
     if (options?.fbLSDToken) {
       this.fbLSDToken = options.fbLSDToken;
     }
+    this.verbose = options?.verbose || false;
   }
 
   _getDefaultHeaders = (username: string) => ({
@@ -44,7 +50,10 @@ export class ThreadsAPI {
     'x-ig-app-id': '238260118697367',
   });
 
-  getUserIDfromUsername = async (username: string): Promise<string | undefined> => {
+  getUserIDfromUsername = async (
+    username: string,
+    options?: { noUpdateLSD?: boolean },
+  ): Promise<string | undefined> => {
     const res = await axios.get(`https://www.threads.net/@${username}`, {
       headers: {
         ...this._getDefaultHeaders(username),
@@ -71,39 +80,28 @@ export class ThreadsAPI {
     // remove all newlines from text
     text = text.replace(/\n/g, '');
 
-    const userId: string | undefined = text.match(/"props":{"user_id":"(\d+)"},/)?.[1];
-    return userId;
+    const userID: string | undefined = text.match(/"props":{"user_id":"(\d+)"},/)?.[1];
+    const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
+
+    if (!options?.noUpdateLSD && !!lsdToken) {
+      this.fbLSDToken = lsdToken;
+      if (this.verbose) {
+        console.debug('[fbLSDToken] UPDATED', this.fbLSDToken);
+      }
+    }
+
+    return userID;
   };
 
   getUserProfile = async (username: string, userId: string) => {
+    if (this.verbose) {
+      console.debug('[fbLSDToken] USING', this.fbLSDToken);
+    }
     const res = await axios.post<GetUserProfileResponse>(
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
-        av: '0',
-        __user: '0',
-        __a: '1',
-        __req: '1',
-        __hs: '19544.HYP:barcelona_web_pkg.2.1..0.0',
-        dpr: '1',
-        __ccg: 'EXCELLENT',
-        __rev: '1007795914',
-        __s: 'c1fpxh:oh98tm:os2fqi',
-        __hsi: '7252655495199472548',
-        __dyn:
-          '7xeUmwlEnwn8K2WnFw9-2i5U4e0yoW3q32360CEbo1nEhw2nVE4W0om78b87C0yE465o-cw5Mx62G3i0Bo7O2l0Fwqo31wnEfovwRwlE-U2zxe2Gew9O22362W2K0zK5o4q0GpovU1aUbodEGdwtU2ewbS1LwTwNwLw8O1pwr82gxC',
-        __csr:
-          'j8kjt5p9e00hB4Eqw-w0Xiwrk0xE9Eixza2svazUndhEpko9xy7Ej7Saxl2U5-8m8yA4zCwxxWegQz5162a5x02UxW1g2Ex3MwM_3M25wlQ13gN0el4m2H3r16089wxwnq0w8gqd12',
-        __comet_req: '29',
         lsd: this.fbLSDToken,
-        jazoest: '21997',
-        __spin_r: '1007795914',
-        __spin_b: 'trunk',
-        __spin_t: '1688640447',
-        __jssesw: '2',
-        fb_api_caller_class: 'RelayModern',
-        fb_api_req_friendly_name: 'BarcelonaProfileRootQuery',
         variables: `{"userID":"${userId}"}`,
-        server_timestamps: 'true',
         doc_id: '23996318473300828',
       }),
       {
@@ -119,34 +117,14 @@ export class ThreadsAPI {
   };
 
   getUserProfileThreads = async (username: string, userId: string) => {
+    if (this.verbose) {
+      console.debug('[fbLSDToken] USING', this.fbLSDToken);
+    }
     const res = await axios.post<GetUserProfileThreadsResponse>(
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
-        av: '0',
-        __user: '0',
-        __a: '1',
-        __req: '2',
-        __hs: '19544.HYP:barcelona_web_pkg.2.1..0.0',
-        dpr: '1',
-        __ccg: 'EXCELLENT',
-        __rev: '1007795914',
-        __s: 'c1fpxh:oh98tm:os2fqi',
-        __hsi: '7252655495199472548',
-        __dyn:
-          '7xeUmwlEnwn8K2WnFw9-2i5U4e0yoW3q32360CEbo1nEhw2nVE4W0om78b87C0yE465o-cw5Mx62G3i0Bo7O2l0Fwqo31wnEfovwRwlE-U2zxe2Gew9O22362W2K0zK5o4q0GpovU1aUbodEGdwtU2ewbS1LwTwNwLw8O1pwr82gxC',
-        __csr:
-          'j8kjt5p9e00hB4Eqw-w0Xiwrk0xE9Eixza2svazUndhEpko9xy7Ej7Saxl2U5-8m8yA4zCwxxWegQz5162a5x02UxW1g2Ex3MwM_3M25wlQ13gN0el4m2H3r16089wxwnq0w8gqd12',
-        __comet_req: '29',
         lsd: this.fbLSDToken,
-        jazoest: '21997',
-        __spin_r: '1007795914',
-        __spin_b: 'trunk',
-        __spin_t: '1688640447',
-        __jssesw: '2',
-        fb_api_caller_class: 'RelayModern',
-        fb_api_req_friendly_name: 'BarcelonaProfileThreadsTabQuery',
         variables: `{"userID":"${userId}"}`,
-        server_timestamps: 'true',
         doc_id: '6232751443445612',
       }),
       {
