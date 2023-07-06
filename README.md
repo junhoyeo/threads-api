@@ -1,4 +1,4 @@
-# <img src="./.github/logo.jpg" width="36" height="36" /> Threads API
+# [<img src="./.github/logo.jpg" width="36" height="36" />](https://github.com/junhoyeo) Threads API
 
 [![NPM](https://img.shields.io/npm/v/threads-api.svg?style=flat-square&labelColor=black)](https://www.npmjs.com/package/threads-api) [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square&labelColor=black)](https://github.com/junhoyeo/threads-api/blob/main/license) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg?style=flat-square&labelColor=black)](https://prettier.io)
 
@@ -531,6 +531,7 @@ main();
 </details>
 
 ## 📦 Installation
+
 ```bash
 yarn add threads-api
 # or with npm
@@ -538,6 +539,7 @@ npm install threads-api
 ```
 
 ## 📌 Roadmap
+
 - [x] ✅ Read public data
   - [ ] 🚧 Threads Pagination
 - [ ] 🚧 Read private data
@@ -547,9 +549,19 @@ npm install threads-api
   - [ ] 🏴‍☠️ Cool CLI App to run Threads in the Terminal
 
 ## 🪡 Projects made with `threads-api`
+
 TBD (Add yours by just opening an [pull request](https://github.com/junhoyeo/threads-api/pulls)!)
 
 ## License
-MIT © Junho Yeo
 
-If you find this project intriguing, please consider **starring it(⭐)** or following me on [GitHub](https://github.com/junhoyeo) (I wouldn't say [Threads](https://www.threads.net/@_junhoyeo)).
+<p align="center">
+  <a href="https://github.com/junhoyeo">
+    <img src="./.github/labtocat.png" width="256" height="256">
+  </a>
+</p>
+
+<p align="center">
+  <strong>MIT © <a href="https://github.com/junhoyeo">Junho Yeo</a></strong>
+</p>
+
+If you find this project intriguing, **please consider starring it(⭐)** or following me on [GitHub](https://github.com/junhoyeo) (I wouldn't say [Threads](https://www.threads.net/@_junhoyeo)).
