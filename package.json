@@ -5,9 +5,10 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "dev": "yarn build && node dist"
+    "dev": "yarn build && node dist/test"
   },
   "devDependencies": {
+    "@types/node": "^20.4.0",
     "typescript": "^5.1.6"
   },
   "dependencies": {
