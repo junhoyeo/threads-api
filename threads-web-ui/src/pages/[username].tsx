@@ -152,16 +152,22 @@ const UserProfilePage: NextPage<Props> = (props) => {
                       }
 
                       // largest candidate
-                      const candidate = candidates[candidates.length - 1];
+                      const bestCandidate = candidates.reduce((prev, current) => {
+                        if (prev?.width > current?.width) {
+                          return prev;
+                        } else {
+                          return current;
+                        }
+                      }, undefined)
 
                       return (
                         <div className="border border-slate-400 p-4">
                           <Image
-                            width={candidate.width}
-                            height={candidate.height}
+                            width={bestCandidate.width}
+                            height={bestCandidate.height}
                             className="w-full"
                             alt=""
-                            src={candidate.url}
+                            src={bestCandidate.url}
                           />
                         </div>
                       );
