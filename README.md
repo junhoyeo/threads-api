@@ -546,6 +546,7 @@ npm install threads-api
 # or with pnpm
 pnpm install threads-api
 ```
+
 ```typescript
 // or in Deno 🦖
 import { ThreadsAPI } from "npm:threads-api";
