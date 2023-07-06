@@ -1,7 +1,7 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Image from 'next/image';
 import React from 'react';
-import { Thread, ThreadsUser, ThreadsAPI, ThreadsUserSummary } from 'threads-api';
+import { Thread, ThreadsUser, ThreadsAPI, ThreadsUserSummary, Candidate, ThreadsHdProfilePicVersion } from 'threads-api';
 
 const threadsAPI = new ThreadsAPI();
 
@@ -145,7 +145,8 @@ const UserProfilePage: NextPage<Props> = (props) => {
 
                     {/* FIXME: IM SO IN A HURRY */}
                     {(() => {
-                      const candidates = post.image_versions2?.candidates;
+                      type CandiateItem =  Candidate | ThreadsHdProfilePicVersion 
+                      const candidates: CandiateItem[] = post.image_versions2?.candidates;
 
                       if (!candidates.length) {
                         return null;
@@ -153,17 +154,17 @@ const UserProfilePage: NextPage<Props> = (props) => {
 
                       // largest candidate
                       const bestCandidate = candidates.reduce((prev, current) => {
-                        if (prev?.width > current?.width) {
+                        if ((prev?.width || 0) > (current?.width || 0)) {
                           return prev;
                         } else {
                           return current;
                         }
-                      }, undefined)
+                      }, undefined as CandiateItem | undefined)!
 
                       return (
                         <div className="border border-slate-400 p-4">
                           <Image
-                            width={bestCandidate.width}
+                            width={bestCandidate.width }
                             height={bestCandidate.height}
                             className="w-full"
                             alt=""
