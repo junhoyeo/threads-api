@@ -22,29 +22,49 @@ export type GetUserProfileThreadsResponse = {
 export class ThreadsAPI {
   constructor() {}
 
+  _getDefaultHeaders = (username: string) => ({
+    authority: 'www.threads.net',
+    accept: '*/*',
+    'accept-language': 'ko',
+    'cache-control': 'no-cache',
+    origin: 'https://www.threads.net',
+    pragma: 'no-cache',
+    referer: `https://www.threads.net/@${username}`,
+    'sec-ch-prefers-color-scheme': 'dark',
+    'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+    'sec-ch-ua-full-version-list':
+      '"Not.A/Brand";v="8.0.0.0", "Chromium";v="114.0.5735.198", "Google Chrome";v="114.0.5735.198"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"macOS"',
+    'sec-ch-ua-platform-version': '"13.0.0"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'same-origin',
+    'user-agent':
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+    'viewport-width': '1728',
+    'x-asbd-id': '129477',
+    'x-fb-lsd': 'NjppQDEgONsU_1LCzrmp6q',
+    'x-ig-app-id': '238260118697367',
+  });
+
   getUserIDfromUsername = async (username: string): Promise<string | undefined> => {
     const res = await axios.get(`https://www.threads.net/@${username}`, {
       headers: {
-        authority: 'www.threads.net',
+        ...this._getDefaultHeaders(username),
         accept:
           'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-language': 'ko,en;q=0.9,ko-KR;q=0.8,ja;q=0.7',
-        'cache-control': 'no-cache',
         pragma: 'no-cache',
         referer: 'https://www.instagram.com/',
-        'sec-ch-prefers-color-scheme': 'dark',
-        'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-        'sec-ch-ua-full-version-list': `"Not.A/Brand";v="8.0.0.0", "Chromium";v="114.0.5735.198", "Google Chrome";v="114.0.5735.198"'`,
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"macOS"',
-        'sec-ch-ua-platform-version': '"13.0.0"',
         'sec-fetch-dest': 'document',
         'sec-fetch-mode': `navigate`,
         'sec-fetch-site': `cross-site`,
         'sec-fetch-user': `?1`,
         'upgrade-insecure-requests': `1`,
-        'user-agent': `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36`,
-        'viewport-width': `536`,
+        'x-asbd-id': undefined,
+        'x-fb-lsd': undefined,
+        'x-ig-app-id': undefined,
       },
     });
 
@@ -92,30 +112,8 @@ export class ThreadsAPI {
       }),
       {
         headers: {
-          authority: 'www.threads.net',
-          accept: '*/*',
-          'accept-language': 'ko',
-          'cache-control': 'no-cache',
-          origin: 'https://www.threads.net',
-          pragma: 'no-cache',
-          referer: `https://www.threads.net/@${username}`,
-          'sec-ch-prefers-color-scheme': 'dark',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-full-version-list':
-            '"Not.A/Brand";v="8.0.0.0", "Chromium";v="114.0.5735.198", "Google Chrome";v="114.0.5735.198"',
-          'sec-ch-ua-mobile': '?0',
-          'sec-ch-ua-platform': '"macOS"',
-          'sec-ch-ua-platform-version': '"13.0.0"',
-          'sec-fetch-dest': 'empty',
-          'sec-fetch-mode': 'cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
-          'viewport-width': '150',
-          'x-asbd-id': '129477',
+          ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRootQuery',
-          'x-fb-lsd': 'NjppQDEgONsU_1LCzrmp6q',
-          'x-ig-app-id': '238260118697367',
         },
       },
     );
@@ -157,30 +155,8 @@ export class ThreadsAPI {
       }),
       {
         headers: {
-          authority: 'www.threads.net',
-          accept: '*/*',
-          'accept-language': 'ko',
-          'cache-control': 'no-cache',
-          origin: 'https://www.threads.net',
-          pragma: 'no-cache',
-          referer: `https://www.threads.net/@${username}`,
-          'sec-ch-prefers-color-scheme': 'dark',
-          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-          'sec-ch-ua-full-version-list':
-            '"Not.A/Brand";v="8.0.0.0", "Chromium";v="114.0.5735.198", "Google Chrome";v="114.0.5735.198"',
-          'sec-ch-ua-mobile': '?0',
-          'sec-ch-ua-platform': '"macOS"',
-          'sec-ch-ua-platform-version': '"13.0.0"',
-          'sec-fetch-dest': 'empty',
-          'sec-fetch-mode': 'cors',
-          'sec-fetch-site': 'same-origin',
-          'user-agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
-          'viewport-width': '150',
-          'x-asbd-id': '129477',
+          ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileThreadsTabQuery',
-          'x-fb-lsd': 'NjppQDEgONsU_1LCzrmp6q',
-          'x-ig-app-id': '238260118697367',
         },
       },
     );
