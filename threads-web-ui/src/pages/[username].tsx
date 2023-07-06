@@ -1,7 +1,7 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Image from 'next/image';
 import React from 'react';
-import { Thread, ThreadsUser, ThreadsAPI, User } from 'threads-api';
+import { Thread, ThreadsUser, ThreadsAPI, ThreadsUserSummary } from 'threads-api';
 
 const threadsAPI = new ThreadsAPI();
 
@@ -44,7 +44,7 @@ export const getServerSideProps: GetServerSideProps<Props, Params> = async (cont
 };
 
 type UserProfileProps = {
-  user: User;
+  user: ThreadsUserSummary;
   taken_at?: number;
 };
 const UserProfile: React.FC<UserProfileProps> = ({ user, taken_at }) => {
