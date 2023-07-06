@@ -1,4 +1,5 @@
 import { GetServerSideProps, NextPage } from 'next';
+import Image from 'next/image';
 import React from 'react';
 import { Thread, ThreadsUser, ThreadsAPI } from 'threads-api';
 
@@ -47,6 +48,8 @@ const UserProfilePage: NextPage<Props> = (props) => {
     <div>
       {props.userProfile.username}
       {props.userProfile.full_name}
+
+      <Image width={128} height={128} alt="" src={props.userProfile.profile_pic_url} />
 
       <div>{JSON.stringify(props.userThreads)}</div>
     </div>
