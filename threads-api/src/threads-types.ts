@@ -36,8 +36,34 @@ export interface ThreadItem {
   __typename: string;
 }
 
+export interface QuotedPost {
+  text_post_app_info: TextPostAppInfo;
+  user: ThreadsUserSummary;
+  pk: string;
+  media_overlay_info: any;
+  code: string;
+  caption: Caption;
+  image_versions2: ImageVersions2;
+  original_width: number;
+  original_height: number;
+  video_versions: any[];
+  carousel_media: any;
+  carousel_media_count: any;
+  has_audio: any;
+  like_count: number;
+  taken_at: number;
+  id: string;
+}
+export interface TextPostAppInfo {
+  link_preview_attachment: any;
+  share_info: ShareInfo;
+  reply_to_author: any;
+  is_post_unavailable: boolean;
+  direct_reply_count: number;
+}
+
 export interface Post {
-  user: User;
+  user: ThreadsUserSummary;
   image_versions2: ImageVersions2;
   original_width: number;
   original_height: number;
@@ -47,7 +73,7 @@ export interface Post {
   pk: string;
   has_audio: any;
   text_post_app_info: TextPostAppInfo;
-  caption?: Caption2;
+  caption?: Caption;
   taken_at: number;
   like_count: number;
   code: string;
@@ -55,7 +81,7 @@ export interface Post {
   id: string;
 }
 
-export interface User {
+export interface ThreadsUserSummary {
   profile_pic_url: string;
   username: string;
   id: any;
@@ -64,7 +90,7 @@ export interface User {
 }
 
 export interface ImageVersions2 {
-  candidates: Candidate[];
+  candidates: Candidate[] | ThreadsHdProfilePicVersion[];
 }
 
 export interface Candidate {
@@ -74,46 +100,27 @@ export interface Candidate {
   __typename: string;
 }
 
-export interface TextPostAppInfo {
-  link_preview_attachment: any;
-  share_info: ShareInfo;
-  reply_to_author: any;
-  is_post_unavailable: boolean;
-}
-
 export interface ShareInfo {
-  quoted_post: any;
+  quoted_post?: QuotedPost;
   reposted_post?: RepostedPost;
 }
 
 export interface RepostedPost {
   pk: string;
-  user: User2;
-  image_versions2: ImageVersions22;
+  user: ThreadsUserSummary;
+  image_versions2: ImageVersions2;
   original_width: number;
   original_height: number;
   video_versions: VideoVersion[];
   carousel_media: any;
   carousel_media_count: any;
   has_audio?: boolean;
-  text_post_app_info: TextPostAppInfo2;
+  text_post_app_info: TextPostAppInfo;
   caption: Caption;
   like_count: number;
   taken_at: number;
   code: string;
   id: string;
-}
-
-export interface User2 {
-  profile_pic_url: string;
-  username: string;
-  id: any;
-  is_verified: boolean;
-  pk: string;
-}
-
-export interface ImageVersions22 {
-  candidates: ThreadsHdProfilePicVersion[];
 }
 
 export interface VideoVersion {
@@ -122,22 +129,7 @@ export interface VideoVersion {
   __typename: string;
 }
 
-export interface TextPostAppInfo2 {
-  link_preview_attachment: any;
-  share_info: ShareInfo2;
-  reply_to_author: any;
-  is_post_unavailable: boolean;
-}
-
-export interface ShareInfo2 {
-  quoted_post: any;
-}
-
 export interface Caption {
-  text: string;
-}
-
-export interface Caption2 {
   text: string;
 }
 

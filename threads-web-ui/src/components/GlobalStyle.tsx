@@ -1,4 +1,5 @@
 import { Global, css } from '@emotion/react';
+import colors from 'tailwindcss/colors';
 
 export const GlobalStyle: React.FC = () => (
   <Global
@@ -21,6 +22,15 @@ export const GlobalStyle: React.FC = () => (
 
       button {
         cursor: pointer;
+      }
+
+      html,
+      body {
+        background-color: ${colors.slate[950]};
+      }
+
+      body {
+        color: ${colors.slate[50]};
       }
     `}
   />
