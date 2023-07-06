@@ -34,7 +34,7 @@ main();
 ### Outputs
 
 <details>
-  <summary>Output — <code>threadsAPI.getUserIDfromUsername</code></summary>
+  <summary>📑 Output — <code>threadsAPI.getUserIDfromUsername</code></summary>
 
 ```text
 5438123050
@@ -43,7 +43,7 @@ main();
 </details>
 
 <details>
-  <summary>Output — <code>threadsAPI.getUserProfile</code></summary>
+  <summary>📑 Output — <code>threadsAPI.getUserProfile</code></summary>
 
 ```json
 {
@@ -77,7 +77,7 @@ main();
 </details>
 
 <details>
-  <summary>Output — <code>threadsAPI.getUserProfileThreads</code></summary>
+  <summary>📑 Output — <code>threadsAPI.getUserProfileThreads</code></summary>
 
 ```json
 [
@@ -546,3 +546,8 @@ npm install threads-api
 
 ## 🪡 Projects made with `threads-api`
 TBD (Add yours by just opening an [pull request](https://github.com/junhoyeo/threads-api/pulls)!)
+
+## License
+MIT © Junho Yeo
+
+If you find this project intriguing, please consider starring it(⭐️) or following me on [GitHub](https://github.com/junhoyeo) (I wouldn't say Threads).
