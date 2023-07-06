@@ -15,6 +15,9 @@
 ```ts
 import { ThreadsAPI } from 'threads-api';
 
+// or in Deno 🦖:
+// import { ThreadsAPI } from "npm:threads-api";
+
 const main = async () => {
   const threadsAPI = new ThreadsAPI();
 
@@ -540,6 +543,12 @@ main();
 yarn add threads-api
 # or with npm
 npm install threads-api
+# or with pnpm
+pnpm install threads-api
+```
+```typescript
+// or in Deno 🦖
+import { ThreadsAPI } from "npm:threads-api";
 ```
 
 ## 📌 Roadmap
