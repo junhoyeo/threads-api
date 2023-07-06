@@ -6,12 +6,12 @@ module.exports = {
   semi: true,
   printWidth: 110,
 
-  // @ianvs/prettier-plugin-sort-imports
+  // @trivago/prettier-plugin-sort-imports
   importOrder: [
     '<THIRD_PARTY_MODULES>',
     '@/(assets|components|hooks|pages|jotai|styles|utils)/(.*)$',
     '@/(.*)$',
     '^[./](.*)$',
   ],
-  plugins: [require('@ianvs/prettier-plugin-sort-imports')],
+  plugins: [require('@trivago/prettier-plugin-sort-imports')],
 };

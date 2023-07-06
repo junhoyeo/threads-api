@@ -1,12 +1,22 @@
 import axios from 'axios';
-import { ThreadsUser } from './threads-types';
+import { Extensions, Thread, ThreadsUser } from './threads-types';
 
-type GetUserProfileResponse = {
+export type GetUserProfileResponse = {
   data: {
     userData: {
       user: ThreadsUser;
     };
   };
+  extensions: Extensions;
+};
+
+export type GetUserProfileThreadsResponse = {
+  data: {
+    mediaData: {
+      threads: Thread[];
+    };
+  };
+  extensions: Extensions;
 };
 
 export class ThreadsAPI {
@@ -112,5 +122,70 @@ export class ThreadsAPI {
 
     const user = res.data.data.userData.user;
     return user;
+  };
+
+  getUserProfileThreads = async (username: string, userId: string) => {
+    const res = await axios.post<GetUserProfileThreadsResponse>(
+      'https://www.threads.net/api/graphql',
+      new URLSearchParams({
+        av: '0',
+        __user: '0',
+        __a: '1',
+        __req: '2',
+        __hs: '19544.HYP:barcelona_web_pkg.2.1..0.0',
+        dpr: '1',
+        __ccg: 'EXCELLENT',
+        __rev: '1007795914',
+        __s: 'c1fpxh:oh98tm:os2fqi',
+        __hsi: '7252655495199472548',
+        __dyn:
+          '7xeUmwlEnwn8K2WnFw9-2i5U4e0yoW3q32360CEbo1nEhw2nVE4W0om78b87C0yE465o-cw5Mx62G3i0Bo7O2l0Fwqo31wnEfovwRwlE-U2zxe2Gew9O22362W2K0zK5o4q0GpovU1aUbodEGdwtU2ewbS1LwTwNwLw8O1pwr82gxC',
+        __csr:
+          'j8kjt5p9e00hB4Eqw-w0Xiwrk0xE9Eixza2svazUndhEpko9xy7Ej7Saxl2U5-8m8yA4zCwxxWegQz5162a5x02UxW1g2Ex3MwM_3M25wlQ13gN0el4m2H3r16089wxwnq0w8gqd12',
+        __comet_req: '29',
+        lsd: 'NjppQDEgONsU_1LCzrmp6q',
+        jazoest: '21997',
+        __spin_r: '1007795914',
+        __spin_b: 'trunk',
+        __spin_t: '1688640447',
+        __jssesw: '2',
+        fb_api_caller_class: 'RelayModern',
+        fb_api_req_friendly_name: 'BarcelonaProfileThreadsTabQuery',
+        variables: `{"userID":"${userId}"}`,
+        server_timestamps: 'true',
+        doc_id: '6232751443445612',
+      }),
+      {
+        headers: {
+          authority: 'www.threads.net',
+          accept: '*/*',
+          'accept-language': 'ko',
+          'cache-control': 'no-cache',
+          origin: 'https://www.threads.net',
+          pragma: 'no-cache',
+          referer: `https://www.threads.net/@${username}`,
+          'sec-ch-prefers-color-scheme': 'dark',
+          'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+          'sec-ch-ua-full-version-list':
+            '"Not.A/Brand";v="8.0.0.0", "Chromium";v="114.0.5735.198", "Google Chrome";v="114.0.5735.198"',
+          'sec-ch-ua-mobile': '?0',
+          'sec-ch-ua-platform': '"macOS"',
+          'sec-ch-ua-platform-version': '"13.0.0"',
+          'sec-fetch-dest': 'empty',
+          'sec-fetch-mode': 'cors',
+          'sec-fetch-site': 'same-origin',
+          'user-agent':
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
+          'viewport-width': '150',
+          'x-asbd-id': '129477',
+          'x-fb-friendly-name': 'BarcelonaProfileThreadsTabQuery',
+          'x-fb-lsd': 'NjppQDEgONsU_1LCzrmp6q',
+          'x-ig-app-id': '238260118697367',
+        },
+      },
+    );
+
+    const threads = res.data.data.mediaData.threads;
+    return threads;
   };
 }

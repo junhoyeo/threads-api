@@ -21,3 +21,132 @@ export interface ThreadsHdProfilePicVersion {
 export interface ThreadsBioLink {
   url: string;
 }
+
+export interface Thread {
+  thread_items: ThreadItem[];
+  id: string;
+}
+
+export interface ThreadItem {
+  post: Post;
+  line_type: string;
+  view_replies_cta_string?: string;
+  reply_facepile_users: ReplyFacepileUser[];
+  should_show_replies_cta: boolean;
+  __typename: string;
+}
+
+export interface Post {
+  user: User;
+  image_versions2: ImageVersions2;
+  original_width: number;
+  original_height: number;
+  video_versions: any[];
+  carousel_media: any;
+  carousel_media_count: any;
+  pk: string;
+  has_audio: any;
+  text_post_app_info: TextPostAppInfo;
+  caption?: Caption2;
+  taken_at: number;
+  like_count: number;
+  code: string;
+  media_overlay_info: any;
+  id: string;
+}
+
+export interface User {
+  profile_pic_url: string;
+  username: string;
+  id: any;
+  is_verified: boolean;
+  pk: string;
+}
+
+export interface ImageVersions2 {
+  candidates: Candidate[];
+}
+
+export interface Candidate {
+  height: number;
+  url: string;
+  width: number;
+  __typename: string;
+}
+
+export interface TextPostAppInfo {
+  link_preview_attachment: any;
+  share_info: ShareInfo;
+  reply_to_author: any;
+  is_post_unavailable: boolean;
+}
+
+export interface ShareInfo {
+  quoted_post: any;
+  reposted_post?: RepostedPost;
+}
+
+export interface RepostedPost {
+  pk: string;
+  user: User2;
+  image_versions2: ImageVersions22;
+  original_width: number;
+  original_height: number;
+  video_versions: VideoVersion[];
+  carousel_media: any;
+  carousel_media_count: any;
+  has_audio?: boolean;
+  text_post_app_info: TextPostAppInfo2;
+  caption: Caption;
+  like_count: number;
+  taken_at: number;
+  code: string;
+  id: string;
+}
+
+export interface User2 {
+  profile_pic_url: string;
+  username: string;
+  id: any;
+  is_verified: boolean;
+  pk: string;
+}
+
+export interface ImageVersions22 {
+  candidates: ThreadsHdProfilePicVersion[];
+}
+
+export interface VideoVersion {
+  type: number;
+  url: string;
+  __typename: string;
+}
+
+export interface TextPostAppInfo2 {
+  link_preview_attachment: any;
+  share_info: ShareInfo2;
+  reply_to_author: any;
+  is_post_unavailable: boolean;
+}
+
+export interface ShareInfo2 {
+  quoted_post: any;
+}
+
+export interface Caption {
+  text: string;
+}
+
+export interface Caption2 {
+  text: string;
+}
+
+export interface ReplyFacepileUser {
+  __typename: string;
+  id: any;
+  profile_pic_url: string;
+}
+
+export interface Extensions {
+  is_final: boolean;
+}
