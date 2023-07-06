@@ -5,7 +5,7 @@
   "author": "Junho Yeo <i@junho.io>",
   "repository": "junhoyeo/threads-api",
   "license": "MIT",
-  "type": "module",
+  "type": "commonjs",
   "source": "./src/index.ts",
   "types": "./build/index.d.ts",
   "exports": {
@@ -21,12 +21,20 @@
   "scripts": {
     "build": "tsc",
     "dev": "yarn build && node build/test",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "jest"
   },
   "devDependencies": {
+    "@babel/core": "^7.22.8",
+    "@babel/preset-env": "^7.22.7",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
+    "@types/jest": "^29.5.2",
     "@types/node": "^20.4.0",
+    "babel-jest": "^29.6.1",
+    "jest": "^29.6.1",
     "prettier": "^3.0.0",
+    "ts-jest": "^29.1.1",
+    "tslib": "^2.6.0",
     "typescript": "^5.1.6"
   },
   "dependencies": {
