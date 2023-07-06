@@ -538,11 +538,13 @@ npm install threads-api
 ```
 
 ## 📌 Roadmap
-- [x] Read public data
-  - [ ] Threads Pagination
-- [ ] Read private data
-- [ ] Write data (i.e. write automated Threads)
-- [ ] Restructure project as an monorepo; Add Demo App
+- [x] ✅ Read public data
+  - [ ] 🚧 Threads Pagination
+- [ ] 🚧 Read private data
+- [ ] 🚧 Write data (i.e. write automated Threads)
+- [ ] 🏴‍☠️ Restructure project as an monorepo
+  - [ ] 🏴‍☠️ Add Demo App with Next.js
+  - [ ] 🏴‍☠️ Cool CLI App to run Threads in the Terminal
 
 ## 🪡 Projects made with `threads-api`
 TBD (Add yours by just opening an [pull request](https://github.com/junhoyeo/threads-api/pulls)!)
