@@ -1,11 +1,26 @@
 {
   "name": "threads-api",
   "version": "1.0.0",
+  "description": "Unofficial, Reverse-Engineered Node.js/TypeScript client for Meta's [Threads](https://threads.net).",
   "author": "Junho Yeo <i@junho.io>",
-  "private": true,
+  "repository": "junhoyeo/threads-api",
+  "license": "MIT",
+  "type": "module",
+  "source": "./src/index.ts",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "import": "./build/index.js",
+      "default": "./build/index.js"
+    }
+  },
+  "files": [
+    "build"
+  ],
   "scripts": {
     "build": "tsc",
-    "dev": "yarn build && node dist/test",
+    "dev": "yarn build && node build/test",
     "format": "prettier --write ."
   },
   "devDependencies": {
@@ -16,5 +31,12 @@
   },
   "dependencies": {
     "axios": "^1.4.0"
-  }
+  },
+  "keywords": [
+    "threads",
+    "instagram",
+    "facebook",
+    "meta",
+    "api"
+  ]
 }
