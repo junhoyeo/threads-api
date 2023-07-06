@@ -4,7 +4,7 @@
 
 > Unofficial, Reverse-Engineered Node.js/TypeScript client for Meta's [Threads](https://threads.net).
 
-## 🚀 `threads-api` in Action
+## [<img src="./.github/emojis/rocket.png" width="30" height="30" />](https://github.com/junhoyeo) `threads-api` in Action
 
 <p align="center">
   <img src=".github/cover.jpg" alt="cover" width="500px" />
@@ -537,7 +537,7 @@ main();
 
 </details>
 
-## 📦 Installation
+## [<img src="./.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
 
 ```bash
 yarn add threads-api
@@ -549,10 +549,10 @@ pnpm install threads-api
 
 ```typescript
 // or in Deno 🦖
-import { ThreadsAPI } from "npm:threads-api";
+import { ThreadsAPI } from 'npm:threads-api';
 ```
 
-## 📌 Roadmap
+## [<img src="./.github/emojis/pushpin.png" width="30" height="30" />](https://github.com/junhoyeo) Roadmap
 
 - [x] ✅ Read public data\
   - [x] ✅ Fetch UserID(`314216`) via username(`zuck`)
@@ -566,7 +566,7 @@ import { ThreadsAPI } from "npm:threads-api";
   - [ ] 🏴‍☠️ Add Demo App with Next.js
   - [ ] 🏴‍☠️ Cool CLI App to run Threads in the Terminal
 
-## 🪡 Projects made with `threads-api`
+## [<img src="./.github/emojis/sewing-needle.png" width="30" height="30" />](https://github.com/junhoyeo) Projects made with `threads-api`
 
 TBD (Add yours by just opening an [pull request](https://github.com/junhoyeo/threads-api/pulls)!)
 
