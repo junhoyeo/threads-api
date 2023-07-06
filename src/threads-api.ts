@@ -19,8 +19,17 @@ export type GetUserProfileThreadsResponse = {
   extensions: Extensions;
 };
 
+export type ThreadsAPIOptions = {
+  fbLSDToken?: string;
+}
 export class ThreadsAPI {
-  constructor() {}
+  fbLSDToken: string = 'NjppQDEgONsU_1LCzrmp6q'; // FIXME: Remove default value
+
+  constructor(options?: ThreadsAPIOptions) {
+    if (options?.fbLSDToken) {
+      this.fbLSDToken = options.fbLSDToken;
+    }
+  }
 
   _getDefaultHeaders = (username: string) => ({
     authority: 'www.threads.net',
@@ -31,7 +40,7 @@ export class ThreadsAPI {
     pragma: 'no-cache',
     referer: `https://www.threads.net/@${username}`,
     'x-asbd-id': '129477',
-    'x-fb-lsd': 'NjppQDEgONsU_1LCzrmp6q',
+    'x-fb-lsd': this.fbLSDToken,
     'x-ig-app-id': '238260118697367',
   });
 
@@ -85,7 +94,7 @@ export class ThreadsAPI {
         __csr:
           'j8kjt5p9e00hB4Eqw-w0Xiwrk0xE9Eixza2svazUndhEpko9xy7Ej7Saxl2U5-8m8yA4zCwxxWegQz5162a5x02UxW1g2Ex3MwM_3M25wlQ13gN0el4m2H3r16089wxwnq0w8gqd12',
         __comet_req: '29',
-        lsd: 'NjppQDEgONsU_1LCzrmp6q',
+        lsd: this.fbLSDToken,
         jazoest: '21997',
         __spin_r: '1007795914',
         __spin_b: 'trunk',
@@ -128,7 +137,7 @@ export class ThreadsAPI {
         __csr:
           'j8kjt5p9e00hB4Eqw-w0Xiwrk0xE9Eixza2svazUndhEpko9xy7Ej7Saxl2U5-8m8yA4zCwxxWegQz5162a5x02UxW1g2Ex3MwM_3M25wlQ13gN0el4m2H3r16089wxwnq0w8gqd12',
         __comet_req: '29',
-        lsd: 'NjppQDEgONsU_1LCzrmp6q',
+        lsd: this.fbLSDToken,
         jazoest: '21997',
         __spin_r: '1007795914',
         __spin_b: 'trunk',
