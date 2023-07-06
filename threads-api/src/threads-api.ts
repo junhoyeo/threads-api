@@ -21,7 +21,7 @@ export type GetUserProfileThreadsResponse = {
 
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
-}
+};
 export class ThreadsAPI {
   fbLSDToken: string = 'NjppQDEgONsU_1LCzrmp6q'; // FIXME: Remove default value
 

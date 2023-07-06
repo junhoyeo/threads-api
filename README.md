@@ -548,7 +548,7 @@ npm install threads-api
   - [ ] 🚧 Threads Pagination
 - [ ] 🚧 Read private data
 - [ ] 🚧 Write data (i.e. write automated Threads)
-- [ ] 🏴‍☠️ Restructure project as an monorepo
+- [x] 🏴‍☠️ Restructure project as an monorepo
   - [ ] 🏴‍☠️ Add Demo App with Next.js
   - [ ] 🏴‍☠️ Cool CLI App to run Threads in the Terminal
 
