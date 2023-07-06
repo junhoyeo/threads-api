@@ -4,6 +4,10 @@
 
 > Unofficial, Reverse-Engineered Node.js/TypeScript client for Meta's [Threads](https://threads.net).
 
+## 🚀 `threads-api` in Action
+
+### Usage
+
 ```ts
 import { ThreadsAPI } from 'threads-api';
 
@@ -26,6 +30,8 @@ const main = async () => {
 };
 main();
 ```
+
+### Outputs
 
 <details>
   <summary>Output — <code>threadsAPI.getUserIDfromUsername</code></summary>
@@ -523,3 +529,20 @@ main();
 ```
 
 </details>
+
+## 📦 Installation
+```bash
+yarn add threads-api
+# or with npm
+npm install threads-api
+```
+
+## 📌 Roadmap
+- [x] Read public data
+  - [ ] Threads Pagination
+- [ ] Read private data
+- [ ] Write data (i.e. write automated Threads)
+- [ ] Restructure project as an monorepo; Add Demo App
+
+## 🪡 Projects made with `threads-api`
+TBD (Add yours by just opening an [pull request](https://github.com/junhoyeo/threads-api/pulls)!)
