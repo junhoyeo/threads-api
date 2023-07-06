@@ -550,4 +550,4 @@ TBD (Add yours by just opening an [pull request](https://github.com/junhoyeo/thr
 ## License
 MIT © Junho Yeo
 
-If you find this project intriguing, please consider starring it(⭐️) or following me on [GitHub](https://github.com/junhoyeo) (I wouldn't say Threads).
+If you find this project intriguing, please consider **starring it(⭐)** or following me on [GitHub](https://github.com/junhoyeo) (I wouldn't say [Threads](https://www.threads.net/@_junhoyeo)).
