@@ -3588,13 +3588,6 @@ test-exclude@^6.0.0:
     glob "^7.1.4"
     minimatch "^3.0.4"
 
-threads-api@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/threads-api/-/threads-api-1.0.2.tgz#285f13c7e5a15da82416f1605010bf4c37b54223"
-  integrity sha512-r61hTz+weI8kD51X2p8V/KLKJzCVQS3oEru2GI1korw4JHMTA+t2Czu4+1d/aFEdDXC2gy9lGxsQNtoCY7wu+w==
-  dependencies:
-    axios "^1.4.0"
-
 tmpl@1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/tmpl/-/tmpl-1.0.5.tgz#8683e0b902bb9c20c4f726e3c0b69f36518c07cc"
