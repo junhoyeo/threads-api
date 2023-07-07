@@ -86,7 +86,7 @@ export class ThreadsAPI {
     username: string,
     options?: { noUpdateLSD?: boolean, proxy?: { host: string, port: number } },
   ): Promise<string | undefined> => {
-    const res = await axios.get(`https://www.threads.net/@${username}`, {
+    const res = await axios.get(`https://www.instagram.com/${username}`, {
       proxy: options?.proxy,
       httpAgent: this.httpAgent,
       headers: {
@@ -114,7 +114,7 @@ export class ThreadsAPI {
     // remove all newlines from text
     text = text.replace(/\n/g, '');
 
-    const userID: string | undefined = text.match(/"props":{"user_id":"(\d+)"},/)?.[1];
+    const userID: string | undefined = text.match(/"user_id":"(\d+)",/)?.[1];
     const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
 
     if (!options?.noUpdateLSD && !!lsdToken) {
