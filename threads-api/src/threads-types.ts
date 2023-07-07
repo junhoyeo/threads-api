@@ -24,6 +24,8 @@ export interface ThreadsBioLink {
 
 export interface Thread {
   thread_items: ThreadItem[];
+  thread_type?: string
+  header?: any
   id: string;
 }
 
