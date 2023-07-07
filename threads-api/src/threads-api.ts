@@ -38,6 +38,15 @@ export type GetUserProfileThreadResponse = {
   extensions: Extensions;
 };
 
+export type GetThreadLikersResponse = {
+  data: {
+    likers: {
+      users: ThreadsUser[];
+    };
+  };
+  extensions: Extensions;
+};
+
 type HTTPAgentType = typeof import('http').Agent;
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
@@ -235,5 +244,26 @@ export class ThreadsAPI {
     );
     const thread = res.data.data.data;
     return thread;
+  };
+
+  getThreadLikers = async (postID: string) => {
+    if (this.verbose) {
+      console.debug('[fbLSDToken] USING', this.fbLSDToken);
+    }
+    const res = await axios.post<GetThreadLikersResponse>(
+      'https://www.threads.net/api/graphql',
+      new URLSearchParams({
+        lsd: this.fbLSDToken,
+        variables: `{"mediaID":"${postID}"}`,
+        doc_id: '9360915773983802',
+      }),
+      {
+        headers: {
+          ...this._getDefaultHeaders(),
+        },
+      },
+    );
+    const likers = res.data.data.likers;
+    return likers;
   };
 }
