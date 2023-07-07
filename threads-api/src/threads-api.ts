@@ -33,7 +33,7 @@ export type GetUserProfileThreadResponse = {
   data: {
     data: {
       containing_thread: Thread;
-      reply_threads: Thread[];
+      reply_threads?: Thread[];
     };
   };
   extensions: Extensions;

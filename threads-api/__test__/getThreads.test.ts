@@ -24,7 +24,7 @@ test('getThreads', async () => {
   );
 
   const replyThreadCaptions = thread.reply_threads
-    .map((v) => v.thread_items.map((v) => v.post.caption?.text))
+    ?.map((v) => v.thread_items.map((v) => v.post.caption?.text))
     .flat();
   expect(replyThreadCaptions).toEqual(expect.arrayContaining(['🤍💙🤍💙💙']));
 });
