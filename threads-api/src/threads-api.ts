@@ -262,7 +262,7 @@ export class ThreadsAPI {
           ...this._getDefaultHeaders(),
           'x-fb-friendly-name': 'BarcelonaPostPageQuery',
         },
-      }
+      },
     );
     const likers = res.data.data.likers;
     return likers;
