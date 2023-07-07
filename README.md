@@ -34,6 +34,9 @@ const main = async () => {
 
   const posts = await threadsAPI.getUserProfileThreads(username, id);
   console.log(JSON.stringify(posts));
+
+  const replies await threadsAPI.getUserProfileReplies(username, id);
+  console.log(JSON.stringify(replies));
 };
 main();
 ```
@@ -537,6 +540,13 @@ main();
 
 </details>
 
+<details>
+  <summary>📑 Output — <code>threadsAPI.getUserProfileReplies</code></summary>
+
+Same as the output of `threadsAPI.getUserProfileThreads` but `thread_items.length` is `2`, with the latter as the reply. 😉
+
+</details>
+
 ## [<img src="./.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
 
 ```bash
@@ -554,11 +564,11 @@ import { ThreadsAPI } from 'npm:threads-api';
 
 ## [<img src="./.github/emojis/pushpin.png" width="30" height="30" />](https://github.com/junhoyeo) Roadmap
 
-- [x] ✅ Read public data\
+- [x] ✅ Read public data
   - [x] ✅ Fetch UserID(`314216`) via username(`zuck`)
-  - [x] ✅ Read user profile info
-  - [x] ✅ Read list of user Threads
-  - [ ] 🚧 Read list of user repiles
+  - [x] ✅ Read User Profile Info
+  - [x] ✅ Read list of User Threads
+  - [x] ✅ Read list of User Repiles
   - [ ] 🚧 Read single Thread
 - [ ] 🚧 Read private data
 - [ ] 🚧 Write data (i.e. write automated Threads)
