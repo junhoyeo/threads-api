@@ -260,7 +260,6 @@ export class ThreadsAPI {
       {
         headers: {
           ...this._getDefaultHeaders(),
-          'x-fb-friendly-name': 'BarcelonaPostPageQuery',
         },
       },
     );
