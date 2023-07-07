@@ -51,6 +51,7 @@ type HTTPAgentType = typeof import('http').Agent;
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
   verbose?: boolean;
+  noUpdateLSD?: boolean;
   httpAgent?: HTTPAgentType;
 };
 
@@ -59,12 +60,12 @@ export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
 export class ThreadsAPI {
   fbLSDToken: string = DEFAULT_LSD_TOKEN;
   verbose: boolean = false;
+  noUpdateLSD: boolean = false;
   httpAgent?: HTTPAgentType;
 
   constructor(options?: ThreadsAPIOptions) {
-    if (options?.fbLSDToken) {
-      this.fbLSDToken = options.fbLSDToken;
-    }
+    if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
+    if (options?.noUpdateLSD) this.noUpdateLSD = options.noUpdateLSD;
     this.verbose = options?.verbose || false;
     this.httpAgent = options?.httpAgent;
   }
@@ -84,7 +85,7 @@ export class ThreadsAPI {
 
   getUserIDfromUsername = async (
     username: string,
-    options?: { noUpdateLSD?: boolean, proxy?: { host: string, port: number } },
+    options?: { proxy?: { host: string, port: number } },
   ): Promise<string | undefined> => {
     const res = await axios.get(`https://www.instagram.com/${username}`, {
       proxy: options?.proxy,
@@ -117,7 +118,7 @@ export class ThreadsAPI {
     const userID: string | undefined = text.match(/"user_id":"(\d+)",/)?.[1];
     const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
 
-    if (!options?.noUpdateLSD && !!lsdToken) {
+    if (!this.noUpdateLSD && !!lsdToken) {
       this.fbLSDToken = lsdToken;
       if (this.verbose) {
         console.debug('[fbLSDToken] UPDATED', this.fbLSDToken);
@@ -210,7 +211,7 @@ export class ThreadsAPI {
 
   getPostIDfromURL = async (
     postURL: string,
-    options?: { noUpdateLSD?: boolean, proxy?: { host: string, port: number } },
+    options?: { proxy?: { host: string, port: number } },
   ): Promise<string | undefined> => {
     const res = await axios.get(postURL, {
       proxy: options?.proxy,
@@ -224,7 +225,7 @@ export class ThreadsAPI {
     const postID: string | undefined = text.match(/{"post_id":"(.*?)"}/)?.[1];
     const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
 
-    if (!options?.noUpdateLSD && !!lsdToken) {
+    if (!this.noUpdateLSD && !!lsdToken) {
       this.fbLSDToken = lsdToken;
       if (this.verbose) {
         console.debug('[fbLSDToken] UPDATED', this.fbLSDToken);
