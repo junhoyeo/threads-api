@@ -45,6 +45,9 @@ const main = async () => {
   const post = await threadsAPI.getThreads(postID);
   console.log(JSON.stringify(post.containing_thread));
   console.log(JSON.stringify(post.reply_threads));
+
+  const likers = await threadsAPI.getThreadLikers(postID);
+  console.log(JSON.stringify(likers));
 };
 main();
 ```
@@ -579,6 +582,9 @@ import { ThreadsAPI } from 'npm:threads-api';
   - [x] ✅ Read list of User Repiles
   - [x] ✅ Fetch PostID(`3140957200974444958`) via PostURL(`https://www.threads.net/t/CuW6-7KyXme`)
   - [x] ✅ Read Threads via PostID
+  - [x] ✅ Read Likers in Thread via PostID
+  - [ ] 🚧 Read User Followers
+  - [ ] 🚧 Read User Followings
 - [ ] 🚧 Read private data
 - [ ] 🚧 Write data (i.e. write automated Threads)
 - [x] 🏴‍☠️ Restructure project as an monorepo
