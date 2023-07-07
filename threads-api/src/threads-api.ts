@@ -1,3 +1,4 @@
+import http from "http";
 import axios from 'axios';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
@@ -27,6 +28,16 @@ export type GetUserProfileRepliesResponse = {
   };
   extensions: Extensions;
 };
+
+export type GetUserProfileThreadResponse = {
+  data: {
+    data: {
+      containing_thread: Thread;
+      reply_threads: Thread[];
+    }
+  };
+  extensions: Extensions;
+}
 
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
@@ -64,6 +75,7 @@ export class ThreadsAPI {
     options?: { noUpdateLSD?: boolean },
   ): Promise<string | undefined> => {
     const res = await axios.get(`https://www.threads.net/@${username}`, {
+      httpAgent: new http.Agent({ keepAlive: true }),
       headers: {
         ...this._getDefaultHeaders(username),
         accept:
@@ -114,6 +126,7 @@ export class ThreadsAPI {
         doc_id: '23996318473300828',
       }),
       {
+        httpAgent: new http.Agent({ keepAlive: true }),
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRootQuery',
@@ -137,6 +150,7 @@ export class ThreadsAPI {
         doc_id: '6232751443445612',
       }),
       {
+        httpAgent: new http.Agent({ keepAlive: true }),
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileThreadsTabQuery',
@@ -160,6 +174,7 @@ export class ThreadsAPI {
         doc_id: '6307072669391286',
       }),
       {
+        httpAgent: new http.Agent({ keepAlive: true }),
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRepliesTabQuery',
@@ -170,4 +185,27 @@ export class ThreadsAPI {
     const threads = res.data.data?.mediaData?.threads || [];
     return threads;
   };
+
+  getUserProfileThread = async (username: string, postID: string) => {
+    if (this.verbose) {
+      console.debug('[fbLSDToken] USING', this.fbLSDToken);
+    }
+    const res = await axios.post<GetUserProfileThreadResponse>(
+      'https://www.threads.net/api/graphql',
+      new URLSearchParams({
+        lsd: this.fbLSDToken,
+        variables: `{"postID":"${postID}"}`,
+        doc_id: '5587632691339264',
+      }),
+      {
+        httpAgent: new http.Agent({ keepAlive: true }),
+        headers: {
+          ...this._getDefaultHeaders(username),
+          'x-fb-friendly-name': 'BarcelonaPostPageQuery',
+        },
+      },
+    );
+    const thread = res.data.data.data;
+    return thread;
+  }
 }
