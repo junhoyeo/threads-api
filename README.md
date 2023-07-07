@@ -577,7 +577,8 @@ import { ThreadsAPI } from 'npm:threads-api';
   - [x] ✅ Read User Profile Info
   - [x] ✅ Read list of User Threads
   - [x] ✅ Read list of User Repiles
-  - [ ] 🚧 Read single Thread
+  - [x] ✅ Fetch PostID(`3140957200974444958`) via PostURL(`https://www.threads.net/t/CuW6-7KyXme`)
+  - [x] ✅ Read Threads via PostID
 - [ ] 🚧 Read private data
 - [ ] 🚧 Write data (i.e. write automated Threads)
 - [x] 🏴‍☠️ Restructure project as an monorepo
