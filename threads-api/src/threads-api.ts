@@ -28,6 +28,24 @@ export type GetUserProfileRepliesResponse = {
   extensions: Extensions;
 };
 
+export type GetThreadResponse = {
+  data: {
+      data:{
+        containing_thread: Thread;
+      };
+  };
+  extensions: Extensions;
+};
+
+export type GetThreadRepliesResponse = {
+  data: {
+      data:{
+        reply_threads: Thread[];
+      };
+  };
+  extensions: Extensions;
+};
+
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
   verbose?: boolean;
@@ -170,4 +188,28 @@ export class ThreadsAPI {
     const threads = res.data.data.mediaData.threads;
     return threads;
   };
+
+  getPostIDfromURL = async (
+    postURL: string,
+    options?: { noUpdateLSD?: boolean },
+    ): Promise<string | undefined> => {
+    const res = await axios.get(postURL);
+    
+    let text: string = res.data;
+    text = text.replace(/\s/g, '');
+    text = text.replace(/\n/g, '');
+
+    const postID: string | undefined = text.match(/{"post_id":"(.*?)"}/)?.[1];
+    const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
+    
+    if (!options?.noUpdateLSD && !!lsdToken) {
+      this.fbLSDToken = lsdToken;
+      if (this.verbose) {
+        console.debug('[fbLSDToken] UPDATED', this.fbLSDToken);
+      }
+    }
+
+    return postID;
+  };
+  
 }
