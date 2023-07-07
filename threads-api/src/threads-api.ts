@@ -12,7 +12,7 @@ export type GetUserProfileResponse = {
 
 export type GetUserProfileThreadsResponse = {
   data: {
-    mediaData: {
+    mediaData?: {
       threads: Thread[];
     };
   };
@@ -21,7 +21,7 @@ export type GetUserProfileThreadsResponse = {
 
 export type GetUserProfileRepliesResponse = {
   data: {
-    mediaData: {
+    mediaData?: {
       threads: Thread[];
     };
   };
@@ -144,7 +144,7 @@ export class ThreadsAPI {
       },
     );
 
-    const threads = res.data.data.mediaData.threads;
+    const threads = res.data.data?.mediaData?.threads || [];
     return threads;
   };
 
@@ -167,7 +167,7 @@ export class ThreadsAPI {
       },
     );
 
-    const threads = res.data.data.mediaData.threads;
+    const threads = res.data.data?.mediaData?.threads || [];
     return threads;
   };
 }
