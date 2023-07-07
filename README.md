@@ -22,21 +22,29 @@ const main = async () => {
   const threadsAPI = new ThreadsAPI();
 
   const username = '_junhoyeo';
-  const id = await threadsAPI.getUserIDfromUsername(username);
-  console.log(id);
 
-  if (!id) {
+  // 👤 Details for a specific user
+  const userID = await threadsAPI.getUserIDfromUsername(username);
+  if (!userID) {
     return;
   }
-
-  const user = await threadsAPI.getUserProfile(username, id);
+  const user = await threadsAPI.getUserProfile(username, userID);
   console.log(JSON.stringify(user));
-
-  const posts = await threadsAPI.getUserProfileThreads(username, id);
+  const posts = await threadsAPI.getUserProfileThreads(username, userID);
   console.log(JSON.stringify(posts));
-
-  const replies await threadsAPI.getUserProfileReplies(username, id);
+  const replies = await threadsAPI.getUserProfileReplies(username, userID);
   console.log(JSON.stringify(replies));
+
+  // 📖 Details for a specific thread
+  const postID = await threadsAPI.getPostIDfromURL(
+    'https://www.threads.net/t/CuX_UYABrr7/?igshid=MzRlODBiNWFlZA==',
+  );
+  if (!postID) {
+    return;
+  }
+  const post = await threadsAPI.getThreads(postID);
+  console.log(JSON.stringify(post.containing_thread));
+  console.log(JSON.stringify(post.reply_threads));
 };
 main();
 ```
