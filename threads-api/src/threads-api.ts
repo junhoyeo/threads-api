@@ -19,6 +19,15 @@ export type GetUserProfileThreadsResponse = {
   extensions: Extensions;
 };
 
+export type GetUserProfileRepliesResponse = {
+  data: {
+    mediaData: {
+      threads: Thread[];
+    };
+  };
+  extensions: Extensions;
+};
+
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
   verbose?: boolean;
@@ -131,6 +140,29 @@ export class ThreadsAPI {
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileThreadsTabQuery',
+        },
+      },
+    );
+
+    const threads = res.data.data.mediaData.threads;
+    return threads;
+  };
+
+  getUserProfileReplies = async (username: string, userId: string) => {
+    if (this.verbose) {
+      console.debug('[fbLSDToken] USING', this.fbLSDToken);
+    }
+    const res = await axios.post<GetUserProfileThreadsResponse>(
+      'https://www.threads.net/api/graphql',
+      new URLSearchParams({
+        lsd: this.fbLSDToken,
+        variables: `{"userID":"${userId}"}`,
+        doc_id: '6307072669391286',
+      }),
+      {
+        headers: {
+          ...this._getDefaultHeaders(username),
+          'x-fb-friendly-name': 'BarcelonaProfileRepliesTabQuery',
         },
       },
     );
