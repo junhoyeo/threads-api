@@ -52,6 +52,29 @@ const main = async () => {
 main();
 ```
 
+### CLI Usage
+
+To use the `threads-api` command line interface, run the following command:
+
+```sh
+$ npx threads-api --help
+Usage: threads-api [command] [options]
+
+Options:
+  -v, --version                                                                   output the current version
+  -h, --help                                                                      display help for command
+
+Commands:
+  help                                                                            display help for command
+  getUserIDfromUsername|userid|uid|id <username>                                  det user ID from username
+  getUserProfile|userprofile|uprof|up <username> <userId> [stringify]             get user profile
+  getUserProfileThreads|uthreads|ut <username> <userId> [stringify]               get user profile threads
+  getUserProfileReplies|userreplies|ureplies|ur <username> <userId> [stringify]   get user profile replies
+  getPostIDfromURL|postid|pid|p <postURL>                                         get post ID from URL
+  getThreads|threads|t <postId> [stringify]                                       get threads
+  getThreadLikers|threadlikers|likers|l <postId> [stringify]                      get thread likers
+```
+
 ### Outputs
 
 <details>
@@ -589,7 +612,7 @@ import { ThreadsAPI } from 'npm:threads-api';
 - [ ] 🚧 Write data (i.e. write automated Threads)
 - [x] 🏴‍☠️ Restructure project as an monorepo
   - [ ] 🏴‍☠️ Add Demo App with Next.js
-  - [ ] 🏴‍☠️ Cool CLI App to run Threads in the Terminal
+  - [x] 🏴‍☠️ Cool CLI App to run Threads in the Terminal
 
 ## [<img src="./.github/emojis/sewing-needle.png" width="30" height="30" />](https://github.com/junhoyeo) Projects made with `threads-api`
 
