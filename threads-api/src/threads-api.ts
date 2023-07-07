@@ -1,3 +1,4 @@
+import http from "http";
 import axios from 'axios';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
@@ -74,6 +75,7 @@ export class ThreadsAPI {
     options?: { noUpdateLSD?: boolean },
   ): Promise<string | undefined> => {
     const res = await axios.get(`https://www.threads.net/@${username}`, {
+      httpAgent: new http.Agent({ keepAlive: true }),
       headers: {
         ...this._getDefaultHeaders(username),
         accept:
@@ -124,6 +126,7 @@ export class ThreadsAPI {
         doc_id: '23996318473300828',
       }),
       {
+        httpAgent: new http.Agent({ keepAlive: true }),
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRootQuery',
@@ -147,6 +150,7 @@ export class ThreadsAPI {
         doc_id: '6232751443445612',
       }),
       {
+        httpAgent: new http.Agent({ keepAlive: true }),
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileThreadsTabQuery',
@@ -170,6 +174,7 @@ export class ThreadsAPI {
         doc_id: '6307072669391286',
       }),
       {
+        httpAgent: new http.Agent({ keepAlive: true }),
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRepliesTabQuery',
@@ -193,6 +198,7 @@ export class ThreadsAPI {
         doc_id: '5587632691339264',
       }),
       {
+        httpAgent: new http.Agent({ keepAlive: true }),
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaPostPageQuery',
