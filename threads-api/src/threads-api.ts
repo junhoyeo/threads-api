@@ -83,10 +83,7 @@ export class ThreadsAPI {
     'x-ig-app-id': '238260118697367',
   });
 
-  getUserIDfromUsername = async (
-    username: string,
-    options?: AxiosRequestConfig,
-  ): Promise<string | undefined> => {
+  getUserIDfromUsername = async (username: string, options?: AxiosRequestConfig): Promise<string | undefined> => {
     const res = await axios.get(`https://www.instagram.com/${username}`, {
       ...options,
       httpAgent: this.httpAgent,
@@ -128,7 +125,7 @@ export class ThreadsAPI {
     return userID;
   };
 
-  getUserProfile = async (username: string, userId: string, options?: AxiosRequestConfig) => {
+  getUserProfile = async (username: string, userID: string, options?: AxiosRequestConfig) => {
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
@@ -137,7 +134,7 @@ export class ThreadsAPI {
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"userID":"${userId}"}`,
+        variables: `{"userID":"${userID}"}`,
         doc_id: '23996318473300828',
       }),
       {
@@ -154,7 +151,7 @@ export class ThreadsAPI {
     return user;
   };
 
-  getUserProfileThreads = async (username: string, userId: string, options?: AxiosRequestConfig) => {
+  getUserProfileThreads = async (username: string, userID: string, options?: AxiosRequestConfig) => {
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
@@ -163,7 +160,7 @@ export class ThreadsAPI {
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"userID":"${userId}"}`,
+        variables: `{"userID":"${userID}"}`,
         doc_id: '6232751443445612',
       }),
       {
@@ -180,7 +177,7 @@ export class ThreadsAPI {
     return threads;
   };
 
-  getUserProfileReplies = async (username: string, userId: string, options?: AxiosRequestConfig) => {
+  getUserProfileReplies = async (username: string, userID: string, options?: AxiosRequestConfig) => {
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
@@ -189,7 +186,7 @@ export class ThreadsAPI {
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"userID":"${userId}"}`,
+        variables: `{"userID":"${userID}"}`,
         doc_id: '6307072669391286',
       }),
       {
