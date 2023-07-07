@@ -107,7 +107,6 @@ export class ThreadsAPI {
     const userID: string | undefined = text.match(/"props":{"user_id":"(\d+)"},/)?.[1];
     const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
 
-    console.log({ lsdToken });
     if (!options?.noUpdateLSD && !!lsdToken) {
       this.fbLSDToken = lsdToken;
       if (this.verbose) {
