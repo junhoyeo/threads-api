@@ -1,5 +1,5 @@
-import http from "http";
 import axios from 'axios';
+import http from 'http';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
 export type GetUserProfileResponse = {
@@ -34,10 +34,10 @@ export type GetUserProfileThreadResponse = {
     data: {
       containing_thread: Thread;
       reply_threads: Thread[];
-    }
+    };
   };
   extensions: Extensions;
-}
+};
 
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
@@ -57,14 +57,14 @@ export class ThreadsAPI {
     this.verbose = options?.verbose || false;
   }
 
-  _getDefaultHeaders = (username: string) => ({
+  _getDefaultHeaders = (username?: string) => ({
     authority: 'www.threads.net',
     accept: '*/*',
     'accept-language': 'ko',
     'cache-control': 'no-cache',
     origin: 'https://www.threads.net',
     pragma: 'no-cache',
-    referer: `https://www.threads.net/@${username}`,
+    ...(!!username ? { referer: `https://www.threads.net/@${username}` } : undefined),
     'x-asbd-id': '129477',
     'x-fb-lsd': this.fbLSDToken,
     'x-ig-app-id': '238260118697367',
@@ -104,6 +104,7 @@ export class ThreadsAPI {
     const userID: string | undefined = text.match(/"props":{"user_id":"(\d+)"},/)?.[1];
     const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
 
+    console.log({ lsdToken });
     if (!options?.noUpdateLSD && !!lsdToken) {
       this.fbLSDToken = lsdToken;
       if (this.verbose) {
@@ -186,7 +187,32 @@ export class ThreadsAPI {
     return threads;
   };
 
-  getUserProfileThread = async (username: string, postID: string) => {
+  getPostIDfromURL = async (
+    postURL: string,
+    options?: { noUpdateLSD?: boolean },
+  ): Promise<string | undefined> => {
+    const res = await axios.get(postURL, {
+      httpAgent: new http.Agent({ keepAlive: true }),
+    });
+
+    let text: string = res.data;
+    text = text.replace(/\s/g, '');
+    text = text.replace(/\n/g, '');
+
+    const postID: string | undefined = text.match(/{"post_id":"(.*?)"}/)?.[1];
+    const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
+
+    if (!options?.noUpdateLSD && !!lsdToken) {
+      this.fbLSDToken = lsdToken;
+      if (this.verbose) {
+        console.debug('[fbLSDToken] UPDATED', this.fbLSDToken);
+      }
+    }
+
+    return postID;
+  };
+
+  getThreads = async (postID: string) => {
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
@@ -200,12 +226,12 @@ export class ThreadsAPI {
       {
         httpAgent: new http.Agent({ keepAlive: true }),
         headers: {
-          ...this._getDefaultHeaders(username),
+          ...this._getDefaultHeaders(),
           'x-fb-friendly-name': 'BarcelonaPostPageQuery',
         },
       },
     );
     const thread = res.data.data.data;
     return thread;
-  }
+  };
 }
