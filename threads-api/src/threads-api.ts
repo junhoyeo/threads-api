@@ -1,5 +1,4 @@
 import axios from 'axios';
-import http from 'http';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
 export type GetUserProfileResponse = {
@@ -39,9 +38,11 @@ export type GetUserProfileThreadResponse = {
   extensions: Extensions;
 };
 
+type HTTPAgentType = typeof import('http').Agent;
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
   verbose?: boolean;
+  httpAgent?: HTTPAgentType;
 };
 
 export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
@@ -49,12 +50,14 @@ export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
 export class ThreadsAPI {
   fbLSDToken: string = DEFAULT_LSD_TOKEN;
   verbose: boolean = false;
+  httpAgent?: HTTPAgentType;
 
   constructor(options?: ThreadsAPIOptions) {
     if (options?.fbLSDToken) {
       this.fbLSDToken = options.fbLSDToken;
     }
     this.verbose = options?.verbose || false;
+    this.httpAgent = options?.httpAgent;
   }
 
   _getDefaultHeaders = (username?: string) => ({
@@ -75,7 +78,7 @@ export class ThreadsAPI {
     options?: { noUpdateLSD?: boolean },
   ): Promise<string | undefined> => {
     const res = await axios.get(`https://www.threads.net/@${username}`, {
-      httpAgent: new http.Agent({ keepAlive: true }),
+      httpAgent: this.httpAgent,
       headers: {
         ...this._getDefaultHeaders(username),
         accept:
@@ -127,7 +130,7 @@ export class ThreadsAPI {
         doc_id: '23996318473300828',
       }),
       {
-        httpAgent: new http.Agent({ keepAlive: true }),
+        httpAgent: this.httpAgent,
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRootQuery',
@@ -151,7 +154,7 @@ export class ThreadsAPI {
         doc_id: '6232751443445612',
       }),
       {
-        httpAgent: new http.Agent({ keepAlive: true }),
+        httpAgent: this.httpAgent,
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileThreadsTabQuery',
@@ -175,7 +178,7 @@ export class ThreadsAPI {
         doc_id: '6307072669391286',
       }),
       {
-        httpAgent: new http.Agent({ keepAlive: true }),
+        httpAgent: this.httpAgent,
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRepliesTabQuery',
@@ -192,7 +195,7 @@ export class ThreadsAPI {
     options?: { noUpdateLSD?: boolean },
   ): Promise<string | undefined> => {
     const res = await axios.get(postURL, {
-      httpAgent: new http.Agent({ keepAlive: true }),
+      httpAgent: this.httpAgent,
     });
 
     let text: string = res.data;
@@ -224,7 +227,7 @@ export class ThreadsAPI {
         doc_id: '5587632691339264',
       }),
       {
-        httpAgent: new http.Agent({ keepAlive: true }),
+        httpAgent: this.httpAgent,
         headers: {
           ...this._getDefaultHeaders(),
           'x-fb-friendly-name': 'BarcelonaPostPageQuery',
