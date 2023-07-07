@@ -212,4 +212,49 @@ export class ThreadsAPI {
     return postID;
   };
   
+  getThread = async (postID: string) => {
+    if (this.verbose) {
+      console.debug('[fbLSDToken] USING', this.fbLSDToken);
+    }
+    const res = await axios.post<GetThreadResponse>(
+      'https://www.threads.net/api/graphql',
+      new URLSearchParams({
+        lsd: this.fbLSDToken,
+        variables: `{"postID":"${postID}"}`,
+        doc_id: '5587632691339264',
+      }),
+      {
+        headers: {
+          ...this._getDefaultHeaders(''),
+          'x-fb-friendly-name': 'BarcelonaProfileRepliesTabQuery',
+        },
+      },
+    );
+  
+    const thread = res.data.data.data.containing_thread;
+    return thread;
+  };
+  
+  getThreadReplies = async (postID: string) => {
+    if (this.verbose) {
+      console.debug('[fbLSDToken] USING', this.fbLSDToken);
+    }
+    const res = await axios.post<GetThreadRepliesResponse>(
+      'https://www.threads.net/api/graphql',
+      new URLSearchParams({
+        lsd: this.fbLSDToken,
+        variables: `{"postID":"${postID}"}`,
+        doc_id: '5587632691339264',
+      }),
+      {
+        headers: {
+          ...this._getDefaultHeaders(''),
+          'x-fb-friendly-name': 'BarcelonaProfileRepliesTabQuery',
+        },
+      },
+    );
+  
+    const threads = res.data.data.data.reply_threads;
+    return threads;
+  };
 }
