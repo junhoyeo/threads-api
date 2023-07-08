@@ -54,37 +54,6 @@ const main = async () => {
 main();
 ```
 
-</details>
-
-### 🚀 Usage (Write)
-
-```ts
-import { ThreadsAPI } from 'threads-api';
-
-const main = async () => {
-  const threadsAPI = new ThreadsAPI({
-    username: 'jamel.hammoud', // Your username
-    password: 'PASSWORD', // Your password
-  });
-
-  await threadsAPI.publish('Hello World');
-};
-
-main();
-```
-
-You can also provide custom `deviceID` (Default is `android-${(Math.random() * 1e24).toString(36)}`).
-
-```ts
-const deviceID = `android-${(Math.random() * 1e24).toString(36)}`;
-
-const threadsAPI = new ThreadsAPI({
-  username: 'jamel.hammoud',
-  password: 'PASSWORD',
-  deviceID,
-});
-```
-
 <details>
   <summary>
   <h3>📑 Outputs</h3>
@@ -595,6 +564,37 @@ Same as the output of `threadsAPI.getUserProfileThreads` but `thread_items.lengt
 </details>
 
 </details>
+
+</details>
+
+### 🚀 Usage (Write)
+
+```ts
+import { ThreadsAPI } from 'threads-api';
+
+const main = async () => {
+  const threadsAPI = new ThreadsAPI({
+    username: 'jamel.hammoud', // Your username
+    password: 'PASSWORD', // Your password
+  });
+
+  await threadsAPI.publish('Hello World');
+};
+
+main();
+```
+
+You can also provide custom `deviceID` (Default is `android-${(Math.random() * 1e24).toString(36)}`).
+
+```ts
+const deviceID = `android-${(Math.random() * 1e24).toString(36)}`;
+
+const threadsAPI = new ThreadsAPI({
+  username: 'jamel.hammoud',
+  password: 'PASSWORD',
+  deviceID,
+});
+```
 
 ## [<img src="./.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
 
