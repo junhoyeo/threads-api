@@ -207,13 +207,13 @@ export class ThreadsAPI {
   };
 
   getPostIDfromThreadID = async (
-    threadId: string,
+    threadID: string,
     options?: AxiosRequestConfig,
   ): Promise<string | undefined> => {
-    threadId = threadId.split('?')[0];
-    threadId = threadId.replace(/\s/g, '');
-    threadId = threadId.replace(/\//g, '');
-    const postURL = `https://www.threads.net/t/${threadId}`;
+    threadID = threadID.split('?')[0];
+    threadID = threadID.replace(/\s/g, '');
+    threadID = threadID.replace(/\//g, '');
+    const postURL = `https://www.threads.net/t/${threadID}`;
     return this.getPostIDfromURL(postURL, options);
   };
 
