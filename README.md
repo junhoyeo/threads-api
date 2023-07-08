@@ -578,7 +578,7 @@ const main = async () => {
     password: 'PASSWORD', // Your password
   });
 
-  await threadsAPI.publish('Hello World');
+  await threadsAPI.publish('🤖 Hello World');
 };
 
 main();
