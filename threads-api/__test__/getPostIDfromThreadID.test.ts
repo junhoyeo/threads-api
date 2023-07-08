@@ -8,10 +8,10 @@ describe('getPostIDfromThreadID', () => {
     beforeAll(async () => {
       // given
       threadsAPI = new ThreadsAPI({ verbose: true });
-      const postURL = 'CuX_UYABrr7';
+      const threadID = 'CuX_UYABrr7';
 
       // when
-      postID = await threadsAPI.getPostIDfromThreadID(postURL);
+      postID = await threadsAPI.getPostIDfromThreadID(threadID);
     });
 
     it('should return postID', async () => {
