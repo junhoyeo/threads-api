@@ -73,15 +73,15 @@ const main = async () => {
 main();
 ```
 
-You can also provide custom `deviceId` (Default is `android-${(Math.random() * 1e24).toString(36)}`).
+You can also provide custom `deviceID` (Default is `android-${(Math.random() * 1e24).toString(36)}`).
 
 ```ts
-const deviceId = `android-${(Math.random() * 1e24).toString(36)}`;
+const deviceID = `android-${(Math.random() * 1e24).toString(36)}`;
 
 const threadsAPI = new ThreadsAPI({
   username: 'jamel.hammoud',
   password: 'PASSWORD',
-  deviceId,
+  deviceID,
 });
 ```
 
