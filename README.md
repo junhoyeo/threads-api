@@ -593,7 +593,7 @@ import { ThreadsAPI } from 'npm:threads-api';
 
 ## [<img src="./.github/emojis/sewing-needle.png" width="30" height="30" />](https://github.com/junhoyeo) Projects made with `threads-api`
 
-### `threads-api` CLI
+### `threads-api` CLI (WIP)
 
 To use the `threads-api` command line interface, run the following command:
 

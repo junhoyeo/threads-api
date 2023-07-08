@@ -1,5 +1,5 @@
-import { ThreadsAPI } from './threads-api';
 import { program } from 'commander';
+import { ThreadsAPI } from './threads-api';
 
 const Threads = new ThreadsAPI();
 
@@ -10,7 +10,7 @@ program
   .command('help')
   .description('display help for command')
   .action(() => {
-	  program.outputHelp();
+    program.outputHelp();
   });
 
 program
@@ -88,4 +88,4 @@ program
     console.log(stringify ? JSON.stringify(threadLikers, null, 5) : threadLikers);
   });
 
-export default program;
+export { program };
