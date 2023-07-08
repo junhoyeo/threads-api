@@ -190,7 +190,7 @@ export class ThreadsAPI {
       new URLSearchParams({
         lsd: this.fbLSDToken,
         variables: `{"userID":"${userID}"}`,
-        doc_id: '6307072669391286',
+        doc_id: '6684830921547925',
       }),
       {
         ...options,
