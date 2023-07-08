@@ -352,7 +352,7 @@ export class ThreadsAPI {
     }
 
     const token = await this.getToken();
-    const userId = await this.getUserIDfromUsername(this.username);
+    const userID = await this.getUserIDfromUsername(this.username);
 
     if (!token) {
       return false;
@@ -367,7 +367,7 @@ export class ThreadsAPI {
         text_post_app_info: '{"reply_control":0}',
         timezone_offset: '-25200',
         source_type: '4',
-        _uid: userId,
+        _uid: userID,
         device_id: `${this.deviceID}`,
         caption,
         upload_id: new Date().getTime(),
