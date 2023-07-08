@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
 export type GetUserProfileResponse = {
@@ -83,12 +83,9 @@ export class ThreadsAPI {
     'x-ig-app-id': '238260118697367',
   });
 
-  getUserIDfromUsername = async (
-    username: string,
-    options?: { proxy?: { host: string, port: number } },
-  ): Promise<string | undefined> => {
+  getUserIDfromUsername = async (username: string, options?: AxiosRequestConfig): Promise<string | undefined> => {
     const res = await axios.get(`https://www.instagram.com/${username}`, {
-      proxy: options?.proxy,
+      ...options,
       httpAgent: this.httpAgent,
       headers: {
         ...this._getDefaultHeaders(username),
@@ -128,22 +125,21 @@ export class ThreadsAPI {
     return userID;
   };
 
-  getUserProfile = async (username: string, userId: string, options?: {
-    proxy?: { host: string, port: number },
-  }) => {
+  getUserProfile = async (username: string, userID: string, options?: AxiosRequestConfig) => {
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
+
     const res = await axios.post<GetUserProfileResponse>(
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"userID":"${userId}"}`,
+        variables: `{"userID":"${userID}"}`,
         doc_id: '23996318473300828',
       }),
       {
+        ...options,
         httpAgent: this.httpAgent,
-        proxy: options?.proxy,
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRootQuery',
@@ -155,22 +151,21 @@ export class ThreadsAPI {
     return user;
   };
 
-  getUserProfileThreads = async (username: string, userId: string, options?: {
-    proxy?: { host: string, port: number },
-  }) => {
+  getUserProfileThreads = async (username: string, userID: string, options?: AxiosRequestConfig) => {
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
+
     const res = await axios.post<GetUserProfileThreadsResponse>(
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"userID":"${userId}"}`,
+        variables: `{"userID":"${userID}"}`,
         doc_id: '6232751443445612',
       }),
       {
+        ...options,
         httpAgent: this.httpAgent,
-        proxy: options?.proxy,
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileThreadsTabQuery',
@@ -182,22 +177,21 @@ export class ThreadsAPI {
     return threads;
   };
 
-  getUserProfileReplies = async (username: string, userId: string, options?: {
-    proxy?: { host: string, port: number },
-  }) => {
+  getUserProfileReplies = async (username: string, userID: string, options?: AxiosRequestConfig) => {
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
+
     const res = await axios.post<GetUserProfileThreadsResponse>(
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"userID":"${userId}"}`,
+        variables: `{"userID":"${userID}"}`,
         doc_id: '6307072669391286',
       }),
       {
+        ...options,
         httpAgent: this.httpAgent,
-        proxy: options?.proxy,
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRepliesTabQuery',
@@ -209,12 +203,9 @@ export class ThreadsAPI {
     return threads;
   };
 
-  getPostIDfromURL = async (
-    postURL: string,
-    options?: { proxy?: { host: string, port: number } },
-  ): Promise<string | undefined> => {
+  getPostIDfromURL = async (postURL: string, options?: AxiosRequestConfig): Promise<string | undefined> => {
     const res = await axios.get(postURL, {
-      proxy: options?.proxy,
+      ...options,
       httpAgent: this.httpAgent,
     });
 
@@ -235,7 +226,7 @@ export class ThreadsAPI {
     return postID;
   };
 
-  getThreads = async (postID: string, options?: { proxy?: { host: string, port: number } }) => {
+  getThreads = async (postID: string, options?: AxiosRequestConfig) => {
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
@@ -247,8 +238,8 @@ export class ThreadsAPI {
         doc_id: '5587632691339264',
       }),
       {
+        ...options,
         httpAgent: this.httpAgent,
-        proxy: options?.proxy,
         headers: {
           ...this._getDefaultHeaders(),
           'x-fb-friendly-name': 'BarcelonaPostPageQuery',
@@ -259,7 +250,7 @@ export class ThreadsAPI {
     return thread;
   };
 
-  getThreadLikers = async (postID: string, options?: { proxy?: { host: string, port: number } }) => {
+  getThreadLikers = async (postID: string, options?: AxiosRequestConfig) => {
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
@@ -271,8 +262,8 @@ export class ThreadsAPI {
         doc_id: '9360915773983802',
       }),
       {
+        ...options,
         httpAgent: this.httpAgent,
-        proxy: options?.proxy,
         headers: {
           ...this._getDefaultHeaders(),
         },
