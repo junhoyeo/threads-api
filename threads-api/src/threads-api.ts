@@ -50,7 +50,7 @@ export type GetThreadLikersResponse = {
 type HTTPAgentType = typeof import('http').Agent;
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
-  androidId?: string;
+  deviceId?: string;
   verbose?: boolean;
   noUpdateLSD?: boolean;
   httpAgent?: HTTPAgentType;
@@ -59,11 +59,11 @@ export type ThreadsAPIOptions = {
 };
 
 export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
-export const DEFAULT_ANDROID_ID = (Math.random() * 1e24).toString(36);
+export const DEFAULT_DEVICE_ID = `android-${(Math.random() * 1e24).toString(36)}`;
 
 export class ThreadsAPI {
   fbLSDToken: string = DEFAULT_LSD_TOKEN;
-  androidId: string = DEFAULT_ANDROID_ID;
+  deviceId: string = DEFAULT_DEVICE_ID;
   verbose: boolean = false;
   noUpdateLSD: boolean = false;
   httpAgent?: HTTPAgentType;
@@ -72,7 +72,7 @@ export class ThreadsAPI {
 
   constructor(options?: ThreadsAPIOptions) {
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
-    if (options?.androidId) this.androidId = options.androidId;
+    if (options?.deviceId) this.deviceId = options.deviceId;
     if (options?.noUpdateLSD) this.noUpdateLSD = options.noUpdateLSD;
     this.verbose = options?.verbose || false;
     this.httpAgent = options?.httpAgent;
@@ -311,11 +311,11 @@ export class ThreadsAPI {
         client_input_params: {
           password: this.password,
           contact_point: this.username,
-          device_id: `android-${this.androidId}`,
+          device_id: `${this.deviceId}`,
         },
         server_params: {
           credential_type: 'password',
-          device_id: `android-${this.androidId}`,
+          device_id: `${this.deviceId}`,
         },
       }),
     );
@@ -368,7 +368,7 @@ export class ThreadsAPI {
         timezone_offset: '-25200',
         source_type: '4',
         _uid: userId,
-        device_id: `android-${this.androidId}`,
+        device_id: `${this.deviceId}`,
         caption,
         upload_id: new Date().getTime(),
         device: {
