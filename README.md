@@ -593,6 +593,8 @@ import { ThreadsAPI } from 'npm:threads-api';
 
 ## [<img src="./.github/emojis/sewing-needle.png" width="30" height="30" />](https://github.com/junhoyeo) Projects made with `threads-api`
 
+> Add yours by just opening an [pull request](https://github.com/junhoyeo/threads-api/pulls)!
+
 ### `threads-api` CLI (WIP)
 
 To use the `threads-api` command line interface, run the following command:
@@ -615,8 +617,6 @@ Commands:
   getThreads|threads|t <postId> [stringify]                                       get threads
   getThreadLikers|threadlikers|likers|l <postId> [stringify]                      get thread likers
 ```
-
-TBD (Add yours by just opening an [pull request](https://github.com/junhoyeo/threads-api/pulls)!)
 
 ## License
 
