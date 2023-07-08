@@ -39,6 +39,7 @@ const main = async () => {
   const postID = await threadsAPI.getPostIDfromURL(
     'https://www.threads.net/t/CuX_UYABrr7/?igshid=MzRlODBiNWFlZA==',
   );
+  // or use `threadsAPI.getPostIDfromThreadID('CuX_UYABrr7')`
   if (!postID) {
     return;
   }
@@ -580,7 +581,7 @@ import { ThreadsAPI } from 'npm:threads-api';
   - [x] ✅ Read User Profile Info
   - [x] ✅ Read list of User Threads
   - [x] ✅ Read list of User Repiles
-  - [x] ✅ Fetch PostID(`3140957200974444958`) via PostURL(`https://www.threads.net/t/CuW6-7KyXme`)
+  - [x] ✅ Fetch PostID(`3140957200974444958`) via PostID(`CuW6-7KyXme`) or PostURL(`https://www.threads.net/t/CuW6-7KyXme`)
   - [x] ✅ Read Threads via PostID
   - [x] ✅ Read Likers in Thread via PostID
   - [ ] 🚧 Read User Followers
