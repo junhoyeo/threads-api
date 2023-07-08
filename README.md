@@ -11,7 +11,7 @@
 </p>
 
 <details>
-<summary><h3>🚀 Usage</h3></summary>
+<summary><h3>🚀 Usage (Read)</h3></summary>
 
 ```ts
 import { ThreadsAPI } from 'threads-api';
@@ -53,8 +53,6 @@ const main = async () => {
 };
 main();
 ```
-
-</details>
 
 <details>
   <summary>
@@ -567,6 +565,37 @@ Same as the output of `threadsAPI.getUserProfileThreads` but `thread_items.lengt
 
 </details>
 
+</details>
+
+### 🚀 Usage (Write)
+
+```ts
+import { ThreadsAPI } from 'threads-api';
+
+const main = async () => {
+  const threadsAPI = new ThreadsAPI({
+    username: 'jamel.hammoud', // Your username
+    password: 'PASSWORD', // Your password
+  });
+
+  await threadsAPI.publish('🤖 Hello World');
+};
+
+main();
+```
+
+You can also provide custom `deviceID` (Default is `android-${(Math.random() * 1e24).toString(36)}`).
+
+```ts
+const deviceID = `android-${(Math.random() * 1e24).toString(36)}`;
+
+const threadsAPI = new ThreadsAPI({
+  username: 'jamel.hammoud',
+  password: 'PASSWORD',
+  deviceID,
+});
+```
+
 ## [<img src="./.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
 
 ```bash
@@ -595,7 +624,10 @@ import { ThreadsAPI } from 'npm:threads-api';
   - [ ] 🚧 Read User Followers
   - [ ] 🚧 Read User Followings
 - [ ] 🚧 Read private data
-- [ ] 🚧 Write data (i.e. write automated Threads)
+- [x] ✅ Write data (i.e. write automated Threads)
+  - [x] ✅ Create new Thread with text
+  - [ ] 🚧 Create new Thread with media
+  - [ ] 🚧 Reply to existing Thread
 - [x] 🏴‍☠️ Restructure project as an monorepo
   - [x] 🏴‍☠ Add Demo App with Next.js
     - [ ] Use components in 🏴‍☠️ [junhoyeo/react-threads](https://github.com/junhoyeo/react-threads)
