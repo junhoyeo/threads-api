@@ -12,5 +12,6 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.autopep8",
   },
-  "jest.autoRun": {}
+  "jest.autoRun": {},
+  "deno.enable": false,
 }

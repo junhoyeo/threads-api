@@ -17,7 +17,7 @@
 import { ThreadsAPI } from 'threads-api';
 
 // or in Deno 🦖:
-// import { ThreadsAPI } from "npm:threads-api";
+// import ThreadsAPI from "npm:threads-api";
 
 const main = async () => {
   const threadsAPI = new ThreadsAPI();
@@ -614,7 +614,8 @@ pnpm install threads-api
 
 ```typescript
 // or in Deno 🦖
-import { ThreadsAPI } from 'npm:threads-api';
+import ThreadsAPI from 'npm:threads-api';
+const threadsAPI = new ThreadsAPI.ThreadsAPI({});
 ```
 
 ## [<img src="./.github/emojis/pushpin.png" width="30" height="30" />](https://github.com/junhoyeo) Roadmap
