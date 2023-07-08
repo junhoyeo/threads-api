@@ -10,7 +10,8 @@
   <img src=".github/cover.jpg" alt="cover" width="500px" />
 </p>
 
-### Usage
+<details>
+<summary><h3>🚀 Usage</h3></summary>
 
 ```ts
 import { ThreadsAPI } from 'threads-api';
@@ -53,7 +54,12 @@ const main = async () => {
 main();
 ```
 
-### Outputs
+</details>
+
+<details>
+  <summary>
+  <h3>📑 Outputs</h3>
+  </summary>
 
 <details>
   <summary>📑 Output — <code>threadsAPI.getUserIDfromUsername</code></summary>
@@ -559,6 +565,8 @@ Same as the output of `threadsAPI.getUserProfileThreads` but `thread_items.lengt
 
 </details>
 
+</details>
+
 ## [<img src="./.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
 
 ```bash
@@ -589,16 +597,37 @@ import { ThreadsAPI } from 'npm:threads-api';
 - [ ] 🚧 Read private data
 - [ ] 🚧 Write data (i.e. write automated Threads)
 - [x] 🏴‍☠️ Restructure project as an monorepo
-  - [ ] 🏴‍☠️ Add Demo App with Next.js
+  - [x] 🏴‍☠ Add Demo App with Next.js
+    - [ ] Use components in 🏴‍☠️ [junhoyeo/react-threads](https://github.com/junhoyeo/react-threads)
+    - [ ] Make it better
   - [x] 🏴‍☠️ Cool CLI App to run Threads in the Terminal
 
 ## [<img src="./.github/emojis/sewing-needle.png" width="30" height="30" />](https://github.com/junhoyeo) Projects made with `threads-api`
 
 > Add yours by just opening an [pull request](https://github.com/junhoyeo/threads-api/pulls)!
 
-### `threads-api` CLI (WIP)
+### [🏴‍☠️ `react-threads`: Embed Static Threads in your React/Next.js application.](https://github.com/junhoyeo/react-threads)
+
+[![NPM](https://img.shields.io/npm/v/react-threads.svg?style=flat-square&labelColor=black)](https://www.npmjs.com/package/react-threads) [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square&labelColor=black)](https://github.com/junhoyeo/react-threads/blob/main/license) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg?style=flat-square&labelColor=black)](https://prettier.io) [![](https://img.shields.io/github/stars/junhoyeo%2Freact-threads?style=social)](https://github.com/junhoyeo/react-threads)
+
+> Embed Static Threads in your React/Next.js application. UI components for Meta's Threads. _Powered by **[junhoyeo/threads-api](https://github.com/junhoyeo/threads-api)**._
+
+[![cover](https://github.com/junhoyeo/react-threads/raw/main/.github/cover.jpg)](https://react-threads.vercel.app)
+
+#### Demo
+
+> **Warning**<br/>
+> Vercel Deployment is currently sometimes unstable. 🏴‍☠️
+
+[![cover](https://github.com/junhoyeo/react-threads/raw/main/.github/cover-netflix.png)](https://react-threads.vercel.app/CuUoEcbRFma)
+
+<details>
+  <summary>
+  <h3>🏴‍☠️ <code>threads-api</code> CLI (WIP)</code></h3>
 
 To use the `threads-api` command line interface, run the following command:
+
+  </summary>
 
 ```sh
 $ npx threads-api --help
@@ -618,6 +647,8 @@ Commands:
   getThreads|threads|t <postId> [stringify]                                       get threads
   getThreadLikers|threadlikers|likers|l <postId> [stringify]                      get thread likers
 ```
+
+</details>
 
 ## License
 
