@@ -63,12 +63,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ user, taken_at }) => {
         height={512}
         className="w-[64px] h-[64px] rounded-full"
         alt=""
-        src={user.profile_pic_url}
+        src={user?.profile_pic_url}
       />
       <div className="flex flex-col">
         <span>
-          {user.username}
-          {user.is_verified && '✅'}
+          {user?.username}
+          {user?.is_verified && '✅'}
         </span>
         {taken_at && <span>{taken_at}</span>}
       </div>
@@ -156,7 +156,7 @@ const UserProfilePage: NextPage<Props> = (props) => {
                       type CandiateItem = Candidate | ThreadsHdProfilePicVersion;
                       const candidates: CandiateItem[] = post.image_versions2?.candidates;
 
-                      if (!candidates.length) {
+                      if (!candidates?.length) {
                         return null;
                       }
 
