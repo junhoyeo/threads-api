@@ -632,6 +632,7 @@ import { ThreadsAPI } from 'npm:threads-api';
 - [ ] 🚧 Read private data
 - [x] ✅ Write data (i.e. write automated Threads)
   - [x] ✅ Create new Thread with text
+    - [ ] 🚧 Make link previews to get shown
   - [ ] 🚧 Create new Thread with media
   - [ ] 🚧 Reply to existing Thread
 - [x] 🏴‍☠️ Restructure project as an monorepo
