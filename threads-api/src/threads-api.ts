@@ -360,17 +360,19 @@ export class ThreadsAPI {
 
     const base = 'https://i.instagram.com';
     const url = `${base}/api/v1/media/configure_text_only_post/`;
+    const now = new Date();
+    const timezoneOffset = -now.getTimezoneOffset() * 60;
 
     const data = encodeURIComponent(
       JSON.stringify({
         publish_mode: 'text_post',
         text_post_app_info: '{"reply_control":0}',
-        timezone_offset: '-25200',
+        timezone_offset: timezoneOffset.toString(),
         source_type: '4',
         _uid: userID,
         device_id: `${this.deviceID}`,
         caption,
-        upload_id: new Date().getTime(),
+        upload_id: now.getTime(),
         device: {
           manufacturer: 'OnePlus',
           model: 'ONEPLUS+A3010',
