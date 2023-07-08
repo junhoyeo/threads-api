@@ -3169,6 +3169,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "commander@npm:11.0.0"
+  checksum: 6621954e1e1d078b4991c1f5bbd9439ad37aa7768d6ab4842de1dbd4d222c8a27e1b8e62108b3a92988614af45031d5bb2a2aaa92951f4d0c934d1a1ac564bb4
+  languageName: node
+  linkType: hard
+
 "commander@npm:^4.0.0":
   version: 4.1.1
   resolution: "commander@npm:4.1.1"
@@ -6600,10 +6607,13 @@ __metadata:
     "@types/node": ^20.4.0
     axios: ^1.4.0
     babel-jest: ^29.6.1
+    commander: ^11.0.0
     jest: ^29.6.1
     ts-jest: ^29.1.1
     tslib: ^2.6.0
     typescript: ^5.1.6
+  bin:
+    threads-api: ./bin/cli.js
   languageName: unknown
   linkType: soft
 
