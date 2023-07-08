@@ -1,6 +1,6 @@
 # [<img src="./.github/logo.jpg" width="36" height="36" />](https://github.com/junhoyeo) Threads API
 
-[![NPM](https://img.shields.io/npm/v/threads-api.svg?style=flat-square&labelColor=black)](https://www.npmjs.com/package/threads-api) [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square&labelColor=black)](https://github.com/junhoyeo/threads-api/blob/main/license) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg?style=flat-square&labelColor=black)](https://prettier.io)
+[![NPM](https://img.shields.io/npm/v/threads-api.svg?style=flat-square&labelColor=black)](https://www.npmjs.com/package/threads-api) [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square&labelColor=black)](https://github.com/junhoyeo/threads-api/blob/main/LICENSE) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg?style=flat-square&labelColor=black)](https://prettier.io)
 
 > Unofficial, Reverse-Engineered Node.js/TypeScript client for Meta's [Threads](https://threads.net).
 
@@ -596,6 +596,12 @@ const threadsAPI = new ThreadsAPI({
 });
 ```
 
+<p align="center">
+  <a href="https://www.threads.net/t/CucsGvZBs9q">
+    <img src=".github/text-threads.jpg" alt="Writing Text Threads" width="400px" />
+  </a>
+</p>
+
 ## [<img src="./.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
 
 ```bash
@@ -626,6 +632,7 @@ import { ThreadsAPI } from 'npm:threads-api';
 - [ ] 🚧 Read private data
 - [x] ✅ Write data (i.e. write automated Threads)
   - [x] ✅ Create new Thread with text
+    - [ ] 🚧 Make link previews to get shown
   - [ ] 🚧 Create new Thread with media
   - [ ] 🚧 Reply to existing Thread
 - [x] 🏴‍☠️ Restructure project as an monorepo
