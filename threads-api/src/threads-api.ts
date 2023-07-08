@@ -83,7 +83,10 @@ export class ThreadsAPI {
     'x-ig-app-id': '238260118697367',
   });
 
-  getUserIDfromUsername = async (username: string, options?: AxiosRequestConfig): Promise<string | undefined> => {
+  getUserIDfromUsername = async (
+    username: string,
+    options?: AxiosRequestConfig,
+  ): Promise<string | undefined> => {
     const res = await axios.get(`https://www.instagram.com/${username}`, {
       ...options,
       httpAgent: this.httpAgent,
@@ -201,6 +204,17 @@ export class ThreadsAPI {
 
     const threads = res.data.data?.mediaData?.threads || [];
     return threads;
+  };
+
+  getPostIDfromThreadID = async (
+    threadId: string,
+    options?: AxiosRequestConfig,
+  ): Promise<string | undefined> => {
+    threadId = threadId.split('?')[0];
+    threadId = threadId.replace(/\s/g, '');
+    threadId = threadId.replace(/\//g, '');
+    const postURL = `https://www.threads.net/t/${threadId}`;
+    return this.getPostIDfromURL(postURL, options);
   };
 
   getPostIDfromURL = async (postURL: string, options?: AxiosRequestConfig): Promise<string | undefined> => {
