@@ -596,6 +596,12 @@ const threadsAPI = new ThreadsAPI({
 });
 ```
 
+<p align="center">
+  <a href="https://www.threads.net/t/CucsGvZBs9q">
+    <img src=".github/text-threads.jpg" alt="Writing Text Threads" width="400px" />
+  </a>
+</p>
+
 ## [<img src="./.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
 
 ```bash
