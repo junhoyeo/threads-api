@@ -50,7 +50,7 @@ export type GetThreadLikersResponse = {
 type HTTPAgentType = typeof import('http').Agent;
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
-  deviceId?: string;
+  deviceID?: string;
   verbose?: boolean;
   noUpdateLSD?: boolean;
   httpAgent?: HTTPAgentType;
@@ -63,7 +63,7 @@ export const DEFAULT_DEVICE_ID = `android-${(Math.random() * 1e24).toString(36)}
 
 export class ThreadsAPI {
   fbLSDToken: string = DEFAULT_LSD_TOKEN;
-  deviceId: string = DEFAULT_DEVICE_ID;
+  deviceID: string = DEFAULT_DEVICE_ID;
   verbose: boolean = false;
   noUpdateLSD: boolean = false;
   httpAgent?: HTTPAgentType;
@@ -72,7 +72,7 @@ export class ThreadsAPI {
 
   constructor(options?: ThreadsAPIOptions) {
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
-    if (options?.deviceId) this.deviceId = options.deviceId;
+    if (options?.deviceID) this.deviceID = options.deviceID;
     if (options?.noUpdateLSD) this.noUpdateLSD = options.noUpdateLSD;
     this.verbose = options?.verbose || false;
     this.httpAgent = options?.httpAgent;
@@ -311,11 +311,11 @@ export class ThreadsAPI {
         client_input_params: {
           password: this.password,
           contact_point: this.username,
-          device_id: `${this.deviceId}`,
+          device_id: `${this.deviceID}`,
         },
         server_params: {
           credential_type: 'password',
-          device_id: `${this.deviceId}`,
+          device_id: `${this.deviceID}`,
         },
       }),
     );
@@ -352,7 +352,7 @@ export class ThreadsAPI {
     }
 
     const token = await this.getToken();
-    const userId = await this.getUserIDfromUsername(this.username);
+    const userID = await this.getUserIDfromUsername(this.username);
 
     if (!token) {
       return false;
@@ -367,8 +367,8 @@ export class ThreadsAPI {
         text_post_app_info: '{"reply_control":0}',
         timezone_offset: '-25200',
         source_type: '4',
-        _uid: userId,
-        device_id: `${this.deviceId}`,
+        _uid: userID,
+        device_id: `${this.deviceID}`,
         caption,
         upload_id: new Date().getTime(),
         device: {
