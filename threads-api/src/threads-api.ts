@@ -50,24 +50,34 @@ export type GetThreadLikersResponse = {
 type HTTPAgentType = typeof import('http').Agent;
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
+  deviceId?: string;
   verbose?: boolean;
   noUpdateLSD?: boolean;
   httpAgent?: HTTPAgentType;
+  username?: string;
+  password?: string;
 };
 
 export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
+export const DEFAULT_DEVICE_ID = `android-${(Math.random() * 1e24).toString(36)}`;
 
 export class ThreadsAPI {
   fbLSDToken: string = DEFAULT_LSD_TOKEN;
+  deviceId: string = DEFAULT_DEVICE_ID;
   verbose: boolean = false;
   noUpdateLSD: boolean = false;
   httpAgent?: HTTPAgentType;
+  username?: string;
+  password?: string;
 
   constructor(options?: ThreadsAPIOptions) {
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
+    if (options?.deviceId) this.deviceId = options.deviceId;
     if (options?.noUpdateLSD) this.noUpdateLSD = options.noUpdateLSD;
     this.verbose = options?.verbose || false;
     this.httpAgent = options?.httpAgent;
+    this.username = options?.username;
+    this.password = options?.password;
   }
 
   _getDefaultHeaders = (username?: string) => ({
@@ -285,5 +295,102 @@ export class ThreadsAPI {
     );
     const likers = res.data.data.likers;
     return likers;
+  };
+
+  getToken = async (): Promise<string | undefined> => {
+    if (!this.username || !this.password) {
+      return;
+    }
+
+    const base = 'https://i.instagram.com/api/v1/';
+    const url = `${base}bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/`;
+    const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
+
+    const params = encodeURIComponent(
+      JSON.stringify({
+        client_input_params: {
+          password: this.password,
+          contact_point: this.username,
+          device_id: `${this.deviceId}`,
+        },
+        server_params: {
+          credential_type: 'password',
+          device_id: `${this.deviceId}`,
+        },
+      }),
+    );
+
+    const bkClientContext = encodeURIComponent(
+      JSON.stringify({
+        bloks_version: blockVersion,
+        styles_id: 'instagram',
+      }),
+    );
+
+    const requestConfig: AxiosRequestConfig = {
+      method: 'POST',
+      headers: {
+        'User-Agent': 'Barcelona 289.0.0.77.109 Android',
+        'Sec-Fetch-Site': 'same-origin',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      },
+      responseType: 'text',
+      data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
+    };
+
+    const { data } = await axios(url, requestConfig);
+
+    const pos = data.split('Bearer IGT:2:')[1];
+    const token = `${pos.split('==')[0]}==`;
+
+    return token;
+  };
+
+  publish = async (caption: string): Promise<boolean> => {
+    if (!this.username || !this.password) {
+      return false;
+    }
+
+    const token = await this.getToken();
+    const userId = await this.getUserIDfromUsername(this.username);
+
+    if (!token) {
+      return false;
+    }
+
+    const base = 'https://i.instagram.com';
+    const url = `${base}/api/v1/media/configure_text_only_post/`;
+
+    const data = encodeURIComponent(
+      JSON.stringify({
+        publish_mode: 'text_post',
+        text_post_app_info: '{"reply_control":0}',
+        timezone_offset: '-25200',
+        source_type: '4',
+        _uid: userId,
+        device_id: `${this.deviceId}`,
+        caption,
+        upload_id: new Date().getTime(),
+        device: {
+          manufacturer: 'OnePlus',
+          model: 'ONEPLUS+A3010',
+          android_version: 25,
+          android_release: '7.1.1',
+        },
+      }),
+    );
+
+    await axios(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer IGT:2:${token}`,
+        'User-Agent': 'Barcelona 289.0.0.77.109 Android',
+        'Sec-Fetch-Site': 'same-origin',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      },
+      data: `signed_body=SIGNATURE.${data}`,
+    });
+
+    return true;
   };
 }
