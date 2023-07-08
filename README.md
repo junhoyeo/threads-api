@@ -594,7 +594,7 @@ import { ThreadsAPI } from 'npm:threads-api';
 
 ## [<img src="./.github/emojis/sewing-needle.png" width="30" height="30" />](https://github.com/junhoyeo) Projects made with `threads-api`
 
-[https://github.com/kattschan/needle](Needle), an Threads WebUI designed with Google Material.
+[Needle](https://github.com/kattschan/needle), an Threads WebUI designed with Google Material.
 
 > Add yours by just opening an [pull request](https://github.com/junhoyeo/threads-api/pulls)!
 
