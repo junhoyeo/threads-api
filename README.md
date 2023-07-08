@@ -1,6 +1,6 @@
 # [<img src="./.github/logo.jpg" width="36" height="36" />](https://github.com/junhoyeo) Threads API
 
-[![NPM](https://img.shields.io/npm/v/threads-api.svg?style=flat-square&labelColor=black)](https://www.npmjs.com/package/threads-api) [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square&labelColor=black)](https://github.com/junhoyeo/threads-api/blob/main/license) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg?style=flat-square&labelColor=black)](https://prettier.io)
+[![NPM](https://img.shields.io/npm/v/threads-api.svg?style=flat-square&labelColor=black)](https://www.npmjs.com/package/threads-api) [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square&labelColor=black)](https://github.com/junhoyeo/threads-api/blob/main/LICENSE) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg?style=flat-square&labelColor=black)](https://prettier.io)
 
 > Unofficial, Reverse-Engineered Node.js/TypeScript client for Meta's [Threads](https://threads.net).
 
