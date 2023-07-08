@@ -610,7 +610,7 @@ import { ThreadsAPI } from 'npm:threads-api';
 
 [![NPM](https://img.shields.io/npm/v/react-threads.svg?style=flat-square&labelColor=black)](https://www.npmjs.com/package/react-threads) [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square&labelColor=black)](https://github.com/junhoyeo/react-threads/blob/main/license) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg?style=flat-square&labelColor=black)](https://prettier.io) [![](https://img.shields.io/github/stars/junhoyeo%2Freact-threads?style=social)](https://github.com/junhoyeo/react-threads)
 
-> Embed Static Threads in your React/Next.js application. UI components for Meta's Threads. _Powered by junhoyeo/threads-api**._
+> Embed Static Threads in your React/Next.js application. UI components for Meta's Threads. _Powered by **junhoyeo/threads-api**._
 
 [![cover](https://github.com/junhoyeo/react-threads/raw/main/.github/cover.jpg)](https://react-threads.vercel.app)
 
