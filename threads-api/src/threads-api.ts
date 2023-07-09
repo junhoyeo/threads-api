@@ -55,13 +55,12 @@ export type GetThreadLikersResponse = {
   extensions: Extensions;
 };
 
-type HTTPAgentType = typeof import('http').Agent;
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
   deviceID?: string;
   verbose?: boolean;
   noUpdateLSD?: boolean;
-  httpAgent?: HTTPAgentType;
+  httpAgent?: AxiosRequestConfig['httpAgent'];
   username?: string;
   password?: string;
   device?: AndroidDevice;
@@ -81,7 +80,7 @@ export class ThreadsAPI {
   deviceID: string = DEFAULT_DEVICE_ID;
   verbose: boolean = false;
   noUpdateLSD: boolean = false;
-  httpAgent?: HTTPAgentType;
+  httpAgent?: AxiosRequestConfig['httpAgent'];
   username?: string;
   password?: string;
   device?: AndroidDevice = DEFAULT_DEVICE;
