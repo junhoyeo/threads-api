@@ -1,6 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Image from 'next/image';
-import React from 'react';
+import React, { useState } from 'react';
 import { Thread } from 'react-threads';
 import { Thread as ThreadType, ThreadsUser, ThreadsAPI } from 'threads-api';
 
@@ -34,9 +34,7 @@ export const getServerSideProps: GetServerSideProps<Props, Params> = async (cont
     return {
       props: {
         userProfile,
-
-        // Data is limited to 10 threads for now, this is to prevent hydration issues
-        userThreads: userThreads.slice(0, 10),
+        userThreads,
       },
     };
   } catch (e) {
@@ -54,7 +52,7 @@ const UserProfilePage: NextPage<Props> = (props) => {
         <Image
           width={512}
           height={512}
-          className="w-[128px] h-[128px]"
+          className="w-[84px] h-[84px]"
           alt=""
           src={props.userProfile.profile_pic_url}
         />
