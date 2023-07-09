@@ -1,4 +1,5 @@
 import { ThreadsAPI } from '../src/threads-api';
+import { TIMEOUT } from './utils/constants';
 
 describe('getToken', () => {
   describe('login from instagram', () => {
@@ -7,14 +8,23 @@ describe('getToken', () => {
 
     beforeAll(async () => {
       // given
-      threadsAPI = new ThreadsAPI({ verbose: true, username: 'username', password: 'password' });
+      threadsAPI = new ThreadsAPI({
+        verbose: true,
+        username: process.env.USERNAME,
+        password: process.env.PASSWORD,
+      });
+
       // when
       token = await threadsAPI.getToken();
-    });
+    }, TIMEOUT);
 
-    it('should return token', async () => {
-      // then
-      expect(typeof token).toBe('string');
-    });
+    it(
+      'should return token',
+      async () => {
+        // then
+        expect(typeof token).toBe('string');
+      },
+      TIMEOUT,
+    );
   });
 });

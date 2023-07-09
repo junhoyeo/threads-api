@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { LATEST_ANDROID_APP_VERSION } from 'dynamic-data';
 import * as fs from 'fs';
 import mimeTypes from 'mime-types';
 import { v4 as uuidV4 } from 'uuid';
@@ -11,6 +10,7 @@ import {
   POST_WITH_IMAGE_URL,
   POST_HEADERS_DEFAULT,
 } from './constants';
+import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
 export type AndroidDevice = {
