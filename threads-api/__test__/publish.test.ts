@@ -7,10 +7,6 @@ describe('publish', () => {
     let checkSum: boolean | undefined;
 
     beforeAll(async () => {
-      console.log({
-        username: process.env.USERNAME,
-        password: process.env.PASSWORD,
-      });
       // given
       threadsAPI = new ThreadsAPI({
         verbose: true,
