@@ -1,7 +1,8 @@
 import { ThreadsAPI } from '../src/threads-api';
-import { TIMEOUT } from './utils/constants';
+import { TIMEOUT, credentials } from './utils/constants';
+import { describeIf } from './utils/describeIf';
 
-describe('getToken', () => {
+describeIf(!!credentials)('getToken', () => {
   describe('login from instagram', () => {
     let threadsAPI: ThreadsAPI;
     let token: string | undefined;

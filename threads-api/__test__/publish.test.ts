@@ -1,7 +1,8 @@
 import { ThreadsAPI } from '../src/threads-api';
-import { TIMEOUT } from './utils/constants';
+import { TIMEOUT, credentials } from './utils/constants';
+import { describeIf } from './utils/describeIf';
 
-describe('publish', () => {
+describeIf(!!credentials)('publish', () => {
   describe('publish a post to the Threads.', () => {
     let threadsAPI: ThreadsAPI;
     let checkSum: boolean | undefined;

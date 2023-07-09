@@ -1,7 +1,8 @@
 import { ThreadsAPI } from '../src/threads-api';
-import { TIMEOUT } from './utils/constants';
+import { TIMEOUT, credentials } from './utils/constants';
+import { describeIf } from './utils/describeIf';
 
-describe('publish', () => {
+describeIf(!!credentials)('publish', () => {
   describe('publish a post with image to the Threads.', () => {
     let threadsAPI: ThreadsAPI;
     let checkSum: boolean | undefined;
@@ -10,8 +11,7 @@ describe('publish', () => {
       // given
       threadsAPI = new ThreadsAPI({
         verbose: true,
-        username: process.env.USERNAME,
-        password: process.env.PASSWORD,
+        ...credentials,
       });
 
       // when
