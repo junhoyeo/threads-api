@@ -1,7 +1,7 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Image from 'next/image';
-import React, { useState } from 'react';
-import { Thread } from 'react-threads';
+import React from 'react';
+import { Thread, ThreadsIcons } from 'react-threads';
 import { Thread as ThreadType, ThreadsUser, ThreadsAPI } from 'threads-api';
 
 const threadsAPI = new ThreadsAPI();
@@ -51,7 +51,10 @@ const UserProfilePage: NextPage<Props> = (props) => {
       <header className="flex flex-col py-4">
         <div className="flex items-center">
           <div className="flex flex-col flex-1">
-            <span className="text-[24px] leading-[30px] font-bold">{props.userProfile.full_name}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[24px] leading-[30px] font-bold">{props.userProfile.full_name}</span>
+              {props.userProfile.is_verified && <ThreadsIcons.Verified width={20} height={20} />}
+            </div>
             <div className="flex items-center gap-1 mt-[2px]">
               <span className="text-[15px]">{props.userProfile.username}</span>
               <span className="px-[8px] py-[6px] rounded-[30px] bg-[rgb(30,30,30)] text-[rgb(97,97,97)] text-[11px] leading-[13px]">
@@ -74,7 +77,7 @@ const UserProfilePage: NextPage<Props> = (props) => {
         </p>
 
         <div className="mt-[18px] text-[15px] leading-[21px] text-[rgb(97,97,97)]">
-          <span>{props.userProfile.follower_count} followers</span>
+          <span>{props.userProfile.follower_count.toLocaleString()} followers</span>
         </div>
       </header>
 
