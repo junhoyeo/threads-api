@@ -1,8 +1,9 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Image from 'next/image';
 import React from 'react';
+import { Thread } from 'react-threads';
 import {
-  Thread,
+  Thread as ThreadType,
   ThreadsUser,
   ThreadsAPI,
   ThreadsUserSummary,
@@ -18,7 +19,7 @@ type Params = {
 
 type Props = {
   userProfile: ThreadsUser;
-  userThreads: Thread[];
+  userThreads: ThreadType[];
 };
 export const getServerSideProps: GetServerSideProps<Props, Params> = async (context) => {
   const username = context.params?.username;
@@ -51,52 +52,6 @@ export const getServerSideProps: GetServerSideProps<Props, Params> = async (cont
   }
 };
 
-type UserProfileProps = {
-  user: ThreadsUserSummary;
-  taken_at?: number;
-};
-const UserProfile: React.FC<UserProfileProps> = ({ user, taken_at }) => {
-  return (
-    <div className="flex">
-      <Image
-        width={512}
-        height={512}
-        className="w-[64px] h-[64px] rounded-full"
-        alt=""
-        src={user.profile_pic_url}
-      />
-      <div className="flex flex-col">
-        <span>
-          {user.username}
-          {user.is_verified && '✅'}
-        </span>
-        {taken_at && <span>{taken_at}</span>}
-      </div>
-    </div>
-  );
-};
-
-type LinkPreviewAttachmentProps = {
-  link_preview_attachment: {
-    image_url: string;
-    title: string;
-    url: string;
-  };
-};
-const LinkPreviewAttachment: React.FC<LinkPreviewAttachmentProps> = ({ link_preview_attachment }) => {
-  return (
-    <div className="p-4 border border-slate-400">
-      <div className="flex flex-col">
-        <Image width={1200} height={1200} className="w-full" alt="" src={link_preview_attachment.image_url} />
-        <div className="flex flex-col">
-          <span>{link_preview_attachment.title}</span>
-          <span>{link_preview_attachment.url}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const UserProfilePage: NextPage<Props> = (props) => {
   return (
     <div className="flex flex-col max-w-4xl mx-auto">
@@ -117,105 +72,7 @@ const UserProfilePage: NextPage<Props> = (props) => {
 
       <div>
         {props.userThreads.map((thread) => {
-          return (
-            <div key={thread.id}>
-              {thread.thread_items.map((item) => {
-                const reposted_post = item.post.text_post_app_info.share_info.reposted_post;
-                const quoted_post = item.post.text_post_app_info.share_info.quoted_post;
-                const post = reposted_post ? reposted_post : quoted_post ? quoted_post : item.post;
-                const user = post.user;
-                return (
-                  <div key={item.post.id} className="p-4 border bg-slate-800 border-slate-600">
-                    <UserProfile user={user} taken_at={post.taken_at} />
-                    <p>{post.caption?.text}</p>
-
-                    {post.text_post_app_info.link_preview_attachment && (
-                      <LinkPreviewAttachment
-                        link_preview_attachment={post.text_post_app_info.link_preview_attachment}
-                      />
-                    )}
-
-                    {/* {JSON.stringify(post)} */}
-
-                    {/* {post.carousel_media?.map((media) => {
-                      return (
-                        <div key={media.id} className="p-4 border border-slate-400">
-                          <Image
-                            width={media.image_versions2.candidates[0].width}
-                            height={media.image_versions2.candidates[0].height}
-                            className="w-full"
-                            alt=""
-                            src={media.image_versions2.candidates[0].url}
-                          />
-                        </div>
-                      );
-                    })} */}
-
-                    {/* FIXME: IM SO IN A HURRY */}
-                    {(() => {
-                      type CandiateItem = Candidate | ThreadsHdProfilePicVersion;
-                      const candidates: CandiateItem[] = post.image_versions2?.candidates;
-
-                      if (!candidates.length) {
-                        return null;
-                      }
-
-                      // largest candidate
-                      const bestCandidate = candidates.reduce((prev, current) => {
-                        if ((prev?.width || 0) > (current?.width || 0)) {
-                          return prev;
-                        } else {
-                          return current;
-                        }
-                      }, undefined as CandiateItem | undefined)!;
-
-                      return (
-                        <div className="p-4 border border-slate-400">
-                          <Image
-                            width={bestCandidate.width}
-                            height={bestCandidate.height}
-                            className="w-full"
-                            alt=""
-                            src={bestCandidate.url}
-                          />
-                        </div>
-                      );
-                    })()}
-
-                    {/* TODO: Video Support */}
-                    {/* {JSON.stringify(post.video_versions)} */}
-
-                    {/* FIXME: IM SO IN A HURRY */}
-                    {(() => {
-                      const nestedRepostedPost = reposted_post?.text_post_app_info.share_info.reposted_post;
-                      const nestedQuotedPost = reposted_post?.text_post_app_info.share_info.quoted_post;
-                      const nestedPost = nestedRepostedPost
-                        ? nestedRepostedPost
-                        : nestedQuotedPost
-                        ? nestedQuotedPost
-                        : null;
-                      if (!nestedPost) {
-                        return null;
-                      }
-
-                      return (
-                        <div className="p-4 border border-slate-400">
-                          <UserProfile user={nestedPost.user} taken_at={nestedPost.taken_at} />
-                          <p>{nestedPost.caption?.text}</p>
-
-                          {nestedPost.text_post_app_info.link_preview_attachment && (
-                            <LinkPreviewAttachment
-                              link_preview_attachment={nestedPost.text_post_app_info.link_preview_attachment}
-                            />
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </div>
-                );
-              })}
-            </div>
-          );
+          return <Thread thread={thread} key={thread.id} />;
         })}
       </div>
     </div>
