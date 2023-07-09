@@ -689,6 +689,8 @@ Commands:
 
 </details>
 
+### [👤 `threads-card`: Share your Threads profile easily](https://github.com/yssf-io/threads-card)
+
 ## License
 
 <p align="center">
