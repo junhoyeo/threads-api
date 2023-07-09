@@ -26,7 +26,7 @@ export const GlobalStyle: React.FC = () => (
 
       html,
       body {
-        background-color: ${colors.slate[950]};
+        background-color: #101010;
       }
 
       body {
