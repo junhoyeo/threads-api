@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { LATEST_ANDROID_APP_VERSION } from 'dynamic-data';
+import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
 export type AndroidDevice = {
