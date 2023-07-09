@@ -20,6 +20,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-is": "^18.2.0",
+    "react-threads": "^1.0.6",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6",
     "threads-api": "^1.0.3"

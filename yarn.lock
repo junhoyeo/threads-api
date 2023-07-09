@@ -4855,6 +4855,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"linkify-it@npm:^2.0.3":
+  version: 2.2.0
+  resolution: "linkify-it@npm:2.2.0"
+  dependencies:
+    uc.micro: ^1.0.1
+  checksum: d198871d0b3f3cfdb745dae564bfd6743474f20cd0ef1057e6ca29451834749e7f3da52b59b4de44e98f31a1e5c71bdad160490d4ae54de251cbcde57e4d7837
+  languageName: node
+  linkType: hard
+
 "locate-path@npm:^5.0.0":
   version: 5.0.0
   resolution: "locate-path@npm:5.0.0"
@@ -5818,6 +5827,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-linkify@npm:^1.0.0-alpha":
+  version: 1.0.0-alpha
+  resolution: "react-linkify@npm:1.0.0-alpha"
+  dependencies:
+    linkify-it: ^2.0.3
+    tlds: ^1.199.0
+  checksum: abff36e1fdd9db822278292379e070d471d96ddda2d199565edd9ecff3d17faa31a3c83bd2be8fa4c0f9589dd97553ba77c553047b94cfd94e0f528b9e91fafa
+  languageName: node
+  linkType: hard
+
+"react-threads@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "react-threads@npm:1.0.6"
+  dependencies:
+    react-linkify: ^1.0.0-alpha
+  peerDependencies:
+    next: 13.4.9
+    react: 18.2.0
+    react-dom: 18.2.0
+  checksum: 174c7fa52e391f892a3a5d6849e6a324d68014f93c9f5562c153dcc69ea660bfc7f2bd0a59ae38ec5d30874cb24de2e58a3bf0f00f87cec482cc3db7cf656043
+  languageName: node
+  linkType: hard
+
 "react@npm:18.2.0":
   version: 18.2.0
   resolution: "react@npm:18.2.0"
@@ -6638,6 +6670,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-is: ^18.2.0
+    react-threads: ^1.0.6
     tailwind-merge: ^1.13.2
     tailwindcss: ^3.3.2
     tailwindcss-animate: ^1.0.6
@@ -6645,6 +6678,15 @@ __metadata:
     typescript: ^5.1.6
   languageName: unknown
   linkType: soft
+
+"tlds@npm:^1.199.0":
+  version: 1.240.0
+  resolution: "tlds@npm:1.240.0"
+  bin:
+    tlds: bin.js
+  checksum: c4bfb0bbfde2f7533f79f7aa49d137e37e5c2f41680bb90a32f588386ac908e23132a61675e5e207e7cb06e7fcf77242b9f44040793de9dc4ca0193dcbcda923
+  languageName: node
+  linkType: hard
 
 "tmpl@npm:1.0.5":
   version: 1.0.5
@@ -6773,6 +6815,13 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: f53bfe97f7c8b2b6d23cf572750d4e7d1e0c5fff1c36d859d0ec84556a827b8785077bc27676bf7e71fae538e517c3ecc0f37e7f593be913d884805d931bc8be
+  languageName: node
+  linkType: hard
+
+"uc.micro@npm:^1.0.1":
+  version: 1.0.6
+  resolution: "uc.micro@npm:1.0.6"
+  checksum: 6898bb556319a38e9cf175e3628689347bd26fec15fc6b29fa38e0045af63075ff3fea4cf1fdba9db46c9f0cbf07f2348cd8844889dd31ebd288c29fe0d27e7a
   languageName: node
   linkType: hard
 
