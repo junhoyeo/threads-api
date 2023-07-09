@@ -1,0 +1,1 @@
+export const LATEST_ANDROID_APP_VERSION = '289.0.0.77.109';

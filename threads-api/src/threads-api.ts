@@ -1,5 +1,13 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { LATEST_ANDROID_APP_VERSION } from 'dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
+
+export type AndroidDevice = {
+  manufacturer: string;
+  model: string;
+  os_version: number;
+  os_release: string;
+};
 
 export type GetUserProfileResponse = {
   data: {
@@ -56,10 +64,17 @@ export type ThreadsAPIOptions = {
   httpAgent?: HTTPAgentType;
   username?: string;
   password?: string;
+  device?: AndroidDevice;
 };
 
 export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
 export const DEFAULT_DEVICE_ID = `android-${(Math.random() * 1e24).toString(36)}`;
+export const DEFAULT_DEVICE: AndroidDevice = {
+  manufacturer: 'OnePlus',
+  model: 'ONEPLUS+A3010',
+  os_version: 25,
+  os_release: '7.1.1',
+};
 
 export class ThreadsAPI {
   fbLSDToken: string = DEFAULT_LSD_TOKEN;
@@ -69,6 +84,7 @@ export class ThreadsAPI {
   httpAgent?: HTTPAgentType;
   username?: string;
   password?: string;
+  device?: AndroidDevice = DEFAULT_DEVICE;
 
   constructor(options?: ThreadsAPIOptions) {
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
@@ -78,6 +94,7 @@ export class ThreadsAPI {
     this.httpAgent = options?.httpAgent;
     this.username = options?.username;
     this.password = options?.password;
+    this.device = options?.device;
   }
 
   _getDefaultHeaders = (username?: string) => ({
@@ -330,7 +347,7 @@ export class ThreadsAPI {
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
       headers: {
-        'User-Agent': 'Barcelona 289.0.0.77.109 Android',
+        'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
         'Sec-Fetch-Site': 'same-origin',
         'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
       },
@@ -373,12 +390,7 @@ export class ThreadsAPI {
         device_id: `${this.deviceID}`,
         caption,
         upload_id: now.getTime(),
-        device: {
-          manufacturer: 'OnePlus',
-          model: 'ONEPLUS+A3010',
-          android_version: 25,
-          android_release: '7.1.1',
-        },
+        device: this.device,
       }),
     );
 
