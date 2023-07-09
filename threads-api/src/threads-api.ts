@@ -61,6 +61,7 @@ export type ThreadsAPIOptions = {
   verbose?: boolean;
   noUpdateLSD?: boolean;
   httpAgent?: AxiosRequestConfig['httpAgent'];
+  httpsAgent?: AxiosRequestConfig['httpsAgent'];
   username?: string;
   password?: string;
   device?: AndroidDevice;
@@ -81,6 +82,7 @@ export class ThreadsAPI {
   verbose: boolean = false;
   noUpdateLSD: boolean = false;
   httpAgent?: AxiosRequestConfig['httpAgent'];
+  httpsAgent?: AxiosRequestConfig['httpsAgent'];
   username?: string;
   password?: string;
   device?: AndroidDevice = DEFAULT_DEVICE;
@@ -91,6 +93,7 @@ export class ThreadsAPI {
     if (options?.noUpdateLSD) this.noUpdateLSD = options.noUpdateLSD;
     this.verbose = options?.verbose || false;
     this.httpAgent = options?.httpAgent;
+    this.httpsAgent = options?.httpsAgent;
     this.username = options?.username;
     this.password = options?.password;
     this.device = options?.device;
@@ -116,6 +119,7 @@ export class ThreadsAPI {
     const res = await axios.get(`https://www.instagram.com/${username}`, {
       ...options,
       httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
       headers: {
         ...this._getDefaultHeaders(username),
         accept:
@@ -169,6 +173,7 @@ export class ThreadsAPI {
       {
         ...options,
         httpAgent: this.httpAgent,
+        httpsAgent: this.httpsAgent,
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRootQuery',
@@ -195,6 +200,7 @@ export class ThreadsAPI {
       {
         ...options,
         httpAgent: this.httpAgent,
+        httpsAgent: this.httpsAgent,
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileThreadsTabQuery',
@@ -221,6 +227,7 @@ export class ThreadsAPI {
       {
         ...options,
         httpAgent: this.httpAgent,
+        httpsAgent: this.httpsAgent,
         headers: {
           ...this._getDefaultHeaders(username),
           'x-fb-friendly-name': 'BarcelonaProfileRepliesTabQuery',
@@ -247,6 +254,7 @@ export class ThreadsAPI {
     const res = await axios.get(postURL, {
       ...options,
       httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
     });
 
     let text: string = res.data;
@@ -280,6 +288,7 @@ export class ThreadsAPI {
       {
         ...options,
         httpAgent: this.httpAgent,
+        httpsAgent: this.httpsAgent,
         headers: {
           ...this._getDefaultHeaders(),
           'x-fb-friendly-name': 'BarcelonaPostPageQuery',
@@ -304,6 +313,7 @@ export class ThreadsAPI {
       {
         ...options,
         httpAgent: this.httpAgent,
+        httpsAgent: this.httpsAgent,
         headers: {
           ...this._getDefaultHeaders(),
         },
