@@ -395,19 +395,12 @@ export class ThreadsAPI {
       data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
     };
 
-    const { data } = await axios(url, requestConfig);
-
-    let pos = data.split('Bearer IGT:2:')[1];
-    if (pos.length > 1) {
-      pos = pos.split('=')[0];
-
-      const token = pos + '==';
-      if (this.verbose) {
-        console.debug('[token]', token);
-      }
-      return token;
+    const { data } = await axios<string>(url, requestConfig);
+    const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
+    if (this.verbose) {
+      console.debug('[token]', token);
     }
-    return;
+    return token;
   };
 
   publish = async (caption: string): Promise<boolean> => {
