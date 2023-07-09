@@ -2,14 +2,7 @@ import { GetServerSideProps, NextPage } from 'next';
 import Image from 'next/image';
 import React from 'react';
 import { Thread } from 'react-threads';
-import {
-  Thread as ThreadType,
-  ThreadsUser,
-  ThreadsAPI,
-  ThreadsUserSummary,
-  Candidate,
-  ThreadsHdProfilePicVersion,
-} from 'threads-api';
+import { Thread as ThreadType, ThreadsUser, ThreadsAPI } from 'threads-api';
 
 const threadsAPI = new ThreadsAPI();
 
@@ -41,7 +34,9 @@ export const getServerSideProps: GetServerSideProps<Props, Params> = async (cont
     return {
       props: {
         userProfile,
-        userThreads,
+
+        // Data is limited to 10 threads for now, this is to prevent hydration issues
+        userThreads: userThreads.slice(0, 10),
       },
     };
   } catch (e) {
