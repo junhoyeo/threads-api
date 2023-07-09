@@ -7,14 +7,18 @@ describe('publish', () => {
 
     beforeAll(async () => {
       // given
-      threadsAPI = new ThreadsAPI({ verbose: true, username: "username", password: "password" });
+      threadsAPI = new ThreadsAPI({ verbose: true, username: 'username', password: 'password' });
       // when
-      checkSum = await threadsAPI.publish("Hello World!");
+      checkSum = await threadsAPI.publish('Hello World!');
     }, 60 * 1000);
 
-    it('should return checkSum', async () => {
-      // then
-      expect(checkSum).toBe(true)
-    }, 60 * 1000);
+    it(
+      'should return checkSum',
+      async () => {
+        // then
+        expect(checkSum).toBe(true);
+      },
+      60 * 1000,
+    );
   });
 });

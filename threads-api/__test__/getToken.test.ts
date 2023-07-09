@@ -7,14 +7,14 @@ describe('getToken', () => {
 
     beforeAll(async () => {
       // given
-      threadsAPI = new ThreadsAPI({ verbose: true, username: "username", password: "password" });
+      threadsAPI = new ThreadsAPI({ verbose: true, username: 'username', password: 'password' });
       // when
       token = await threadsAPI.getToken();
     });
 
     it('should return token', async () => {
       // then
-      expect(typeof token).toBe('string')
+      expect(typeof token).toBe('string');
     });
   });
 });
