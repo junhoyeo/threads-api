@@ -693,6 +693,13 @@ Commands:
 
 ### [👤 `threads-card`: Share your Threads profile easily](https://github.com/yssf-io/threads-card)
 
+
+
+### [👤 `Strings`: Web-Frontend for Threads](https://github.com/Nainish-Rai/strings-web)
+[![Screenshot (84)](https://github.com/Nainish-Rai/threads-api/assets/109546113/e8c4b990-6a95-470d-bbff-55a04f850b7b)](https://strings.vercel.app)
+
+
+
 ## License
 
 <p align="center">
@@ -704,5 +711,7 @@ Commands:
 <p align="center">
   <strong>MIT © <a href="https://github.com/junhoyeo">Junho Yeo</a></strong>
 </p>
+
+
 
 If you find this project intriguing, **please consider starring it(⭐)** or following me on [GitHub](https://github.com/junhoyeo) (I wouldn't say [Threads](https://www.threads.net/@_junhoyeo)). I code 24/7 and ship mind-breaking things on a regular basis, so your support definitely won't be in vain.
