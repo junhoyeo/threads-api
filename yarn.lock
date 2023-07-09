@@ -5837,16 +5837,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-threads@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "react-threads@npm:1.0.2"
+"react-threads@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "react-threads@npm:1.0.5"
   dependencies:
     react-linkify: ^1.0.0-alpha
   peerDependencies:
     next: 13.4.9
     react: 18.2.0
     react-dom: 18.2.0
-  checksum: d7f6ef1b01fbc0579cd8467db426443598f23ceea91517be9f205ebd30e71dc595f4ce3a758135695a6bef4a28dff825a0e8158c2c1aea09f03388e565562715
+  checksum: 354addde29a12d1fabff56c4dea8a047753377a44c5daca38567569708d0b99ee74fb29d5c732ad92714aa829ee7f238b878e561ed7d1472f8e2697b2d7d0f41
   languageName: node
   linkType: hard
 
@@ -6670,7 +6670,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-is: ^18.2.0
-    react-threads: ^1.0.2
+    react-threads: ^1.0.5
     tailwind-merge: ^1.13.2
     tailwindcss: ^3.3.2
     tailwindcss-animate: ^1.0.6
