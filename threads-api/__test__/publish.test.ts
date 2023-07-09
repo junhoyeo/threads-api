@@ -1,4 +1,5 @@
 import { ThreadsAPI } from '../src/threads-api';
+import { TIMEOUT } from './utils/constants';
 
 describe('publish', () => {
   describe('publish a post to the Threads.', () => {
@@ -7,14 +8,23 @@ describe('publish', () => {
 
     beforeAll(async () => {
       // given
-      threadsAPI = new ThreadsAPI({ verbose: true, username: "username", password: "password" });
-      // when
-      checkSum = await threadsAPI.publish("Hello World!");
-    }, 60 * 1000);
+      threadsAPI = new ThreadsAPI({
+        verbose: true,
+        username: process.env.USERNAME,
+        password: process.env.PASSWORD,
+      });
 
-    it('should return checkSum', async () => {
-      // then
-      expect(checkSum).toBe(true)
-    }, 60 * 1000);
+      // when
+      checkSum = await threadsAPI.publish('🤖 Hello World!');
+    }, TIMEOUT);
+
+    it(
+      'should return checkSum',
+      async () => {
+        // then
+        expect(checkSum).toBe(true);
+      },
+      TIMEOUT,
+    );
   });
 });

@@ -1,9 +1,24 @@
+import axios, { AxiosRequestConfig } from 'axios';
 import * as fs from 'fs';
 import mimeTypes from 'mime-types';
-import { v4 as uuidV4 } from "uuid";
-import axios, { AxiosRequestConfig } from 'axios';
-import { DEFAULT_LSD_TOKEN, DEFAULT_DEVICE_ID, LOGIN_URL, POST_URL, POST_WITH_IMAGE_URL, POST_HEADERS_DEFAULT } from "./constants";
+import { v4 as uuidV4 } from 'uuid';
+import {
+  // DEFAULT_LSD_TOKEN,
+  // DEFAULT_DEVICE_ID,
+  LOGIN_URL,
+  POST_URL,
+  POST_WITH_IMAGE_URL,
+  POST_HEADERS_DEFAULT,
+} from './constants';
+import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
+
+export type AndroidDevice = {
+  manufacturer: string;
+  model: string;
+  os_version: number;
+  os_release: string;
+};
 
 export type GetUserProfileResponse = {
   data: {
@@ -59,6 +74,16 @@ export type ThreadsAPIOptions = {
   httpAgent?: AxiosRequestConfig['httpAgent'];
   username?: string;
   password?: string;
+  device?: AndroidDevice;
+};
+
+export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
+export const DEFAULT_DEVICE_ID = `android-${(Math.random() * 1e24).toString(36)}`;
+export const DEFAULT_DEVICE: AndroidDevice = {
+  manufacturer: 'OnePlus',
+  model: 'ONEPLUS+A3010',
+  os_version: 25,
+  os_release: '7.1.1',
 };
 
 export class ThreadsAPI {
@@ -69,6 +94,7 @@ export class ThreadsAPI {
   httpAgent?: AxiosRequestConfig['httpAgent'];
   username?: string;
   password?: string;
+  device?: AndroidDevice = DEFAULT_DEVICE;
 
   constructor(options?: ThreadsAPIOptions) {
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
@@ -78,6 +104,7 @@ export class ThreadsAPI {
     this.httpAgent = options?.httpAgent;
     this.username = options?.username;
     this.password = options?.password;
+    this.device = options?.device;
   }
 
   _getDefaultHeaders = (username?: string) => ({
@@ -93,9 +120,10 @@ export class ThreadsAPI {
     'x-ig-app-id': '238260118697367',
   });
 
-  _isValidUrl = async(url: string): Promise<boolean> => {
-    const urlPattern: RegExp = /^(https?:\/\/)?((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])\.)+[a-zA-Z]{2,})(\/?|\/[-a-zA-Z0-9_%+.~!@#$^&*(){}[\]|\/\\<>]*)$/;
-    
+  _isValidUrl = async (url: string): Promise<boolean> => {
+    const urlPattern: RegExp =
+      /^(https?:\/\/)?((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])\.)+[a-zA-Z]{2,})(\/?|\/[-a-zA-Z0-9_%+.~!@#$^&*(){}[\]|\/\\<>]*)$/;
+
     if (urlPattern.test(url)) {
       try {
         const response = await axios.head(url);
@@ -104,10 +132,10 @@ export class ThreadsAPI {
         return false;
       }
     }
-    
+
     return false;
-  }
-  
+  };
+
   _download = async (url: string): Promise<Buffer | null> => {
     try {
       const response = await axios.get(url, { responseType: 'text' });
@@ -121,7 +149,7 @@ export class ThreadsAPI {
       console.error('[ERROR] fail to file load:', error);
       return null;
     }
-  }
+  };
 
   getUserIDfromUsername = async (
     username: string,
@@ -332,6 +360,8 @@ export class ThreadsAPI {
       return;
     }
 
+    const base = 'https://i.instagram.com/api/v1/';
+    const url = `${base}bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/`;
     const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
 
     const params = encodeURIComponent(
@@ -356,20 +386,25 @@ export class ThreadsAPI {
     );
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
-      headers: POST_HEADERS_DEFAULT,
+      headers: {
+        'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
+        'Sec-Fetch-Site': 'same-origin',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      },
       responseType: 'text',
       data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
     };
 
-    const { data } = await axios(LOGIN_URL, requestConfig);
-    if (data === "Oops, an error occurred.") {
-      return;
-    }
-    let pos = data.split('Bearer IGT:2:');
+    const { data } = await axios(url, requestConfig);
+
+    let pos = data.split('Bearer IGT:2:')[1];
     if (pos.length > 1) {
-      pos = pos[1];
-      pos = pos.split("==")[0];
-      const token = pos + "==";
+      pos = pos.split('=')[0];
+
+      const token = pos + '==';
+      if (this.verbose) {
+        console.debug('[token]', token);
+      }
       return token;
     }
     return;
@@ -384,46 +419,57 @@ export class ThreadsAPI {
     if (!userID) {
       return false;
     }
-    
+
     const token = await this.getToken();
     if (!token) {
       return false;
     }
 
+    const base = 'https://i.instagram.com';
+    const url = `${base}/api/v1/media/configure_text_only_post/`;
+    const now = new Date();
+    const timezoneOffset = -now.getTimezoneOffset() * 60;
+
     const data = encodeURIComponent(
       JSON.stringify({
         publish_mode: 'text_post',
         text_post_app_info: '{"reply_control":0}',
-        timezone_offset: '-25200',
+        timezone_offset: timezoneOffset.toString(),
         source_type: '4',
         _uid: userID,
         device_id: `${this.deviceID}`,
         caption,
-        upload_id: new Date().getTime(),
-        device: {
-          manufacturer: 'OnePlus',
-          model: 'ONEPLUS+A3010',
-          android_version: 25,
-          android_release: '7.1.1',
-        },
+        upload_id: now.getTime(),
+        device: this.device,
       }),
     );
-    const headers = POST_HEADERS_DEFAULT;
-    headers["Authorization"] = `Bearer IGT:2:${token}`;
-    try {
-      const res = await axios.post(POST_URL,`signed_body=SIGNATURE.${data}`, {
-        httpAgent: this.httpAgent,
-        headers: headers,
-        timeout: 60 * 1000,
-      });
-      if (res.data  && res.data.status === "ok") {
-        return true;
-      } else {
-        return false;
-      }
-    } catch(e) {
-      return false;
-    }
+    // const headers = POST_HEADERS_DEFAULT;
+    // headers['Authorization'] = `Bearer IGT:2:${token}`;
+    // try {
+    //   const res = await axios.post(POST_URL, `signed_body=SIGNATURE.${data}`, {
+    //     httpAgent: this.httpAgent,
+    //     headers: headers,
+    //     timeout: 60 * 1000,
+    //   });
+    //   if (res.data && res.data.status === 'ok') {
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // } catch (e) {
+    //   return false;
+
+    await axios(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer IGT:2:${token}`,
+        'User-Agent': 'Barcelona 289.0.0.77.109 Android',
+        'Sec-Fetch-Site': 'same-origin',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      },
+      data: `signed_body=SIGNATURE.${data}`,
+    });
+    return true;
   };
 
   publishWithImage = async (caption: string, imagePath: string): Promise<boolean> => {
@@ -444,36 +490,34 @@ export class ThreadsAPI {
     let imageContent = null;
     if (!(fs.existsSync(imagePath) && fs.statSync(imagePath).isFile())) {
       if (!this._isValidUrl(imagePath)) {
-          return false;
+        return false;
       } else {
-          imageContent = await this._download(imagePath);
+        imageContent = await this._download(imagePath);
       }
     }
     const headers = POST_HEADERS_DEFAULT;
-    headers["Authorization"] = `Bearer IGT:2:${token}`;
+    headers['Authorization'] = `Bearer IGT:2:${token}`;
     const content = await this.uploadImage(headers, imagePath, imageContent);
     if (content != null) {
       try {
         const contentItem = JSON.parse(content as string);
         const upload_id = contentItem.upload_id;
-        const params = JSON.stringify(
-            {
-                "text_post_app_info": '{"reply_control":0}',
-                "scene_capture_type": "",
-                "timezone_offset": "-25200",
-                "source_type": "4",
-                "_uid": userID,
-                "device_id": this.deviceID,
-                "caption": caption,
-                "upload_id": upload_id,
-                "device": {
-                    "manufacturer": "OnePlus",
-                    "model": "ONEPLUS+A3010",
-                    "android_version": 25,
-                    "android_release": "7.1.1",
-                },
-            }
-        )
+        const params = JSON.stringify({
+          text_post_app_info: '{"reply_control":0}',
+          scene_capture_type: '',
+          timezone_offset: '-25200',
+          source_type: '4',
+          _uid: userID,
+          device_id: this.deviceID,
+          caption: caption,
+          upload_id: upload_id,
+          device: {
+            manufacturer: 'OnePlus',
+            model: 'ONEPLUS+A3010',
+            android_version: 25,
+            android_release: '7.1.1',
+          },
+        });
         const payload = `signed_body=SIGNATURE.${params}`;
         const res = await axios.post(POST_WITH_IMAGE_URL, payload, {
           httpAgent: this.httpAgent,
@@ -481,12 +525,12 @@ export class ThreadsAPI {
           timeout: 60 * 1000,
         });
         const postResult = res.data;
-        if ("status" in postResult && postResult["status"] === "ok") {
-            return true;
+        if ('status' in postResult && postResult['status'] === 'ok') {
+          return true;
         } else {
-            return false;
+          return false;
         }
-      } catch(e) {
+      } catch (e) {
         return false;
       }
     } else {
@@ -494,60 +538,66 @@ export class ThreadsAPI {
     }
   };
 
-  uploadImage = async (headers: any, imagePath: string, imageContent: Buffer|null): Promise<String|null> => {
+  uploadImage = async (
+    headers: any,
+    imagePath: string,
+    imageContent: Buffer | null,
+  ): Promise<String | null> => {
     const uploadId: number = Math.floor(Date.now());
-    const name: string = `${uploadId}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
-    const url: string = "https://www.instagram.com/rupload_igphoto/" + name;
+    const name: string = `${uploadId}_0_${Math.floor(
+      Math.random() * (9999999999 - 1000000000 + 1) + 1000000000,
+    )}`;
+    const url: string = 'https://www.instagram.com/rupload_igphoto/' + name;
 
     let content: Buffer;
     let mime_type: string | null;
     if (imageContent === null) {
-      const f = await fs.promises.open(imagePath, "rb");
+      const f = await fs.promises.open(imagePath, 'rb');
       content = await f.readFile();
       await f.close();
-      
+
       const mimeTypeResult = mimeTypes.lookup(imagePath);
-      mime_type = mimeTypeResult ? mimeTypeResult : "application/octet-stream";
+      mime_type = mimeTypeResult ? mimeTypeResult : 'application/octet-stream';
     } else {
       content = imageContent;
       const response = await axios.head(imagePath);
       const contentType = response.headers['content-type'];
       if (!contentType) {
-        if (url.split("/").length > 0) {
-          const fileName = url.split("/").pop();
-          mime_type = mimeTypes.lookup(fileName as string) || "application/octet-stream";
+        if (url.split('/').length > 0) {
+          const fileName = url.split('/').pop();
+          mime_type = mimeTypes.lookup(fileName as string) || 'application/octet-stream';
         }
       }
     }
 
     const x_instagram_rupload_params = {
       upload_id: uploadId,
-      media_type: "1",
-      sticker_burnin_params: "[]",
-      image_compression: JSON.stringify({ lib_name: "moz", lib_version: "3.1.m", quality: "80" }),
-      xsharing_user_ids: "[]",
+      media_type: '1',
+      sticker_burnin_params: '[]',
+      image_compression: JSON.stringify({ lib_name: 'moz', lib_version: '3.1.m', quality: '80' }),
+      xsharing_user_ids: '[]',
       retry_context: {
-        num_step_auto_retry: "0",
-        num_reupload: "0",
-        num_step_manual_retry: "0",
+        num_step_auto_retry: '0',
+        num_reupload: '0',
+        num_step_manual_retry: '0',
       },
-      "IG-FB-Xpost-entry-point-v2": "feed",
+      'IG-FB-Xpost-entry-point-v2': 'feed',
     };
 
     const contentLength = content.length;
     const imageHeaders: any = {
-      "User-Agent": headers["User-Agent"],
-      "Content-Type": "application/octet-stream",
-      "Sec-Fetch-Site": headers["Sec-Fetch-Site"],
-      "Authorization": headers["Authorization"],
-      "X_FB_PHOTO_WATERFALL_ID": uuidV4(),
-      "X-Entity-Type": mime_type!! !== undefined ? `image/${mime_type!!}`: "image/jpeg",
-      "Offset": "0",
-      "X-Instagram-Rupload-Params": JSON.stringify(x_instagram_rupload_params),
-      "X-Entity-Name": name,
-      "X-Entity-Length": contentLength,
-      "Content-Length": contentLength,
-      "Accept-Encoding": "gzip",
+      'User-Agent': headers['User-Agent'],
+      'Content-Type': 'application/octet-stream',
+      'Sec-Fetch-Site': headers['Sec-Fetch-Site'],
+      Authorization: headers['Authorization'],
+      X_FB_PHOTO_WATERFALL_ID: uuidV4(),
+      'X-Entity-Type': mime_type!! !== undefined ? `image/${mime_type!!}` : 'image/jpeg',
+      Offset: '0',
+      'X-Instagram-Rupload-Params': JSON.stringify(x_instagram_rupload_params),
+      'X-Entity-Name': name,
+      'X-Entity-Length': contentLength,
+      'Content-Length': contentLength,
+      'Accept-Encoding': 'gzip',
     };
 
     try {
@@ -563,8 +613,8 @@ export class ThreadsAPI {
         return null;
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error('Error:', error);
       return null;
     }
-  }
+  };
 }
