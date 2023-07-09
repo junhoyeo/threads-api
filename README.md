@@ -615,6 +615,7 @@ pnpm install threads-api
 ```typescript
 // or in Deno 🦖
 import ThreadsAPI from 'npm:threads-api';
+
 const threadsAPI = new ThreadsAPI.ThreadsAPI({});
 ```
 
