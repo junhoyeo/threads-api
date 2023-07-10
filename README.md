@@ -701,12 +701,13 @@ const threadsAPI = new ThreadsAPI.ThreadsAPI({});
 - [ ] 🚧 Read private data
 - [x] ✅ Write data (i.e. write automated Threads)
   - [x] ✅ Create new Thread with text
-    - [ ] 🚧 Make link previews to get shown
-  - [ ] 🚧 Create new Thread with media
-  - [ ] 🚧 Reply to existing Thread
+    - [x] ✅ Make link previews to get shown
+  - [x] ✅ Create new Thread with a single image
+  - [ ] 🚧 Create new Thread with a multiple images
+  - [x] ✅ Reply to existing Thread
 - [x] 🏴‍☠️ Restructure project as an monorepo
   - [x] 🏴‍☠ Add Demo App with Next.js
-    - [ ] Use components in 🏴‍☠️ [junhoyeo/react-threads](https://github.com/junhoyeo/react-threads)
+    - [x] Use components in 🏴‍☠️ [junhoyeo/react-threads](https://github.com/junhoyeo/react-threads)
     - [ ] Make it better
   - [x] 🏴‍☠️ Cool CLI App to run Threads in the Terminal
 
