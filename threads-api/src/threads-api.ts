@@ -472,26 +472,26 @@ export class ThreadsAPI {
 
     const headers = POST_HEADERS_DEFAULT;
     headers['Authorization'] = `Bearer IGT:2:${token}`;
-    const uploadResult = await this.uploadImage(headers, imagePath);
-    if (!uploadResult) {
-      throw new Error('Upload failed');
-    }
+    const { upload_id: uploadId } = await this.uploadImage(headers, imagePath);
     try {
-      const uploadId = uploadResult.upload_id;
       const now = new Date();
       const timezoneOffset = -now.getTimezoneOffset() * 60;
-      const params = JSON.stringify({
-        text_post_app_info: JSON.stringify({ reply_control: 0 }),
-        scene_capture_type: '',
-        timezone_offset: timezoneOffset,
-        source_type: '4',
-        _uid: userID,
-        device_id: this.deviceID,
-        caption: caption,
-        upload_id: uploadId,
-        device: this.device,
-      });
+
+      const params = encodeURIComponent(
+        JSON.stringify({
+          text_post_app_info: JSON.stringify({ reply_control: 0 }),
+          scene_capture_type: '',
+          timezone_offset: timezoneOffset,
+          source_type: '4',
+          _uid: userID,
+          device_id: this.deviceID,
+          caption: caption,
+          upload_id: uploadId,
+          device: this.device,
+        }),
+      );
       const payload = `signed_body=SIGNATURE.${params}`;
+
       const res = await axios.post(POST_WITH_IMAGE_URL, payload, {
         httpAgent: this.httpAgent,
         headers: headers,
@@ -503,8 +503,8 @@ export class ThreadsAPI {
       } else {
         return false;
       }
-    } catch (e) {
-      return false;
+    } catch (err) {
+      throw err;
     }
   };
 
