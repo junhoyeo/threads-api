@@ -3,9 +3,9 @@ import { TIMEOUT, credentials } from './utils/constants';
 import { describeIf } from './utils/describeIf';
 
 describeIf(!!credentials)('publish', () => {
-  describe('publish a post with image to the Threads.', () => {
+  describe('publish a post with image to Threads.', () => {
     let threadsAPI: ThreadsAPI;
-    let checkSum: boolean | undefined;
+    let success: boolean = false;
 
     beforeAll(async () => {
       // given
@@ -15,17 +15,18 @@ describeIf(!!credentials)('publish', () => {
       });
 
       // when
-      checkSum = await threadsAPI.publishWithImage(
+      await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
+      success = await threadsAPI.publishWithImage(
         '🤖 Hello World!',
         'https://github.com/junhoyeo/threads-py/blob/main/.github/logo.jpg?raw=true',
       );
     }, TIMEOUT);
 
     it(
-      'should return checkSum',
+      'should return success',
       async () => {
         // then
-        expect(checkSum).toBe(true);
+        expect(success).toBe(true);
       },
       TIMEOUT,
     );

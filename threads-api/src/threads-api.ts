@@ -2,13 +2,8 @@ import axios, { AxiosRequestConfig } from 'axios';
 import * as fs from 'fs';
 import mimeTypes from 'mime-types';
 import { v4 as uuidV4 } from 'uuid';
-import {
-  POST_URL,
-  POST_WITH_IMAGE_URL,
-  POST_HEADERS_DEFAULT,
-  DEFAULT_LSD_TOKEN,
-  DEFAULT_DEVICE_ID,
-} from './constants';
+import { POST_URL, POST_WITH_IMAGE_URL, DEFAULT_LSD_TOKEN, DEFAULT_DEVICE_ID } from './constants';
+import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
 export type AndroidDevice = {
@@ -128,17 +123,25 @@ export class ThreadsAPI {
     this.device = options?.device;
   }
 
+  _getAppHeaders = () => ({
+    'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    ...(this.token ? { Authorization: `Bearer IGT:2:${this.token}` } : undefined),
+  });
+
   _getDefaultHeaders = (username?: string) => ({
+    ...this._getAppHeaders(),
     authority: 'www.threads.net',
     accept: '*/*',
     'accept-language': 'ko',
     'cache-control': 'no-cache',
     origin: 'https://www.threads.net',
     pragma: 'no-cache',
-    ...(!!username ? { referer: `https://www.threads.net/@${username}` } : undefined),
+    'Sec-Fetch-Site': 'same-origin',
     'x-asbd-id': '129477',
     'x-fb-lsd': this.fbLSDToken,
     'x-ig-app-id': '238260118697367',
+    ...(!!username ? { referer: `https://www.threads.net/@${username}` } : undefined),
   });
 
   getUserIDfromUsername = async (
@@ -154,7 +157,7 @@ export class ThreadsAPI {
         accept:
           'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-language': 'ko,en;q=0.9,ko-KR;q=0.8,ja;q=0.7',
-        pragma: 'no-cache',
+        Authorization: undefined,
         referer: 'https://www.instagram.com/',
         'sec-fetch-dest': 'document',
         'sec-fetch-mode': `navigate`,
@@ -343,9 +346,7 @@ export class ThreadsAPI {
         ...options,
         httpAgent: this.httpAgent,
         httpsAgent: this.httpsAgent,
-        headers: {
-          ...this._getDefaultHeaders(),
-        },
+        headers: this._getDefaultHeaders(),
       },
     );
     const likers = res.data.data.likers;
@@ -390,7 +391,7 @@ export class ThreadsAPI {
     );
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
-      headers: POST_HEADERS_DEFAULT,
+      headers: this._getAppHeaders(),
       responseType: 'text',
       data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
     };
@@ -439,12 +440,9 @@ export class ThreadsAPI {
         device: this.device,
       }),
     );
-    const headers = POST_HEADERS_DEFAULT;
-    headers['Authorization'] = `Bearer IGT:2:${token}`;
-
     await axios(POST_URL, {
       method: 'POST',
-      headers: headers,
+      headers: this._getAppHeaders(),
       data: `signed_body=SIGNATURE.${data}`,
     });
     return true;
@@ -465,9 +463,7 @@ export class ThreadsAPI {
       throw new Error('Token not found');
     }
 
-    const headers = POST_HEADERS_DEFAULT;
-    headers['Authorization'] = `Bearer IGT:2:${token}`;
-    const { upload_id: uploadId } = await this.uploadImage(headers, imagePath);
+    const { upload_id: uploadId } = await this.uploadImage(imagePath);
     try {
       const now = new Date();
       const timezoneOffset = -now.getTimezoneOffset() * 60;
@@ -489,11 +485,13 @@ export class ThreadsAPI {
 
       const res = await axios.post(POST_WITH_IMAGE_URL, payload, {
         httpAgent: this.httpAgent,
-        headers: headers,
+        headers: this._getAppHeaders(),
         timeout: 60 * 1000,
       });
-      const postResult = res.data;
-      if ('status' in postResult && postResult['status'] === 'ok') {
+      if (this.verbose) {
+        console.debug('[PUBLISH]', res.data);
+      }
+      if (res.data['status'] === 'ok') {
         return true;
       } else {
         return false;
@@ -503,7 +501,7 @@ export class ThreadsAPI {
     }
   };
 
-  uploadImage = async (headers: any, imagePath: string): Promise<InstagramImageUploadResponse> => {
+  uploadImage = async (imagePath: string): Promise<InstagramImageUploadResponse> => {
     const uploadId = Date.now().toString();
     const name = `${uploadId}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
     const url: string = `https://www.instagram.com/rupload_igphoto/${name}`;
@@ -538,10 +536,8 @@ export class ThreadsAPI {
 
     const contentLength = content.length;
     const imageHeaders: any = {
-      'User-Agent': headers['User-Agent'],
+      ...this._getDefaultHeaders(),
       'Content-Type': 'application/octet-stream',
-      'Sec-Fetch-Site': headers['Sec-Fetch-Site'],
-      Authorization: headers['Authorization'],
       X_FB_PHOTO_WATERFALL_ID: uuidV4(),
       'X-Entity-Type': mime_type!! !== undefined ? `image/${mime_type!!}` : 'image/jpeg',
       Offset: '0',
