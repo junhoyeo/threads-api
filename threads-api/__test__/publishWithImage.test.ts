@@ -9,7 +9,7 @@ describe('publishWithImage (deprecated)', () => {
       password: 'mocked-password',
       token: 'mocked-token',
     });
-    const imageURL = 'https://github.com/junhoyeo/threads-py/blob/main/.github/logo.jpg?raw=true';
+    const imageURL = 'https://github.com/junhoyeo/threads-api/blob/main/.github/logo.jpg?raw=true';
 
     const publishSpy = jest.spyOn(threadsAPI, 'publish');
     publishSpy.mockImplementation(() => Promise.resolve(true));
