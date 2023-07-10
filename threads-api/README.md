@@ -7,7 +7,7 @@
 ## [<img src="https://github.com/junhoyeo/threads-api/raw/main/.github/emojis/rocket.png" width="30" height="30" />](https://github.com/junhoyeo) `threads-api` in Action
 
 <p align="center">
-  <img src=".github/cover.jpg" alt="cover" width="500px" />
+  <img src="https://github.com/junhoyeo/threads-api/raw/main/.github/cover.jpg" alt="cover" width="500px" />
 </p>
 
 <details>
@@ -592,7 +592,7 @@ main();
 
 <p align="center">
   <a href="https://www.threads.net/t/CucsGvZBs9q">
-    <img src=".github/text-threads.jpg" alt="Writing Text Threads" width="400px" />
+    <img src="https://github.com/junhoyeo/threads-api/raw/main/.github/text-threads.jpg" alt="Writing Text Threads" width="400px" />
   </a>
 </p>
 
@@ -631,7 +631,7 @@ await threadsAPI.publish({
 
 <p align="center">
   <a href="https://www.threads.net/t/CugF-EjhQ3r">
-    <img src=".github/rich-threads.png" alt="Writing Text Threads" width="400px" />
+    <img src="https://github.com/junhoyeo/threads-api/raw/main/.github/rich-threads.png" alt="Writing Text Threads" width="400px" />
   </a>
 </p>
 
