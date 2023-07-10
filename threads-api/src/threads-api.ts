@@ -2,7 +2,14 @@ import axios, { AxiosRequestConfig } from 'axios';
 import * as fs from 'fs';
 import mimeTypes from 'mime-types';
 import { v4 as uuidV4 } from 'uuid';
-import { POST_URL, POST_WITH_IMAGE_URL, DEFAULT_LSD_TOKEN, DEFAULT_DEVICE_ID, LOGIN_URL } from './constants';
+import {
+  POST_URL,
+  POST_WITH_IMAGE_URL,
+  DEFAULT_LSD_TOKEN,
+  DEFAULT_DEVICE_ID,
+  LOGIN_URL,
+  BASE_API_URL,
+} from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
@@ -357,6 +364,34 @@ export class ThreadsAPI {
     );
     const likers = res.data.data.likers;
     return likers;
+  };
+
+  _toggleAuthPostRequest = async <T extends any>(url: string, options?: AxiosRequestConfig) => {
+    const token = await this.getToken();
+    if (!token) {
+      throw new Error('Token not found');
+    }
+    const res = await axios.post<T>(url, undefined, {
+      ...options,
+      httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
+      headers: this._getDefaultHeaders(),
+    });
+    return res;
+  };
+  like = async (userID: string, postID: string, options?: AxiosRequestConfig) => {
+    const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
+      `${BASE_API_URL}/media/${postID}_${userID}/like/`,
+      options,
+    );
+    return res.data.status === 'ok';
+  };
+  unlike = async (userID: string, postID: string, options?: AxiosRequestConfig) => {
+    const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
+      `${BASE_API_URL}/media/${postID}_${userID}/unlike/`,
+      options,
+    );
+    return res.data.status === 'ok';
   };
 
   getToken = async (): Promise<string | undefined> => {
