@@ -71,14 +71,19 @@ export type InstagramImageUploadResponse = {
 };
 
 export type ThreadsAPIOptions = {
-  fbLSDToken?: string;
-  deviceID?: string;
   verbose?: boolean;
+  token?: string;
+  fbLSDToken?: string;
+
+  noUpdateToken?: boolean;
   noUpdateLSD?: boolean;
+
   httpAgent?: AxiosRequestConfig['httpAgent'];
   httpsAgent?: AxiosRequestConfig['httpsAgent'];
+
   username?: string;
   password?: string;
+  deviceID?: string;
   device?: AndroidDevice;
 };
 
@@ -90,25 +95,36 @@ export const DEFAULT_DEVICE: AndroidDevice = {
 };
 
 export class ThreadsAPI {
-  fbLSDToken: string = DEFAULT_LSD_TOKEN;
-  deviceID: string = DEFAULT_DEVICE_ID;
   verbose: boolean = false;
+  token?: string = undefined;
+  fbLSDToken: string = DEFAULT_LSD_TOKEN;
+
+  noUpdateToken: boolean = false;
   noUpdateLSD: boolean = false;
+
   httpAgent?: AxiosRequestConfig['httpAgent'];
   httpsAgent?: AxiosRequestConfig['httpsAgent'];
+
   username?: string;
   password?: string;
+  deviceID: string = DEFAULT_DEVICE_ID;
   device?: AndroidDevice = DEFAULT_DEVICE;
 
   constructor(options?: ThreadsAPIOptions) {
+    if (options?.token) this.token = options.token;
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
-    if (options?.deviceID) this.deviceID = options.deviceID;
-    if (options?.noUpdateLSD) this.noUpdateLSD = options.noUpdateLSD;
+
+    this.noUpdateToken = !!options?.noUpdateToken;
+    this.noUpdateLSD = !!options?.noUpdateLSD;
+
     this.verbose = options?.verbose || false;
     this.httpAgent = options?.httpAgent;
     this.httpsAgent = options?.httpsAgent;
+
     this.username = options?.username;
     this.password = options?.password;
+
+    if (options?.deviceID) this.deviceID = options.deviceID;
     this.device = options?.device;
   }
 
@@ -124,37 +140,6 @@ export class ThreadsAPI {
     'x-fb-lsd': this.fbLSDToken,
     'x-ig-app-id': '238260118697367',
   });
-
-  _isValidUrl = async (url: string): Promise<boolean> => {
-    const urlPattern: RegExp =
-      /^(https?:\/\/)?((([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])\.)+[a-zA-Z]{2,})(\/?|\/[-a-zA-Z0-9_%+.~!@#$^&*(){}[\]|\/\\<>]*)$/;
-
-    if (urlPattern.test(url)) {
-      try {
-        const response = await axios.head(url);
-        return response.status === 200;
-      } catch (error) {
-        return false;
-      }
-    }
-
-    return false;
-  };
-
-  _download = async (url: string): Promise<Buffer | null> => {
-    try {
-      const response = await axios.get(url, { responseType: 'text' });
-      if (response.status === 200) {
-        return Buffer.from(response.data, 'binary');
-      } else {
-        console.error('[ERROR] fail to file load');
-        return null;
-      }
-    } catch (error) {
-      console.error('[ERROR] fail to file load:', error);
-      return null;
-    }
-  };
 
   getUserIDfromUsername = async (
     username: string,
@@ -368,8 +353,15 @@ export class ThreadsAPI {
   };
 
   getToken = async (): Promise<string | undefined> => {
+    if (this.token) {
+      if (this.verbose) {
+        console.debug('[token] USING', this.token);
+      }
+      return this.token;
+    }
+
     if (!this.username || !this.password) {
-      return;
+      throw new Error('Username and password are required');
     }
 
     const base = 'https://i.instagram.com/api/v1/';
@@ -405,25 +397,28 @@ export class ThreadsAPI {
 
     const { data } = await axios<string>(url, requestConfig);
     const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
-    if (this.verbose) {
-      console.debug('[token]', token);
+    if (!this.noUpdateToken) {
+      if (this.verbose) {
+        console.debug('[token] UPDATED', token);
+      }
+      this.token = token;
     }
     return token;
   };
 
   publish = async (caption: string): Promise<boolean> => {
     if (!this.username || !this.password) {
-      return false;
+      throw new Error('Username or password not set');
     }
 
     const userID = await this.getUserIDfromUsername(this.username);
     if (!userID) {
-      return false;
+      throw new Error('User ID not found');
     }
 
     const token = await this.getToken();
     if (!token) {
-      return false;
+      throw new Error('Token not found');
     }
 
     const base = 'https://i.instagram.com';
