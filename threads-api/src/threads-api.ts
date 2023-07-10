@@ -85,13 +85,8 @@ export type ThreadsAPIOptions = {
 export type ThreadsAPIPublishOptions =
   | {
       text?: string;
-    } & (
-      | {
-          // TODO: to be implemented
-          url?: string;
-        }
-      | { image?: string }
-    );
+      replyPostId?: string;
+    } & ({ url?: string } | { image?: string });
 
 export const DEFAULT_DEVICE: AndroidDevice = {
   manufacturer: 'OnePlus',
@@ -452,6 +447,12 @@ export class ThreadsAPI {
       const { upload_id: uploadId } = await this.uploadImage(options.image);
       data.upload_id = uploadId;
       data.scene_capture_type = '';
+    } else if ('url' in options && !!options.url) {
+      data.text_post_app_info.link_attachment_url = options.url;
+    }
+
+    if (!!options.replyPostId) {
+      data.text_post_app_info.reply_id = options.replyPostId;
     }
     if (!(options as any).image) {
       data.publish_mode = 'text_post';

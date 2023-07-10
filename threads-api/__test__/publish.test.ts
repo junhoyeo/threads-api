@@ -33,11 +33,28 @@ describeIf(!!credentials)('publish', () => {
     async () => {
       // given
       const text = '🤖 Hello World!';
-      const imageURL = 'https://github.com/junhoyeo/threads-py/blob/main/.github/logo.jpg?raw=true';
+      const imageURL = 'https://github.com/junhoyeo/threads-api/blob/main/.github/logo.jpg?raw=true';
 
       // when
       await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
       const success = await threadsAPI.publish({ text, image: imageURL });
+
+      // then
+      expect(success).toBe(true);
+    },
+    TIMEOUT,
+  );
+
+  it(
+    'Publish a text post to Threads with an URL attrachment.',
+    async () => {
+      // given
+      const text = '🤖 Hello World!';
+      const imageURL = 'https://github.com/junhoyeo/threads-api';
+
+      // when
+      await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
+      const success = await threadsAPI.publish({ text, url: imageURL });
 
       // then
       expect(success).toBe(true);
