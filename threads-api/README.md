@@ -1,10 +1,10 @@
-# [<img src="./.github/logo.jpg" width="36" height="36" />](https://github.com/junhoyeo) Threads API
+# [<img src="https://github.com/junhoyeo/threads-api/raw/main/.github/logo.jpg" width="36" height="36" />](https://github.com/junhoyeo) Threads API
 
 [![NPM](https://img.shields.io/npm/v/threads-api.svg?style=flat-square&labelColor=black)](https://www.npmjs.com/package/threads-api) [![MIT License](https://img.shields.io/badge/license-MIT-blue?style=flat-square&labelColor=black)](https://github.com/junhoyeo/threads-api/blob/main/LICENSE) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg?style=flat-square&labelColor=black)](https://prettier.io)
 
 > Unofficial, Reverse-Engineered Node.js/TypeScript client for Meta's [Threads](https://threads.net).
 
-## [<img src="./.github/emojis/rocket.png" width="30" height="30" />](https://github.com/junhoyeo) `threads-api` in Action
+## [<img src="https://github.com/junhoyeo/threads-api/raw/main/.github/emojis/rocket.png" width="30" height="30" />](https://github.com/junhoyeo) `threads-api` in Action
 
 <p align="center">
   <img src=".github/cover.jpg" alt="cover" width="500px" />
@@ -669,7 +669,7 @@ const threadsAPI = new ThreadsAPI({
 
 </details>
 
-## [<img src="./.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
+## [<img src="https://github.com/junhoyeo/threads-api/raw/main/.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
 
 ```bash
 yarn add threads-api
@@ -686,7 +686,7 @@ import ThreadsAPI from 'npm:threads-api';
 const threadsAPI = new ThreadsAPI.ThreadsAPI({});
 ```
 
-## [<img src="./.github/emojis/pushpin.png" width="30" height="30" />](https://github.com/junhoyeo) Roadmap
+## [<img src="https://github.com/junhoyeo/threads-api/raw/main/.github/emojis/pushpin.png" width="30" height="30" />](https://github.com/junhoyeo) Roadmap
 
 - [x] ✅ Read public data
   - [x] ✅ Fetch UserID(`314216`) via username(`zuck`)
@@ -711,7 +711,7 @@ const threadsAPI = new ThreadsAPI.ThreadsAPI({});
     - [ ] Make it better
   - [x] 🏴‍☠️ Cool CLI App to run Threads in the Terminal
 
-## [<img src="./.github/emojis/sewing-needle.png" width="30" height="30" />](https://github.com/junhoyeo) Projects made with `threads-api`
+## [<img src="https://github.com/junhoyeo/threads-api/raw/main/.github/emojis/sewing-needle.png" width="30" height="30" />](https://github.com/junhoyeo) Projects made with `threads-api`
 
 > Add yours by just opening an [pull request](https://github.com/junhoyeo/threads-api/pulls)!
 
@@ -769,7 +769,7 @@ Commands:
 
 <p align="center">
   <a href="https://github.com/junhoyeo">
-    <img src="./.github/labtocat.png" width="256" height="256">
+    <img src="https://github.com/junhoyeo/threads-api/raw/main/.github/labtocat.png" width="256" height="256">
   </a>
 </p>
 
