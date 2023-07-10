@@ -72,6 +72,24 @@ export type InstagramImageUploadResponse = {
   status: 'ok';
 };
 
+export type FriendshipStatusResponse = {
+  friendship_status: {
+    following: boolean;
+    followed_by: boolean;
+    blocking: boolean;
+    muting: boolean;
+    is_private: boolean;
+    incoming_request: boolean;
+    outgoing_request: boolean;
+    text_post_app_pre_following: boolean;
+    is_bestie: boolean;
+    is_restricted: boolean;
+    is_feed_favorite: boolean;
+    is_eligible_to_subscribe: boolean;
+  };
+  status: 'ok';
+};
+
 export type ThreadsAPIOptions = {
   verbose?: boolean;
   token?: string;
@@ -392,6 +410,26 @@ export class ThreadsAPI {
       options,
     );
     return res.data.status === 'ok';
+  };
+  follow = async (userID: string, options?: AxiosRequestConfig) => {
+    const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
+      `${BASE_API_URL}/friendships/create/${userID}/`,
+      options,
+    );
+    if (this.verbose) {
+      console.debug('[FOLLOW]', res.data);
+    }
+    return res.data;
+  };
+  unfollow = async (userID: string, options?: AxiosRequestConfig) => {
+    const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
+      `${BASE_API_URL}/friendships/destroy/${userID}/`,
+      options,
+    );
+    if (this.verbose) {
+      console.debug('[UNFOLLOW]', res.data);
+    }
+    return res.data;
   };
 
   getToken = async (): Promise<string | undefined> => {
