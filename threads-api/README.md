@@ -635,6 +635,27 @@ await threadsAPI.publish({
   </a>
 </p>
 
+#### ✨ Like/Unlike a Thread (from v1.3.0)
+
+```ts
+const threadURL = 'https://www.threads.net/t/CugK35fh6u2';
+const postIDToLike = await threadsAPI.getPostIDfromURL(threadURL); // or use `getPostIDfromThreadID`
+
+// 💡 Uses current credentials
+await threadsAPI.like(postIDToLike);
+await threadsAPI.unlike(postIDToLike);
+```
+
+#### ✨ Follow/Unfollow a User (from v1.3.0)
+
+```ts
+const userIDToFollow = await threadsAPI.getUserIDfromUsername('junhoyeo');
+
+// 💡 Uses current credentials
+await threadsAPI.follow(userIDToFollow);
+await threadsAPI.unfollow(userIDToFollow);
+```
+
 <details>
   <summary>
     <h3>Old API (Deprecated, Still works for backwards compatibility)</h3>
@@ -705,6 +726,12 @@ const threadsAPI = new ThreadsAPI.ThreadsAPI({});
   - [x] ✅ Create new Thread with a single image
   - [ ] 🚧 Create new Thread with a multiple images
   - [x] ✅ Reply to existing Thread
+- [x] ✅ Friendships
+  - [x] ✅ Follow User
+  - [x] ✅ Unfollow User
+- [x] ✅ Interactions
+  - [x] ✅ Like Thread
+  - [x] ✅ Unike Thread
 - [x] 🏴‍☠️ Restructure project as an monorepo
   - [x] 🏴‍☠ Add Demo App with Next.js
     - [x] Use components in 🏴‍☠️ [junhoyeo/react-threads](https://github.com/junhoyeo/react-threads)

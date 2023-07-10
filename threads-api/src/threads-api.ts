@@ -2,7 +2,14 @@ import axios, { AxiosRequestConfig } from 'axios';
 import * as fs from 'fs';
 import mimeTypes from 'mime-types';
 import { v4 as uuidV4 } from 'uuid';
-import { POST_URL, POST_WITH_IMAGE_URL, DEFAULT_LSD_TOKEN, DEFAULT_DEVICE_ID, LOGIN_URL } from './constants';
+import {
+  POST_URL,
+  POST_WITH_IMAGE_URL,
+  DEFAULT_LSD_TOKEN,
+  DEFAULT_DEVICE_ID,
+  LOGIN_URL,
+  BASE_API_URL,
+} from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
@@ -65,6 +72,24 @@ export type InstagramImageUploadResponse = {
   status: 'ok';
 };
 
+export type FriendshipStatusResponse = {
+  friendship_status: {
+    following: boolean;
+    followed_by: boolean;
+    blocking: boolean;
+    muting: boolean;
+    is_private: boolean;
+    incoming_request: boolean;
+    outgoing_request: boolean;
+    text_post_app_pre_following: boolean;
+    is_bestie: boolean;
+    is_restricted: boolean;
+    is_feed_favorite: boolean;
+    is_eligible_to_subscribe: boolean;
+  };
+  status: 'ok';
+};
+
 export type ThreadsAPIOptions = {
   verbose?: boolean;
   token?: string;
@@ -110,6 +135,8 @@ export class ThreadsAPI {
   password?: string;
   deviceID: string = DEFAULT_DEVICE_ID;
   device?: AndroidDevice = DEFAULT_DEVICE;
+
+  userID: string | undefined = undefined;
 
   constructor(options?: ThreadsAPIOptions) {
     if (options?.token) this.token = options.token;
@@ -194,6 +221,22 @@ export class ThreadsAPI {
     }
 
     return userID;
+  };
+  getCurrentUserID = async (options?: AxiosRequestConfig) => {
+    if (this.userID) {
+      if (this.verbose) {
+        console.debug('[userID] USING', this.userID);
+      }
+      return this.userID;
+    }
+    if (!this.username) {
+      throw new Error('username is not defined');
+    }
+    this.userID = await this.getUserIDfromUsername(this.username, options);
+    if (this.verbose) {
+      console.debug('[userID] UPDATED', this.userID);
+    }
+    return this.userID;
   };
 
   getUserProfile = async (username: string, userID: string, options?: AxiosRequestConfig) => {
@@ -357,6 +400,56 @@ export class ThreadsAPI {
     );
     const likers = res.data.data.likers;
     return likers;
+  };
+
+  _toggleAuthPostRequest = async <T extends any>(url: string, options?: AxiosRequestConfig) => {
+    const token = await this.getToken();
+    if (!token) {
+      throw new Error('Token not found');
+    }
+    const res = await axios.post<T>(url, undefined, {
+      ...options,
+      httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
+      headers: this._getDefaultHeaders(),
+    });
+    return res;
+  };
+  like = async (postID: string, options?: AxiosRequestConfig) => {
+    const userID = await this.getCurrentUserID();
+    const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
+      `${BASE_API_URL}/media/${postID}_${userID}/like/`,
+      options,
+    );
+    return res.data.status === 'ok';
+  };
+  unlike = async (postID: string, options?: AxiosRequestConfig) => {
+    const userID = await this.getCurrentUserID();
+    const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
+      `${BASE_API_URL}/media/${postID}_${userID}/unlike/`,
+      options,
+    );
+    return res.data.status === 'ok';
+  };
+  follow = async (userID: string, options?: AxiosRequestConfig) => {
+    const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
+      `${BASE_API_URL}/friendships/create/${userID}/`,
+      options,
+    );
+    if (this.verbose) {
+      console.debug('[FOLLOW]', res.data);
+    }
+    return res.data;
+  };
+  unfollow = async (userID: string, options?: AxiosRequestConfig) => {
+    const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
+      `${BASE_API_URL}/friendships/destroy/${userID}/`,
+      options,
+    );
+    if (this.verbose) {
+      console.debug('[UNFOLLOW]', res.data);
+    }
+    return res.data;
   };
 
   getToken = async (): Promise<string | undefined> => {
