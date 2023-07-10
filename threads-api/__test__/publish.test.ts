@@ -3,18 +3,16 @@ import { TIMEOUT, credentials } from './utils/constants';
 import { describeIf } from './utils/describeIf';
 
 describeIf(!!credentials)('publish', () => {
-  describe('publish a text post to Threads.', () => {
-    let threadsAPI: ThreadsAPI;
+  const threadsAPI = new ThreadsAPI({
+    verbose: true,
+    username: process.env.USERNAME,
+    password: process.env.PASSWORD,
+  });
+
+  describe('Publish a text post to Threads.', () => {
     let success: boolean = false;
 
     beforeAll(async () => {
-      // given
-      threadsAPI = new ThreadsAPI({
-        verbose: true,
-        username: process.env.USERNAME,
-        password: process.env.PASSWORD,
-      });
-
       // when
       await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
       success = await threadsAPI.publish('🤖 Hello World!');
@@ -29,4 +27,21 @@ describeIf(!!credentials)('publish', () => {
       TIMEOUT,
     );
   });
+
+  it(
+    'Publish a text post to Threads with an image.',
+    async () => {
+      // given
+      const text = '🤖 Hello World!';
+      const imageURL = 'https://github.com/junhoyeo/threads-py/blob/main/.github/logo.jpg?raw=true';
+
+      // when
+      await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
+      const success = await threadsAPI.publish({ text, image: imageURL });
+
+      // then
+      expect(success).toBe(true);
+    },
+    TIMEOUT,
+  );
 });

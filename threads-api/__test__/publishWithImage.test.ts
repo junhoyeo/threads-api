@@ -1,34 +1,27 @@
 import { ThreadsAPI } from '../src/threads-api';
-import { TIMEOUT, credentials } from './utils/constants';
-import { describeIf } from './utils/describeIf';
 
-describeIf(!!credentials)('publish', () => {
-  describe('publish a post with image to Threads.', () => {
-    let threadsAPI: ThreadsAPI;
-    let success: boolean = false;
+describe('publishWithImage (deprecated)', () => {
+  it('Route implementation to new publish method', async () => {
+    // given
+    const threadsAPI = new ThreadsAPI({
+      verbose: true,
+      username: 'mocked-username',
+      password: 'mocked-password',
+      token: 'mocked-token',
+    });
+    const imageURL = 'https://github.com/junhoyeo/threads-py/blob/main/.github/logo.jpg?raw=true';
 
-    beforeAll(async () => {
-      // given
-      threadsAPI = new ThreadsAPI({
-        verbose: true,
-        ...credentials,
-      });
+    const publishSpy = jest.spyOn(threadsAPI, 'publish');
+    publishSpy.mockImplementation(() => Promise.resolve(true));
 
-      // when
-      await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
-      success = await threadsAPI.publishWithImage(
-        '🤖 Hello World!',
-        'https://github.com/junhoyeo/threads-py/blob/main/.github/logo.jpg?raw=true',
-      );
-    }, TIMEOUT);
+    // when
+    await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
+    await threadsAPI.publishWithImage('🤖 Hello World!', imageURL);
 
-    it(
-      'should return success',
-      async () => {
-        // then
-        expect(success).toBe(true);
-      },
-      TIMEOUT,
-    );
+    // then
+    expect(publishSpy).toHaveBeenCalledWith({
+      text: '🤖 Hello World!',
+      image: imageURL,
+    });
   });
 });
