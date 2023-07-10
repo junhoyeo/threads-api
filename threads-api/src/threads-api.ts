@@ -472,7 +472,7 @@ export class ThreadsAPI {
 
     const headers = POST_HEADERS_DEFAULT;
     headers['Authorization'] = `Bearer IGT:2:${token}`;
-    const uploadResult = await this.uploadImage(headers, imagePath, null);
+    const uploadResult = await this.uploadImage(headers, imagePath);
     if (!uploadResult) {
       throw new Error('Upload failed');
     }
@@ -508,31 +508,23 @@ export class ThreadsAPI {
     }
   };
 
-  uploadImage = async (
-    headers: any,
-    imagePath: string,
-    imageContent: Buffer | null,
-  ): Promise<InstagramImageUploadResponse | null> => {
+  uploadImage = async (headers: any, imagePath: string): Promise<InstagramImageUploadResponse> => {
     const uploadId = Date.now().toString();
     const name = `${uploadId}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
     const url: string = `https://www.instagram.com/rupload_igphoto/${name}`;
 
     let content: Buffer;
     let mime_type: string | null;
-    if (imageContent === null) {
+
+    const isFilePath = !imagePath.startsWith('http');
+    if (isFilePath) {
       content = await fs.promises.readFile(imagePath);
       const mimeTypeResult = mimeTypes.lookup(imagePath);
       mime_type = mimeTypeResult ? mimeTypeResult : 'application/octet-stream';
     } else {
-      content = imageContent;
-      const response = await axios.head(imagePath);
-      const contentType = response.headers['content-type'];
-      if (!contentType) {
-        if (url.split('/').length > 0) {
-          const fileName = url.split('/').pop();
-          mime_type = mimeTypes.lookup(fileName as string) || 'application/octet-stream';
-        }
-      }
+      const response = await axios.get(imagePath, { responseType: 'arraybuffer' });
+      content = Buffer.from(response.data, 'binary');
+      mime_type = response.headers['content-type'];
     }
 
     const x_instagram_rupload_params = {
@@ -556,8 +548,7 @@ export class ThreadsAPI {
       'Sec-Fetch-Site': headers['Sec-Fetch-Site'],
       Authorization: headers['Authorization'],
       X_FB_PHOTO_WATERFALL_ID: uuidV4(),
-      'X-Entity-Type': 'image/jpeg',
-      // mime_type!! !== undefined ? `image/${mime_type!!}` : 'image/jpeg',
+      'X-Entity-Type': mime_type!! !== undefined ? `image/${mime_type!!}` : 'image/jpeg',
       Offset: '0',
       'X-Instagram-Rupload-Params': JSON.stringify(x_instagram_rupload_params),
       'X-Entity-Name': name,
@@ -566,8 +557,9 @@ export class ThreadsAPI {
       'Accept-Encoding': 'gzip',
     };
 
-    console.log('Uploading image to Instagram...');
-    console.log(content);
+    if (this.verbose) {
+      console.log(`[UPLOAD_IMAGE] Uploading ${contentLength.toLocaleString()}b as ${uploadId}...`);
+    }
 
     try {
       const { data } = await axios.post<InstagramImageUploadResponse>(url, content, {
@@ -575,13 +567,15 @@ export class ThreadsAPI {
         headers: imageHeaders,
         timeout: 60 * 1000,
       });
-      console.log(data);
-
+      if (this.verbose) {
+        console.log(`[UPLOAD_IMAGE] SUCCESS`, data);
+      }
       return data;
     } catch (error: any) {
-      console.log(error.response.data);
-      // console.error('Error:', error);
-      return null;
+      if (this.verbose) {
+        console.log(`[UPLOAD_IMAGE] FAILED`, error.response.data);
+      }
+      throw error;
     }
   };
 }
