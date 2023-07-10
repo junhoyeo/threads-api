@@ -575,7 +575,6 @@ export class ThreadsAPI {
     const url = DELETE_URL(postID);
 
     const data = {
-      igtv_feed_preview: 'false',
       media_id: postID,
       _uid: this.userID,
       _uuid: this.deviceID,
