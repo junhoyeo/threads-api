@@ -82,6 +82,17 @@ export type ThreadsAPIOptions = {
   device?: AndroidDevice;
 };
 
+export type ThreadsAPIPublishOptions =
+  | {
+      text?: string;
+    } & (
+      | {
+          // TODO: to be implemented
+          url?: string;
+        }
+      | { image?: string }
+    );
+
 export const DEFAULT_DEVICE: AndroidDevice = {
   manufacturer: 'OnePlus',
   model: 'ONEPLUS+A3010',
@@ -404,7 +415,9 @@ export class ThreadsAPI {
     return token;
   };
 
-  publish = async (caption: string): Promise<boolean> => {
+  publish = async (rawOptions: ThreadsAPIPublishOptions | string): Promise<boolean> => {
+    const options: ThreadsAPIPublishOptions =
+      typeof rawOptions === 'string' ? { text: rawOptions } : rawOptions;
     if (!this.username || !this.password) {
       throw new Error('Username or password not set');
     }
@@ -422,78 +435,51 @@ export class ThreadsAPI {
     const now = new Date();
     const timezoneOffset = -now.getTimezoneOffset() * 60;
 
-    const data = encodeURIComponent(
-      JSON.stringify({
-        publish_mode: 'text_post',
-        text_post_app_info: '{"reply_control":0}',
-        timezone_offset: timezoneOffset.toString(),
-        source_type: '4',
-        _uid: userID,
-        device_id: `${this.deviceID}`,
-        caption,
-        upload_id: now.getTime(),
-        device: this.device,
-      }),
-    );
-    await axios(POST_URL, {
-      method: 'POST',
+    let data: any = {
+      text_post_app_info: { reply_control: 0 },
+      timezone_offset: timezoneOffset.toString(),
+      source_type: '4',
+      _uid: userID,
+      device_id: this.deviceID,
+      caption: options.text || '',
+      upload_id: now.getTime(),
+      device: this.device,
+    };
+    let url = POST_URL;
+
+    if ('image' in options && !!options.image) {
+      url = POST_WITH_IMAGE_URL;
+      const { upload_id: uploadId } = await this.uploadImage(options.image);
+      data.upload_id = uploadId;
+      data.scene_capture_type = '';
+    }
+    if (!(options as any).image) {
+      data.publish_mode = 'text_post';
+    }
+
+    const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
+    const res = await axios.post(url, payload, {
+      httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
       headers: this._getAppHeaders(),
-      data: `signed_body=SIGNATURE.${data}`,
+      timeout: 60 * 1000,
     });
-    return true;
+
+    if (this.verbose) {
+      console.debug('[PUBLISH]', res.data);
+    }
+    if (res.data['status'] === 'ok') {
+      return true;
+    } else {
+      return false;
+    }
   };
 
+  /**
+   * @deprecated: use `publish` instead
+   **/
   publishWithImage = async (caption: string, imagePath: string): Promise<boolean> => {
-    if (!this.username || !this.password) {
-      throw new Error('Username or password not set');
-    }
-
-    const userID = await this.getUserIDfromUsername(this.username);
-    if (!userID) {
-      throw new Error('User ID not found');
-    }
-
-    const token = await this.getToken();
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
-    const { upload_id: uploadId } = await this.uploadImage(imagePath);
-    try {
-      const now = new Date();
-      const timezoneOffset = -now.getTimezoneOffset() * 60;
-
-      const params = encodeURIComponent(
-        JSON.stringify({
-          text_post_app_info: JSON.stringify({ reply_control: 0 }),
-          scene_capture_type: '',
-          timezone_offset: timezoneOffset,
-          source_type: '4',
-          _uid: userID,
-          device_id: this.deviceID,
-          caption: caption,
-          upload_id: uploadId,
-          device: this.device,
-        }),
-      );
-      const payload = `signed_body=SIGNATURE.${params}`;
-
-      const res = await axios.post(POST_WITH_IMAGE_URL, payload, {
-        httpAgent: this.httpAgent,
-        headers: this._getAppHeaders(),
-        timeout: 60 * 1000,
-      });
-      if (this.verbose) {
-        console.debug('[PUBLISH]', res.data);
-      }
-      if (res.data['status'] === 'ok') {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (err) {
-      throw err;
-    }
+    return this.publish({ text: caption, image: imagePath });
   };
 
   uploadImage = async (imagePath: string): Promise<InstagramImageUploadResponse> => {
