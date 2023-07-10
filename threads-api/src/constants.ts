@@ -1,7 +1,9 @@
+import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
+
 export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
-export const DEFAULT_DEVICE_ID = `android-${Math.floor(Math.random() * 1e24).toString(16)}`;
+export const DEFAULT_DEVICE_ID = `android-${(Math.random() * 1e24).toString(36)}`;
 export const POST_HEADERS_DEFAULT: any = {
-  'User-Agent': 'Barcelona 289.0.0.77.109 Android',
+  'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
   'Sec-Fetch-Site': 'same-origin',
   'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
 };

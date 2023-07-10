@@ -3,14 +3,12 @@ import * as fs from 'fs';
 import mimeTypes from 'mime-types';
 import { v4 as uuidV4 } from 'uuid';
 import {
-  // DEFAULT_LSD_TOKEN,
-  // DEFAULT_DEVICE_ID,
-  LOGIN_URL,
   POST_URL,
   POST_WITH_IMAGE_URL,
   POST_HEADERS_DEFAULT,
+  DEFAULT_LSD_TOKEN,
+  DEFAULT_DEVICE_ID,
 } from './constants';
-import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
 export type AndroidDevice = {
@@ -66,6 +64,12 @@ export type GetThreadLikersResponse = {
   extensions: Extensions;
 };
 
+export type InstagramImageUploadResponse = {
+  upload_id: string;
+  xsharing_nonces: {};
+  status: 'ok';
+};
+
 export type ThreadsAPIOptions = {
   fbLSDToken?: string;
   deviceID?: string;
@@ -78,8 +82,6 @@ export type ThreadsAPIOptions = {
   device?: AndroidDevice;
 };
 
-export const DEFAULT_LSD_TOKEN = 'NjppQDEgONsU_1LCzrmp6q';
-export const DEFAULT_DEVICE_ID = `android-${(Math.random() * 1e24).toString(36)}`;
 export const DEFAULT_DEVICE: AndroidDevice = {
   manufacturer: 'OnePlus',
   model: 'ONEPLUS+A3010',
@@ -396,11 +398,7 @@ export class ThreadsAPI {
     );
     const requestConfig: AxiosRequestConfig = {
       method: 'POST',
-      headers: {
-        'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
-        'Sec-Fetch-Site': 'same-origin',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      },
+      headers: POST_HEADERS_DEFAULT,
       responseType: 'text',
       data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
     };
@@ -459,66 +457,53 @@ export class ThreadsAPI {
 
   publishWithImage = async (caption: string, imagePath: string): Promise<boolean> => {
     if (!this.username || !this.password) {
-      return false;
+      throw new Error('Username or password not set');
     }
 
     const userID = await this.getUserIDfromUsername(this.username);
     if (!userID) {
-      return false;
+      throw new Error('User ID not found');
     }
 
     const token = await this.getToken();
     if (!token) {
-      return false;
+      throw new Error('Token not found');
     }
 
-    let imageContent = null;
-    if (!(fs.existsSync(imagePath) && fs.statSync(imagePath).isFile())) {
-      if (!this._isValidUrl(imagePath)) {
-        return false;
-      } else {
-        imageContent = await this._download(imagePath);
-      }
-    }
     const headers = POST_HEADERS_DEFAULT;
     headers['Authorization'] = `Bearer IGT:2:${token}`;
-    const content = await this.uploadImage(headers, imagePath, imageContent);
-    if (content != null) {
-      try {
-        const contentItem = JSON.parse(content as string);
-        const upload_id = contentItem.upload_id;
-        const params = JSON.stringify({
-          text_post_app_info: '{"reply_control":0}',
-          scene_capture_type: '',
-          timezone_offset: '-25200',
-          source_type: '4',
-          _uid: userID,
-          device_id: this.deviceID,
-          caption: caption,
-          upload_id: upload_id,
-          device: {
-            manufacturer: 'OnePlus',
-            model: 'ONEPLUS+A3010',
-            android_version: 25,
-            android_release: '7.1.1',
-          },
-        });
-        const payload = `signed_body=SIGNATURE.${params}`;
-        const res = await axios.post(POST_WITH_IMAGE_URL, payload, {
-          httpAgent: this.httpAgent,
-          headers: headers,
-          timeout: 60 * 1000,
-        });
-        const postResult = res.data;
-        if ('status' in postResult && postResult['status'] === 'ok') {
-          return true;
-        } else {
-          return false;
-        }
-      } catch (e) {
+    const uploadResult = await this.uploadImage(headers, imagePath, null);
+    if (!uploadResult) {
+      throw new Error('Upload failed');
+    }
+    try {
+      const uploadId = uploadResult.upload_id;
+      const now = new Date();
+      const timezoneOffset = -now.getTimezoneOffset() * 60;
+      const params = JSON.stringify({
+        text_post_app_info: JSON.stringify({ reply_control: 0 }),
+        scene_capture_type: '',
+        timezone_offset: timezoneOffset,
+        source_type: '4',
+        _uid: userID,
+        device_id: this.deviceID,
+        caption: caption,
+        upload_id: uploadId,
+        device: this.device,
+      });
+      const payload = `signed_body=SIGNATURE.${params}`;
+      const res = await axios.post(POST_WITH_IMAGE_URL, payload, {
+        httpAgent: this.httpAgent,
+        headers: headers,
+        timeout: 60 * 1000,
+      });
+      const postResult = res.data;
+      if ('status' in postResult && postResult['status'] === 'ok') {
+        return true;
+      } else {
         return false;
       }
-    } else {
+    } catch (e) {
       return false;
     }
   };
@@ -527,20 +512,15 @@ export class ThreadsAPI {
     headers: any,
     imagePath: string,
     imageContent: Buffer | null,
-  ): Promise<String | null> => {
+  ): Promise<InstagramImageUploadResponse | null> => {
     const uploadId = Date.now().toString();
-    const name: string = `${uploadId}_0_${Math.floor(
-      Math.random() * (9999999999 - 1000000000 + 1) + 1000000000,
-    )}`;
+    const name = `${uploadId}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
     const url: string = `https://www.instagram.com/rupload_igphoto/${name}`;
 
     let content: Buffer;
     let mime_type: string | null;
     if (imageContent === null) {
-      const f = await fs.promises.open(imagePath, 'rb');
-      content = await f.readFile();
-      await f.close();
-
+      content = await fs.promises.readFile(imagePath);
       const mimeTypeResult = mimeTypes.lookup(imagePath);
       mime_type = mimeTypeResult ? mimeTypeResult : 'application/octet-stream';
     } else {
@@ -558,14 +538,14 @@ export class ThreadsAPI {
     const x_instagram_rupload_params = {
       upload_id: uploadId,
       media_type: '1',
-      sticker_burnin_params: '[]',
+      sticker_burnin_params: JSON.stringify([]),
       image_compression: JSON.stringify({ lib_name: 'moz', lib_version: '3.1.m', quality: '80' }),
-      xsharing_user_ids: '[]',
-      retry_context: {
+      xsharing_user_ids: JSON.stringify([]),
+      retry_context: JSON.stringify({
         num_step_auto_retry: '0',
         num_reupload: '0',
         num_step_manual_retry: '0',
-      },
+      }),
       'IG-FB-Xpost-entry-point-v2': 'feed',
     };
 
@@ -576,29 +556,31 @@ export class ThreadsAPI {
       'Sec-Fetch-Site': headers['Sec-Fetch-Site'],
       Authorization: headers['Authorization'],
       X_FB_PHOTO_WATERFALL_ID: uuidV4(),
-      'X-Entity-Type': mime_type!! !== undefined ? `image/${mime_type!!}` : 'image/jpeg',
+      'X-Entity-Type': 'image/jpeg',
+      // mime_type!! !== undefined ? `image/${mime_type!!}` : 'image/jpeg',
       Offset: '0',
       'X-Instagram-Rupload-Params': JSON.stringify(x_instagram_rupload_params),
       'X-Entity-Name': name,
-      'X-Entity-Length': contentLength,
-      'Content-Length': contentLength,
+      'X-Entity-Length': contentLength.toString(),
+      'Content-Length': contentLength.toString(),
       'Accept-Encoding': 'gzip',
     };
 
+    console.log('Uploading image to Instagram...');
+    console.log(content);
+
     try {
-      const response = await axios.post(url, content, {
+      const { data } = await axios.post<InstagramImageUploadResponse>(url, content, {
         httpAgent: this.httpAgent,
         headers: imageHeaders,
         timeout: 60 * 1000,
       });
+      console.log(data);
 
-      if (response.status === 200) {
-        return response.data;
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error('Error:', error);
+      return data;
+    } catch (error: any) {
+      console.log(error.response.data);
+      // console.error('Error:', error);
       return null;
     }
   };
