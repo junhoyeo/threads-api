@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import * as fs from 'fs';
 import mimeTypes from 'mime-types';
 import { v4 as uuidV4 } from 'uuid';
-import { POST_URL, POST_WITH_IMAGE_URL, DEFAULT_LSD_TOKEN, DEFAULT_DEVICE_ID } from './constants';
+import { POST_URL, POST_WITH_IMAGE_URL, DEFAULT_LSD_TOKEN, DEFAULT_DEVICE_ID, LOGIN_URL } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
@@ -365,10 +365,6 @@ export class ThreadsAPI {
       throw new Error('Username and password are required');
     }
 
-    const base = 'https://i.instagram.com/api/v1/';
-    const url = `${base}bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/`;
-    const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
-
     const params = encodeURIComponent(
       JSON.stringify({
         client_input_params: {
@@ -383,6 +379,7 @@ export class ThreadsAPI {
       }),
     );
 
+    const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
     const bkClientContext = encodeURIComponent(
       JSON.stringify({
         bloks_version: blockVersion,
@@ -396,7 +393,7 @@ export class ThreadsAPI {
       data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
     };
 
-    const { data } = await axios<string>(url, requestConfig);
+    const { data } = await axios<string>(LOGIN_URL, requestConfig);
     const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
     if (!this.noUpdateToken) {
       if (this.verbose) {
@@ -422,8 +419,6 @@ export class ThreadsAPI {
       throw new Error('Token not found');
     }
 
-    const base = 'https://i.instagram.com';
-    const url = `${base}/api/v1/media/configure_text_only_post/`;
     const now = new Date();
     const timezoneOffset = -now.getTimezoneOffset() * 60;
 
