@@ -500,6 +500,12 @@ export class ThreadsAPI {
       }
       this.token = token;
     }
+
+    console.log(
+      '\x1b[33m%s\x1b[0m',
+      'We advise that you store the token locally and pass it to the constructor in your next runs in order to avoid getting your account disabled.',
+    );
+
     return token;
   };
 
