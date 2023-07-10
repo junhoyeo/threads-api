@@ -446,30 +446,12 @@ export class ThreadsAPI {
         device: this.device,
       }),
     );
-    // const headers = POST_HEADERS_DEFAULT;
-    // headers['Authorization'] = `Bearer IGT:2:${token}`;
-    // try {
-    //   const res = await axios.post(POST_URL, `signed_body=SIGNATURE.${data}`, {
-    //     httpAgent: this.httpAgent,
-    //     headers: headers,
-    //     timeout: 60 * 1000,
-    //   });
-    //   if (res.data && res.data.status === 'ok') {
-    //     return true;
-    //   } else {
-    //     return false;
-    //   }
-    // } catch (e) {
-    //   return false;
+    const headers = POST_HEADERS_DEFAULT;
+    headers['Authorization'] = `Bearer IGT:2:${token}`;
 
-    await axios(url, {
+    await axios(POST_URL, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer IGT:2:${token}`,
-        'User-Agent': 'Barcelona 289.0.0.77.109 Android',
-        'Sec-Fetch-Site': 'same-origin',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      },
+      headers: headers,
       data: `signed_body=SIGNATURE.${data}`,
     });
     return true;
@@ -546,11 +528,11 @@ export class ThreadsAPI {
     imagePath: string,
     imageContent: Buffer | null,
   ): Promise<String | null> => {
-    const uploadId: number = Math.floor(Date.now());
+    const uploadId = Date.now().toString();
     const name: string = `${uploadId}_0_${Math.floor(
       Math.random() * (9999999999 - 1000000000 + 1) + 1000000000,
     )}`;
-    const url: string = 'https://www.instagram.com/rupload_igphoto/' + name;
+    const url: string = `https://www.instagram.com/rupload_igphoto/${name}`;
 
     let content: Buffer;
     let mime_type: string | null;
