@@ -85,7 +85,7 @@ export type ThreadsAPIOptions = {
 export type ThreadsAPIPublishOptions =
   | {
       text?: string;
-      replyPostId?: string;
+      parentPostID?: string;
     } & ({ url?: string } | { image?: string });
 
 export const DEFAULT_DEVICE: AndroidDevice = {
@@ -451,8 +451,8 @@ export class ThreadsAPI {
       data.text_post_app_info.link_attachment_url = options.url;
     }
 
-    if (!!options.replyPostId) {
-      data.text_post_app_info.reply_id = options.replyPostId;
+    if (!!options.parentPostID) {
+      data.text_post_app_info.reply_id = options.parentPostID;
     }
     if (!(options as any).image) {
       data.publish_mode = 'text_post';

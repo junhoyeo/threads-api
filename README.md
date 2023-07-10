@@ -569,6 +569,52 @@ Same as the output of `threadsAPI.getUserProfileThreads` but `thread_items.lengt
 
 ### 🚀 Usage (Write)
 
+### New API (from v1.2.0)
+
+#### ✨ Text Threads
+
+```ts
+await threadsAPI.publish({
+  text: '🤖 Hello World',
+});
+```
+
+#### ✨ Threads with Image
+
+```ts
+await threadsAPI.publish({
+  text: '🤖 Threads with Image',
+  image: 'https://github.com/junhoyeo/threads-api/raw/main/.github/cover.jpg',
+});
+```
+
+#### ✨ Threads with Link Attachment
+
+```ts
+await threadsAPI.publish({
+  text: '🤖 Threads with Link Attachment',
+  link: 'https://github.com/junhoyeo/threads-api',
+});
+```
+
+#### ✨ Reply to Other Threads
+
+```ts
+const parentURL = 'https://www.threads.net/t/Cucr-EEBdDJ';
+const parentPostID = await threadsAPI.getPostIDfromURL(parentURL); // or use `getPostIDfromThreadID`
+
+await threadsAPI.publish({
+  text: '🤖 Beep',
+  link: 'https://github.com/junhoyeo/threads-api',
+  parentPostID: parentPostID,
+});
+```
+
+<details>
+  <summary>
+    <h3>Old API (Deprecated, Still works for backwards compatibility)</h3>
+  </summary>
+
 ```ts
 import { ThreadsAPI } from 'threads-api';
 
@@ -601,6 +647,8 @@ const threadsAPI = new ThreadsAPI({
     <img src=".github/text-threads.jpg" alt="Writing Text Threads" width="400px" />
   </a>
 </p>
+
+</details>
 
 ## [<img src="./.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
 
@@ -693,12 +741,9 @@ Commands:
 
 ### [👤 `threads-card`: Share your Threads profile easily](https://github.com/yssf-io/threads-card)
 
-
-
 ### [👤 `Strings`: Web-Frontend for Threads](https://github.com/Nainish-Rai/strings-web)
+
 [![Screenshot (84)](https://github.com/Nainish-Rai/threads-api/assets/109546113/e8c4b990-6a95-470d-bbff-55a04f850b7b)](https://strings.vercel.app)
-
-
 
 ## License
 
@@ -711,7 +756,5 @@ Commands:
 <p align="center">
   <strong>MIT © <a href="https://github.com/junhoyeo">Junho Yeo</a></strong>
 </p>
-
-
 
 If you find this project intriguing, **please consider starring it(⭐)** or following me on [GitHub](https://github.com/junhoyeo) (I wouldn't say [Threads](https://www.threads.net/@_junhoyeo)). I code 24/7 and ship mind-breaking things on a regular basis, so your support definitely won't be in vain.
