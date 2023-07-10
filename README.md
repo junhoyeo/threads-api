@@ -593,7 +593,7 @@ await threadsAPI.publish({
 ```ts
 await threadsAPI.publish({
   text: '🤖 Threads with Link Attachment',
-  link: 'https://github.com/junhoyeo/threads-api',
+  url: 'https://github.com/junhoyeo/threads-api',
 });
 ```
 
