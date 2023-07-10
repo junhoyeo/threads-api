@@ -136,6 +136,8 @@ export class ThreadsAPI {
   deviceID: string = DEFAULT_DEVICE_ID;
   device?: AndroidDevice = DEFAULT_DEVICE;
 
+  userID: string | undefined = undefined;
+
   constructor(options?: ThreadsAPIOptions) {
     if (options?.token) this.token = options.token;
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
@@ -219,6 +221,22 @@ export class ThreadsAPI {
     }
 
     return userID;
+  };
+  getCurrentUserID = async (options?: AxiosRequestConfig) => {
+    if (this.userID) {
+      if (this.verbose) {
+        console.debug('[userID] USING', this.userID);
+      }
+      return this.userID;
+    }
+    if (!this.username) {
+      throw new Error('username is not defined');
+    }
+    this.userID = await this.getUserIDfromUsername(this.username, options);
+    if (this.verbose) {
+      console.debug('[userID] UPDATED', this.userID);
+    }
+    return this.userID;
   };
 
   getUserProfile = async (username: string, userID: string, options?: AxiosRequestConfig) => {
@@ -397,14 +415,16 @@ export class ThreadsAPI {
     });
     return res;
   };
-  like = async (userID: string, postID: string, options?: AxiosRequestConfig) => {
+  like = async (postID: string, options?: AxiosRequestConfig) => {
+    const userID = await this.getCurrentUserID();
     const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
       `${BASE_API_URL}/media/${postID}_${userID}/like/`,
       options,
     );
     return res.data.status === 'ok';
   };
-  unlike = async (userID: string, postID: string, options?: AxiosRequestConfig) => {
+  unlike = async (postID: string, options?: AxiosRequestConfig) => {
+    const userID = await this.getCurrentUserID();
     const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
       `${BASE_API_URL}/media/${postID}_${userID}/unlike/`,
       options,

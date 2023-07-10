@@ -21,13 +21,13 @@ describeIf(!!credentials)('Like/Unlike', () => {
 
       // like
       await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
-      success = await threadsAPI.like(userID, postID);
+      success = await threadsAPI.like(postID);
       expect(success).toBe(true);
       success = false;
 
       // unlike
       await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
-      success = await threadsAPI.unlike(userID, postID);
+      success = await threadsAPI.unlike(postID);
       expect(success).toBe(true);
       success = false;
     },
