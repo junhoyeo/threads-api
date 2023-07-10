@@ -9,6 +9,7 @@ import {
   DEFAULT_DEVICE_ID,
   LOGIN_URL,
   BASE_API_URL,
+  DELETE_URL,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
@@ -503,7 +504,7 @@ export class ThreadsAPI {
     return token;
   };
 
-  publish = async (rawOptions: ThreadsAPIPublishOptions | string): Promise<boolean> => {
+  publish = async (rawOptions: ThreadsAPIPublishOptions | string): Promise<string | undefined> => {
     const options: ThreadsAPIPublishOptions =
       typeof rawOptions === 'string' ? { text: rawOptions } : rawOptions;
     if (!this.username || !this.password) {
@@ -562,17 +563,44 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[PUBLISH]', res.data);
     }
+
+    if (res.data['status'] === 'ok') {
+      return res.data['media']['id'];
+    }
+
+    return undefined;
+  };
+
+  delete = async (postID: string): Promise<boolean> => {
+    const url = DELETE_URL(postID);
+
+    const data = {
+      igtv_feed_preview: 'false',
+      media_id: postID,
+      _uid: this.userID,
+      _uuid: this.deviceID,
+    };
+
+    const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
+
+    const res = await axios.post(url, payload, {
+      httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
+      headers: this._getAppHeaders(),
+      timeout: 60 * 1000,
+    });
+
     if (res.data['status'] === 'ok') {
       return true;
-    } else {
-      return false;
     }
+
+    return false;
   };
 
   /**
    * @deprecated: use `publish` instead
    **/
-  publishWithImage = async (caption: string, imagePath: string): Promise<boolean> => {
+  publishWithImage = async (caption: string, imagePath: string): Promise<string | undefined> => {
     return this.publish({ text: caption, image: imagePath });
   };
 
