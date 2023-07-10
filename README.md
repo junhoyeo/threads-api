@@ -574,10 +574,29 @@ Same as the output of `threadsAPI.getUserProfileThreads` but `thread_items.lengt
 #### ✨ Text Threads
 
 ```ts
-await threadsAPI.publish({
-  text: '🤖 Hello World',
-});
+import { ThreadsAPI } from 'threads-api';
+
+const main = async () => {
+  const threadsAPI = new ThreadsAPI({
+    username: '_junhoyeo', // Your username
+    password: 'PASSWORD', // Your password
+  });
+
+  await threadsAPI.publish({
+    text: '🤖 Hello World',
+  });
+};
+
+main();
 ```
+
+<p align="center">
+  <a href="https://www.threads.net/t/CucsGvZBs9q">
+    <img src=".github/text-threads.jpg" alt="Writing Text Threads" width="400px" />
+  </a>
+</p>
+
+> **💡 TIP**: Use the [`url` field in `ThreadsAPIPublishOptions` to render Link Attachments(link previews).](https://github.com/junhoyeo/threads-api#-threads-with-link-attachment)
 
 #### ✨ Threads with Image
 
@@ -600,7 +619,7 @@ await threadsAPI.publish({
 #### ✨ Reply to Other Threads
 
 ```ts
-const parentURL = 'https://www.threads.net/t/Cucr-EEBdDJ';
+const parentURL = 'https://www.threads.net/t/CugF-EjhQ3r';
 const parentPostID = await threadsAPI.getPostIDfromURL(parentURL); // or use `getPostIDfromThreadID`
 
 await threadsAPI.publish({
@@ -609,6 +628,12 @@ await threadsAPI.publish({
   parentPostID: parentPostID,
 });
 ```
+
+<p align="center">
+  <a href="https://www.threads.net/t/CugF-EjhQ3r">
+    <img src=".github/rich-threads.png" alt="Writing Text Threads" width="400px" />
+  </a>
+</p>
 
 <details>
   <summary>
@@ -641,12 +666,6 @@ const threadsAPI = new ThreadsAPI({
   deviceID,
 });
 ```
-
-<p align="center">
-  <a href="https://www.threads.net/t/CucsGvZBs9q">
-    <img src=".github/text-threads.jpg" alt="Writing Text Threads" width="400px" />
-  </a>
-</p>
 
 </details>
 
