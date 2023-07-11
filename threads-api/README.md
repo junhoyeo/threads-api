@@ -805,6 +805,21 @@ Commands:
 [![Screenshot (84)](https://github.com/Nainish-Rai/threads-api/assets/109546113/e8c4b990-6a95-470d-bbff-55a04f850b7b)](https://strings.vercel.app)
 
 ### [👤 `threads-projects`: Unleashing the power of Meta's Threads.net platform with insightful bots and efficient workflows](https://github.com/AayushGithub/threads-projects)
+<p align="center">
+  <img width = "550px" height="auto" src="https://github.com/AayushGithub/threads-api/assets/66742440/ae09b734-4f2b-48cc-93f6-6eb0375238ec">
+</p>
+
+### [🧵 `thread-count`: Custom status badges for Meta's Threads.net follower counts](https://github.com/AayushGithub/thread-count)
+<div align="center">
+
+  | parameter | demo |
+  | ----- | ---- |
+  | `Default (_junhoyeo's account)` | <a href="https://github.com/AayushGithub/thread-count"><img src="https://thread-count.vercel.app/thread-count/_junhoyeo" alt="_junhoyeo Badge"></a> |
+  | `Custom Text and Colors` | <a href="https://www.threads.net/@fortune_cookie_bot"><img src="https://thread-count.vercel.app/thread-count/fortune_cookie_bot?label=Follower%20Count&labelColor=white&color=pink&gradient=false" alt="Alternative Count Badge"></a> |
+  | `Scale Badge Size` | ![https://www.threads.net/@zuck](https://thread-count.vercel.app/thread-count/zuck?scale=1.5) |
+
+</div>
+
 
 ## License
 
