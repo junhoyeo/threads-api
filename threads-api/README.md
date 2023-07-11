@@ -814,7 +814,7 @@ Commands:
 
   | parameter | demo |
   | ----- | ---- |
-  | `Default (_junhoyeo's account)` | <a href="https://github.com/AayushGithub/thread-count"><img src="https://thread-count.vercel.app/thread-count/_junhoyeo" alt="_junhoyeo Badge"></a> |
+  | `Default (_junhoyeo's account)` | <a href="https://www.threads.net/@_junhoyeo"><img src="https://thread-count.vercel.app/thread-count/_junhoyeo" alt="_junhoyeo Badge"></a> |
   | `Custom Text and Colors` | <a href="https://www.threads.net/@fortune_cookie_bot"><img src="https://thread-count.vercel.app/thread-count/fortune_cookie_bot?label=Follower%20Count&labelColor=white&color=pink&gradient=false" alt="Alternative Count Badge"></a> |
   | `Scale Badge Size` | ![https://www.threads.net/@zuck](https://thread-count.vercel.app/thread-count/zuck?scale=1.5) |
 
