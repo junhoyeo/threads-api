@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import mimeTypes from 'mime-types';
+import mimeTypes from 'mrmime';
 import { v4 as uuidV4 } from 'uuid';
 import {
   POST_URL,
