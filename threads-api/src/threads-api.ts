@@ -511,7 +511,7 @@ export class ThreadsAPI {
       throw new Error('Username or password not set');
     }
 
-    const userID = await this.getUserIDfromUsername(this.username);
+    const userID = await this.getCurrentUserID();
     if (!userID) {
       throw new Error('User ID not found');
     }
