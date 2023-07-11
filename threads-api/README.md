@@ -656,6 +656,15 @@ await threadsAPI.follow(userIDToFollow);
 await threadsAPI.unfollow(userIDToFollow);
 ```
 
+#### ✨ Delete a Post (from v1.3.1)
+
+```ts
+const postID = await threadsAPI.publish({ text: '🤖 This message will self-destruct in 5 seconds.' });
+
+await new Promise((resolve) => setTimeout(resolve, 5_000));
+await threadsAPI.delete(postID);
+```
+
 <details>
   <summary>
     <h3>Old API (Deprecated, Still works for backwards compatibility)</h3>
