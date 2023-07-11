@@ -8,7 +8,6 @@ import {
   DEFAULT_DEVICE_ID,
   LOGIN_URL,
   BASE_API_URL,
-  DELETE_URL,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
@@ -572,15 +571,13 @@ export class ThreadsAPI {
     return undefined;
   };
 
-  delete = async (postID: string): Promise<boolean> => {
-    const url = DELETE_URL(postID);
-
+  delete = async (postID: string, options?: AxiosRequestConfig): Promise<boolean> => {
+    const url = `${BASE_API_URL}/media/${postID}/delete/`;
     const data = {
       media_id: postID,
       _uid: this.userID,
       _uuid: this.deviceID,
     };
-
     const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
 
     const res = await axios.post(url, payload, {
@@ -588,12 +585,11 @@ export class ThreadsAPI {
       httpsAgent: this.httpsAgent,
       headers: this._getAppHeaders(),
       timeout: 60 * 1000,
+      ...options,
     });
-
     if (res.data['status'] === 'ok') {
       return true;
     }
-
     return false;
   };
 
