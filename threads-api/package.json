@@ -25,7 +25,6 @@
   ],
   "scripts": {
     "build": "rimraf ./lib && swc src --config-file .swcrc -d build && tsc --emitDeclarationOnly",
-    "dev": "yarn build && node build/test",
     "test": "jest"
   },
   "devDependencies": {
