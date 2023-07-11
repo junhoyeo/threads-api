@@ -111,7 +111,9 @@ export type ThreadsAPIPublishOptions =
   | {
       text?: string;
       parentPostID?: string;
-    } & ({ url?: string } | { image?: string });
+    } & ({ url?: string } | { image?: string | ThreadsAPIImage });
+
+export type ThreadsAPIImage = { path: string } | { type: string; data: Buffer };
 
 export const DEFAULT_DEVICE: AndroidDevice = {
   manufacturer: 'OnePlus',
@@ -629,7 +631,7 @@ export class ThreadsAPI {
     return this.publish({ text: caption, image: imagePath });
   };
 
-  uploadImage = async (imagePath: string): Promise<InstagramImageUploadResponse> => {
+  uploadImage = async (image: string | ThreadsAPIImage): Promise<InstagramImageUploadResponse> => {
     const uploadId = Date.now().toString();
     const name = `${uploadId}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
     const url: string = `https://www.instagram.com/rupload_igphoto/${name}`;
@@ -637,16 +639,23 @@ export class ThreadsAPI {
     let content: Buffer;
     let mime_type: string | null;
 
-    const isFilePath = !imagePath.startsWith('http');
-    if (isFilePath) {
-      const fs = await import('fs');
-      content = await fs.promises.readFile(imagePath);
-      const mimeTypeResult = mimeTypes.lookup(imagePath);
-      mime_type = mimeTypeResult ? mimeTypeResult : 'application/octet-stream';
+    if (typeof image === 'string' || 'path' in image) {
+      const imagePath = typeof image === 'string' ? image : image.path;
+      const isFilePath = !imagePath.startsWith('http');
+      if (isFilePath) {
+        const fs = await import('fs');
+        content = await fs.promises.readFile(imagePath);
+        const mimeTypeResult = mimeTypes.lookup(imagePath);
+        mime_type = mimeTypeResult ? mimeTypeResult : 'application/octet-stream';
+      } else {
+        const response = await axios.get(imagePath, { responseType: 'arraybuffer' });
+        content = Buffer.from(response.data, 'binary');
+        mime_type = response.headers['content-type'];
+      }
     } else {
-      const response = await axios.get(imagePath, { responseType: 'arraybuffer' });
-      content = Buffer.from(response.data, 'binary');
-      mime_type = response.headers['content-type'];
+      content = image.data;
+      const mimeTypeResult = image.type.includes('/') ? image.type : mimeTypes.lookup(image.type);
+      mime_type = mimeTypeResult ? mimeTypeResult : 'application/octet-stream';
     }
 
     const x_instagram_rupload_params = {
