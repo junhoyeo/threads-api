@@ -106,6 +106,7 @@ export type ThreadsAPIOptions = {
   password?: string;
   deviceID?: string;
   device?: AndroidDevice;
+  userID?: string;
 };
 
 export type ThreadsAPIPublishOptions =
@@ -155,6 +156,7 @@ export class ThreadsAPI {
 
     if (options?.deviceID) this.deviceID = options.deviceID;
     this.device = options?.device;
+    this.userID = options?.userID;
   }
 
   _getAppHeaders = () => ({
