@@ -15,7 +15,7 @@ describeIf(!!credentials)('publish', () => {
     beforeAll(async () => {
       // when
       await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
-      success = await threadsAPI.publish('🤖 Hello World!');
+      success = !!(await threadsAPI.publish('🤖 Hello World!'));
     }, TIMEOUT);
 
     it(
@@ -37,7 +37,7 @@ describeIf(!!credentials)('publish', () => {
 
       // when
       await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
-      const success = await threadsAPI.publish({ text, image: imageURL });
+      const success = !!(await threadsAPI.publish({ text, image: imageURL }));
 
       // then
       expect(success).toBe(true);
@@ -54,7 +54,7 @@ describeIf(!!credentials)('publish', () => {
 
       // when
       await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
-      const success = await threadsAPI.publish({ text, url: imageURL });
+      const success = !!(await threadsAPI.publish({ text, url: imageURL }));
 
       // then
       expect(success).toBe(true);
