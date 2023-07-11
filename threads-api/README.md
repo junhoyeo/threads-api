@@ -792,6 +792,8 @@ Commands:
 
 [![Screenshot (84)](https://github.com/Nainish-Rai/threads-api/assets/109546113/e8c4b990-6a95-470d-bbff-55a04f850b7b)](https://strings.vercel.app)
 
+### [👤 `threads-projects`: Unleashing the power of Meta's Threads.net platform with insightful bots and efficient workflows](https://github.com/AayushGithub/threads-projects)
+
 ## License
 
 <p align="center">
