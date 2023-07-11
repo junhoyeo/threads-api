@@ -113,7 +113,7 @@ export type ThreadsAPIPublishOptions =
       parentPostID?: string;
     } & ({ url?: string } | { image?: string | ThreadsAPIImage });
 
-export type ThreadsAPIImage = { name: string; data: Buffer };
+export type ThreadsAPIImage = { path: string } | { type: string; data: Buffer };
 
 export const DEFAULT_DEVICE: AndroidDevice = {
   manufacturer: 'OnePlus',
@@ -639,8 +639,8 @@ export class ThreadsAPI {
     let content: Buffer;
     let mime_type: string | null;
 
-    if (typeof image === 'string') {
-      const imagePath = image;
+    if (typeof image === 'string' || 'path' in image) {
+      const imagePath = typeof image === 'string' ? image : image.path;
       const isFilePath = !imagePath.startsWith('http');
       if (isFilePath) {
         const fs = await import('fs');
@@ -654,7 +654,7 @@ export class ThreadsAPI {
       }
     } else {
       content = image.data;
-      const mimeTypeResult = mimeTypes.lookup(image.name);
+      const mimeTypeResult = image.type.includes('/') ? image.type : mimeTypes.lookup(image.type);
       mime_type = mimeTypeResult ? mimeTypeResult : 'application/octet-stream';
     }
 
