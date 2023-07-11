@@ -12,7 +12,7 @@ describe('publishWithImage (deprecated)', () => {
     const imageURL = 'https://github.com/junhoyeo/threads-api/blob/main/.github/logo.jpg?raw=true';
 
     const publishSpy = jest.spyOn(threadsAPI, 'publish');
-    publishSpy.mockImplementation(() => Promise.resolve(true));
+    publishSpy.mockImplementation(() => Promise.resolve('mocked-id'));
 
     // when
     await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety
