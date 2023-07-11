@@ -178,11 +178,8 @@ export class ThreadsAPI {
     ...(!!username ? { referer: `https://www.threads.net/@${username}` } : undefined),
   });
 
-  getUserIDfromUsername = async (
-    username: string,
-    options?: AxiosRequestConfig,
-  ): Promise<string | undefined> => {
-    const res = await axios.get(`https://www.instagram.com/${username}`, {
+  getProfilePage = async (url: string, username: string, options?: AxiosRequestConfig) => {
+    const res = await axios.get(`${url}${username}`, {
       ...options,
       httpAgent: this.httpAgent,
       httpsAgent: this.httpsAgent,
@@ -211,8 +208,40 @@ export class ThreadsAPI {
     // remove all newlines from text
     text = text.replace(/\n/g, '');
 
+    return text;
+  };
+
+  getUserIDfromUsernameWithInstagram = async (
+    username: string,
+    options?: AxiosRequestConfig,
+  ): Promise<string | undefined> => {
+    const text = await this.getProfilePage('https://www.instagram.com/', username, options);
+
     const userID: string | undefined = text.match(/"user_id":"(\d+)",/)?.[1];
     const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
+
+    if (!this.noUpdateLSD && !!lsdToken) {
+      this.fbLSDToken = lsdToken;
+      if (this.verbose) {
+        console.debug('[fbLSDToken] UPDATED', this.fbLSDToken);
+      }
+    }
+
+    return userID;
+  };
+
+  getUserIDfromUsername = async (
+    username: string,
+    options?: AxiosRequestConfig,
+  ): Promise<string | undefined> => {
+    const text = await this.getProfilePage('https://www.threads.net/@', username, options);
+
+    const userID: string | undefined = text.match(/"user_id":"(\d+)"/)?.[1];
+    const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
+
+    if (!userID) {
+      return this.getUserIDfromUsernameWithInstagram(username, options);
+    }
 
     if (!this.noUpdateLSD && !!lsdToken) {
       this.fbLSDToken = lsdToken;
