@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import * as fs from 'fs';
 import mimeTypes from 'mime-types';
 import { v4 as uuidV4 } from 'uuid';
 import {
@@ -615,6 +614,7 @@ export class ThreadsAPI {
 
     const isFilePath = !imagePath.startsWith('http');
     if (isFilePath) {
+      const fs = await import('fs');
       content = await fs.promises.readFile(imagePath);
       const mimeTypeResult = mimeTypes.lookup(imagePath);
       mime_type = mimeTypeResult ? mimeTypeResult : 'application/octet-stream';
