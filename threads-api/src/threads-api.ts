@@ -1,13 +1,15 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import * as crypto from 'crypto';
 import mimeTypes from 'mrmime';
-import { v4 as uuidV4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import {
   POST_URL,
   POST_WITH_IMAGE_URL,
   DEFAULT_LSD_TOKEN,
   DEFAULT_DEVICE_ID,
-  LOGIN_URL,
   BASE_API_URL,
+  LOGIN_EXPERIMENTS,
+  SIGNATURE_KEY,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
@@ -166,6 +168,150 @@ export class ThreadsAPI {
     this.userID = options?.userID;
   }
 
+  sign(payload: object | string) {
+    const json = typeof payload === 'object' ? JSON.stringify(payload) : payload;
+    const signature = crypto.createHmac('sha256', SIGNATURE_KEY).update(json).digest('hex');
+    return {
+      ig_sig_key_version: 4,
+      signed_body: `${signature}.${json}`,
+    };
+  }
+
+  syncLoginExperiments = async () => {
+    const uid = uuidv4();
+    const data = {
+      id: uid,
+      experiments: LOGIN_EXPERIMENTS,
+    };
+    try {
+      const res = await axios.post(`${BASE_API_URL}/api/v1/qe/sync/`, this.sign(data), {
+        headers: {
+          ...this._getAppHeaders(),
+          Authorization: undefined,
+          'Sec-Fetch-Site': 'same-origin',
+          'X-DEVICE-ID': uid,
+        },
+      });
+      return res;
+    } catch (error: any) {
+      if (this.verbose) {
+        console.log('[SYNC LOGIN EXPERIMENT FAILED]', error.response.data);
+      }
+      throw error;
+    }
+  };
+
+  encryptPassword = async (password: string) => {
+    // https://github.com/dilame/instagram-private-api/blob/master/src/repositories/account.repository.ts#L79
+    const randKey = crypto.randomBytes(32);
+    const iv = crypto.randomBytes(12);
+    const { headers } = await this.syncLoginExperiments();
+
+    if (this.verbose) {
+      console.log('[SYNC LOGIN EXPERIMENT HEADERS]', JSON.stringify(headers));
+    }
+
+    const passwordEncryptionKeyId: number | undefined = headers['ig-set-password-encryption-key-id'];
+    const passwordEncryptionPubKey: string | undefined = headers['ig-set-password-encryption-pub-key'];
+
+    const rsaEncrypted = crypto.publicEncrypt(
+      {
+        key: Buffer.from(passwordEncryptionPubKey || '', 'base64').toString(),
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+      },
+      randKey,
+    );
+    const cipher = crypto.createCipheriv('aes-256-gcm', randKey, iv);
+    const time = Math.floor(Date.now() / 1000).toString();
+    cipher.setAAD(Buffer.from(time));
+
+    const aesEncrypted = Buffer.concat([cipher.update(password, 'utf8'), cipher.final()]);
+    const sizeBuffer = Buffer.alloc(2, 0);
+    sizeBuffer.writeInt16LE(rsaEncrypted.byteLength, 0);
+
+    const authTag = cipher.getAuthTag();
+    return {
+      time,
+      password: Buffer.concat([
+        Buffer.from([1, passwordEncryptionKeyId || 0]),
+        iv,
+        sizeBuffer,
+        rsaEncrypted,
+        authTag,
+        aesEncrypted,
+      ]).toString('base64'),
+    };
+  };
+
+  login = async () => {
+    if (this.verbose) {
+      console.log('[LOGIN] Logging in...');
+    }
+    const encryptedPassword = await this.encryptPassword(this.password!);
+
+    const params = encodeURIComponent(
+      JSON.stringify({
+        client_input_params: {
+          password: `#PWD_INSTAGRAM:4:${encryptedPassword.time}:${encryptedPassword.password}`,
+          contact_point: this.username,
+          device_id: this.deviceID,
+        },
+        server_params: {
+          credential_type: 'password',
+          device_id: this.deviceID,
+        },
+      }),
+    );
+
+    const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
+    const bkClientContext = encodeURIComponent(
+      JSON.stringify({
+        bloks_version: blockVersion,
+        styles_id: 'instagram',
+      }),
+    );
+    const requestConfig: AxiosRequestConfig = {
+      method: 'POST',
+      headers: this._getAppHeaders(),
+      responseType: 'text',
+      data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
+    };
+
+    let { data } = await axios<string>(
+      `${BASE_API_URL}/api/v1/bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/`,
+      requestConfig,
+    );
+    data = JSON.stringify(data.replaceAll('\\', ''));
+
+    if (this.verbose) {
+      console.log('[LOGIN] Cleaned output', data);
+    }
+
+    try {
+      const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
+      const userID = data.match(/pk_id":"(\d+)/)?.[1];
+
+      if (!this.noUpdateToken) {
+        if (this.verbose) {
+          console.debug('[token] UPDATED', token);
+        }
+        this.token = token;
+      }
+
+      this.userID = userID;
+      if (this.verbose) {
+        console.debug('[userID] UPDATED', this.userID);
+      }
+
+      return { token, userID };
+    } catch (error) {
+      if (this.verbose) {
+        console.error('[LOGIN] Failed to login', error);
+      }
+      throw error;
+    }
+  };
+
   _getAppHeaders = () => ({
     'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -271,11 +417,19 @@ export class ThreadsAPI {
     if (!this.username) {
       throw new Error('username is not defined');
     }
-    this.userID = await this.getUserIDfromUsername(this.username, options);
-    if (this.verbose) {
-      console.debug('[userID] UPDATED', this.userID);
+    try {
+      this.userID = await this.getUserIDfromUsername(this.username, options);
+      if (this.verbose) {
+        console.debug('[userID] UPDATED', this.userID);
+      }
+      return this.userID;
+    } catch (e) {
+      if (this.verbose) {
+        console.error('[userID] Failed to fetch userID, Fallbacking to login', e);
+      }
+      const { userID } = await this.login();
+      return userID;
     }
-    return this.userID;
   };
 
   _requestQuery = <T extends any>(url: string, data: Record<string, string>, options?: AxiosRequestConfig) =>
@@ -447,7 +601,7 @@ export class ThreadsAPI {
   like = async (postID: string, options?: AxiosRequestConfig) => {
     const userID = await this.getCurrentUserID();
     const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
-      `${BASE_API_URL}/media/${postID}_${userID}/like/`,
+      `${BASE_API_URL}/api/v1/media/${postID}_${userID}/like/`,
       options,
     );
     return res.data.status === 'ok';
@@ -455,14 +609,14 @@ export class ThreadsAPI {
   unlike = async (postID: string, options?: AxiosRequestConfig) => {
     const userID = await this.getCurrentUserID();
     const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
-      `${BASE_API_URL}/media/${postID}_${userID}/unlike/`,
+      `${BASE_API_URL}/api/v1/media/${postID}_${userID}/unlike/`,
       options,
     );
     return res.data.status === 'ok';
   };
   follow = async (userID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
-      `${BASE_API_URL}/friendships/create/${userID}/`,
+      `${BASE_API_URL}/api/v1/friendships/create/${userID}/`,
       options,
     );
     if (this.verbose) {
@@ -472,7 +626,7 @@ export class ThreadsAPI {
   };
   unfollow = async (userID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
-      `${BASE_API_URL}/friendships/destroy/${userID}/`,
+      `${BASE_API_URL}/api/v1/friendships/destroy/${userID}/`,
       options,
     );
     if (this.verbose) {
@@ -492,44 +646,8 @@ export class ThreadsAPI {
     if (!this.username || !this.password) {
       throw new Error('Username and password are required');
     }
-
-    const params = encodeURIComponent(
-      JSON.stringify({
-        client_input_params: {
-          password: this.password,
-          contact_point: this.username,
-          device_id: `${this.deviceID}`,
-        },
-        server_params: {
-          credential_type: 'password',
-          device_id: `${this.deviceID}`,
-        },
-      }),
-    );
-
-    const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
-    const bkClientContext = encodeURIComponent(
-      JSON.stringify({
-        bloks_version: blockVersion,
-        styles_id: 'instagram',
-      }),
-    );
-    const requestConfig: AxiosRequestConfig = {
-      method: 'POST',
-      headers: this._getAppHeaders(),
-      responseType: 'text',
-      data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
-    };
-
-    const { data } = await axios<string>(LOGIN_URL, requestConfig);
-    const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
-    if (!this.noUpdateToken) {
-      if (this.verbose) {
-        console.debug('[token] UPDATED', token);
-      }
-      this.token = token;
-    }
-    return token;
+    await this.login();
+    return this.token;
   };
 
   publish = async (rawOptions: ThreadsAPIPublishOptions | string): Promise<string | undefined> => {
@@ -600,7 +718,7 @@ export class ThreadsAPI {
   };
 
   delete = async (postID: string, options?: AxiosRequestConfig): Promise<boolean> => {
-    const url = `${BASE_API_URL}/media/${postID}/delete/`;
+    const url = `${BASE_API_URL}/api/v1/media/${postID}/delete/`;
     const data = {
       media_id: postID,
       _uid: this.userID,
@@ -673,7 +791,7 @@ export class ThreadsAPI {
     const imageHeaders: any = {
       ...this._getDefaultHeaders(),
       'Content-Type': 'application/octet-stream',
-      X_FB_PHOTO_WATERFALL_ID: uuidV4(),
+      X_FB_PHOTO_WATERFALL_ID: uuidv4(),
       'X-Entity-Type': mime_type!! !== undefined ? `image/${mime_type!!}` : 'image/jpeg',
       Offset: '0',
       'X-Instagram-Rupload-Params': JSON.stringify(x_instagram_rupload_params),
