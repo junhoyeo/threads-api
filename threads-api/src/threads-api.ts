@@ -280,7 +280,7 @@ export class ThreadsAPI {
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"userID":"${userID}"}`,
+        variables: JSON.stringify({ userID }),
         doc_id: '23996318473300828',
       }),
       {
@@ -307,7 +307,7 @@ export class ThreadsAPI {
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"userID":"${userID}"}`,
+        variables: JSON.stringify({ userID }),
         doc_id: '6232751443445612',
       }),
       {
@@ -334,7 +334,7 @@ export class ThreadsAPI {
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"userID":"${userID}"}`,
+        variables: JSON.stringify({ userID }),
         doc_id: '6684830921547925',
       }),
       {
@@ -395,7 +395,7 @@ export class ThreadsAPI {
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"postID":"${postID}"}`,
+        variables: JSON.stringify({ postID }),
         doc_id: '5587632691339264',
       }),
       {
@@ -420,7 +420,7 @@ export class ThreadsAPI {
       'https://www.threads.net/api/graphql',
       new URLSearchParams({
         lsd: this.fbLSDToken,
-        variables: `{"mediaID":"${postID}"}`,
+        variables: JSON.stringify({ mediaID: postID }),
         doc_id: '9360915773983802',
       }),
       {
