@@ -122,6 +122,13 @@ export const DEFAULT_DEVICE: AndroidDevice = {
   os_release: '7.1.1',
 };
 
+interface GetUserProfile {
+  (userID: string, options?: AxiosRequestConfig): Promise<ThreadsUser>;
+
+  // deprecated
+  (username: string, userID: string, options?: AxiosRequestConfig): Promise<ThreadsUser>;
+}
+
 export class ThreadsAPI {
   verbose: boolean = false;
   token?: string = undefined;
@@ -279,7 +286,18 @@ export class ThreadsAPI {
       ...options,
     });
 
-  getUserProfile = async (_username: string | undefined, userID: string, options?: AxiosRequestConfig) => {
+  getUserProfile: GetUserProfile = async (...params) => {
+    let userID: string;
+    let options: AxiosRequestConfig | undefined;
+    if (params.length === 3) {
+      // username = params[0]
+      userID = params[1] as string;
+      options = params[2] as AxiosRequestConfig | undefined;
+    } else {
+      userID = params[0];
+      options = params[1] as AxiosRequestConfig | undefined;
+    }
+
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
