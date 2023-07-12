@@ -184,7 +184,7 @@ export class ThreadsAPI {
       experiments: LOGIN_EXPERIMENTS,
     };
     try {
-      const res = await axios.post(`${BASE_API_URL}/qe/sync/`, this.sign(data), {
+      const res = await axios.post(`${BASE_API_URL}/api/v1/qe/sync/`, this.sign(data), {
         headers: {
           ...this._getAppHeaders(),
           Authorization: undefined,
@@ -244,7 +244,6 @@ export class ThreadsAPI {
   };
 
   login = async () => {
-    const loginUrl = '/bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/';
     const encryptedPassword = await this.encryptPassword(this.password!);
 
     const params = encodeURIComponent(
@@ -275,7 +274,10 @@ export class ThreadsAPI {
       data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
     };
 
-    let { data } = await axios<string>(BASE_API_URL + loginUrl, requestConfig);
+    let { data } = await axios<string>(
+      `${BASE_API_URL}/api/v1/bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/`,
+      requestConfig,
+    );
     data = JSON.stringify(data.replaceAll('\\', ''));
 
     const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
@@ -585,7 +587,7 @@ export class ThreadsAPI {
   like = async (postID: string, options?: AxiosRequestConfig) => {
     const userID = await this.getCurrentUserID();
     const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
-      `${BASE_API_URL}/media/${postID}_${userID}/like/`,
+      `${BASE_API_URL}/api/v1/media/${postID}_${userID}/like/`,
       options,
     );
     return res.data.status === 'ok';
@@ -593,14 +595,14 @@ export class ThreadsAPI {
   unlike = async (postID: string, options?: AxiosRequestConfig) => {
     const userID = await this.getCurrentUserID();
     const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
-      `${BASE_API_URL}/media/${postID}_${userID}/unlike/`,
+      `${BASE_API_URL}/api/v1/media/${postID}_${userID}/unlike/`,
       options,
     );
     return res.data.status === 'ok';
   };
   follow = async (userID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
-      `${BASE_API_URL}/friendships/create/${userID}/`,
+      `${BASE_API_URL}/api/v1/friendships/create/${userID}/`,
       options,
     );
     if (this.verbose) {
@@ -610,7 +612,7 @@ export class ThreadsAPI {
   };
   unfollow = async (userID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
-      `${BASE_API_URL}/friendships/destroy/${userID}/`,
+      `${BASE_API_URL}/api/v1/friendships/destroy/${userID}/`,
       options,
     );
     if (this.verbose) {
@@ -702,7 +704,7 @@ export class ThreadsAPI {
   };
 
   delete = async (postID: string, options?: AxiosRequestConfig): Promise<boolean> => {
-    const url = `${BASE_API_URL}/media/${postID}/delete/`;
+    const url = `${BASE_API_URL}/api/v1/media/${postID}/delete/`;
     const data = {
       media_id: postID,
       _uid: this.userID,
