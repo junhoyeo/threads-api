@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.cdninstagram.com',
+        hostname: '**.cdninstagram.com, **.fbcdn.net',
       },
     ],
   },
