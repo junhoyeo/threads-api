@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import * as crypto from 'crypto';
 import mimeTypes from 'mrmime';
-import { v4 as uuidV4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import {
   POST_URL,
   POST_WITH_IMAGE_URL,
@@ -165,6 +166,138 @@ export class ThreadsAPI {
     this.device = options?.device;
     this.userID = options?.userID;
   }
+
+  LOGIN_EXPERIMENTS =
+    'ig_android_fci_onboarding_friend_search,ig_android_device_detection_info_upload,ig_android_account_linking_upsell_universe,ig_android_direct_main_tab_universe_v2,ig_android_allow_account_switch_once_media_upload_finish_universe,ig_android_sign_in_help_only_one_account_family_universe,ig_android_sms_retriever_backtest_universe,ig_android_direct_add_direct_to_android_native_photo_share_sheet,ig_android_spatial_account_switch_universe,ig_growth_android_profile_pic_prefill_with_fb_pic_2,ig_account_identity_logged_out_signals_global_holdout_universe,ig_android_prefill_main_account_username_on_login_screen_universe,ig_android_login_identifier_fuzzy_match,ig_android_mas_remove_close_friends_entrypoint,ig_android_shared_email_reg_universe,ig_android_video_render_codec_low_memory_gc,ig_android_custom_transitions_universe,ig_android_push_fcm,multiple_account_recovery_universe,ig_android_show_login_info_reminder_universe,ig_android_email_fuzzy_matching_universe,ig_android_one_tap_aymh_redesign_universe,ig_android_direct_send_like_from_notification,ig_android_suma_landing_page,ig_android_prefetch_debug_dialog,ig_android_smartlock_hints_universe,ig_android_black_out,ig_activation_global_discretionary_sms_holdout,ig_android_video_ffmpegutil_pts_fix,ig_android_multi_tap_login_new,ig_save_smartlock_universe,ig_android_caption_typeahead_fix_on_o_universe,ig_android_enable_keyboardlistener_redesign,ig_android_sign_in_password_visibility_universe,ig_android_nux_add_email_device,ig_android_direct_remove_view_mode_stickiness_universe,ig_android_hide_contacts_list_in_nux,ig_android_new_users_one_tap_holdout_universe,ig_android_ingestion_video_support_hevc_decoding,ig_android_mas_notification_badging_universe,ig_android_secondary_account_in_main_reg_flow_universe,ig_android_secondary_account_creation_universe,ig_android_account_recovery_auto_login,ig_android_pwd_encrytpion,ig_android_bottom_sheet_keyboard_leaks,ig_android_sim_info_upload,ig_android_mobile_http_flow_device_universe,ig_android_hide_fb_button_when_not_installed_universe,ig_android_account_linking_on_concurrent_user_session_infra_universe,ig_android_targeted_one_tap_upsell_universe,ig_android_gmail_oauth_in_reg,ig_android_account_linking_flow_shorten_universe,ig_android_vc_interop_use_test_igid_universe,ig_android_notification_unpack_universe,ig_android_registration_confirmation_code_universe,ig_android_device_based_country_verification,ig_android_log_suggested_users_cache_on_error,ig_android_reg_modularization_universe,ig_android_device_verification_separate_endpoint,ig_android_universe_noticiation_channels,ig_android_account_linking_universe,ig_android_hsite_prefill_new_carrier,ig_android_one_login_toast_universe,ig_android_retry_create_account_universe,ig_android_family_apps_user_values_provider_universe,ig_android_reg_nux_headers_cleanup_universe,ig_android_mas_ui_polish_universe,ig_android_device_info_foreground_reporting,ig_android_shortcuts_2019,ig_android_device_verification_fb_signup,ig_android_onetaplogin_optimization,ig_android_passwordless_account_password_creation_universe,ig_android_black_out_toggle_universe,ig_video_debug_overlay,ig_android_ask_for_permissions_on_reg,ig_assisted_login_universe,ig_android_security_intent_switchoff,ig_android_device_info_job_based_reporting,ig_android_add_account_button_in_profile_mas_universe,ig_android_add_dialog_when_delinking_from_child_account_universe,ig_android_passwordless_auth,ig_radio_button_universe_2,ig_android_direct_main_tab_account_switch,ig_android_recovery_one_tap_holdout_universe,ig_android_modularized_dynamic_nux_universe,ig_android_fb_account_linking_sampling_freq_universe,ig_android_fix_sms_read_lollipop,ig_android_access_flow_prefil';
+
+  sign(payload: object | string) {
+    const SIGNATURE_KEY = '9193488027538fd3450b83b7d05286d4ca9599a0f7eeed90d8c85925698a05dc';
+    const json = typeof payload === 'object' ? JSON.stringify(payload) : payload;
+    const signature = crypto.createHmac('sha256', SIGNATURE_KEY).update(json).digest('hex');
+    return {
+      ig_sig_key_version: 4,
+      signed_body: `${signature}.${json}`,
+    };
+  }
+
+  syncLoginExperiments = async () => {
+    const uid = uuidv4();
+    const data = {
+      id: uid,
+      experiments: this.LOGIN_EXPERIMENTS,
+    };
+    try {
+      const res = await axios.post(`${BASE_API_URL}/qe/sync/`, this.sign(data), {
+        headers: {
+          'User-Agent': 'Barcelona 289.0.0.77.109 Android',
+          'Sec-Fetch-Site': 'same-origin',
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          'X-DEVICE-ID': uid,
+        },
+      });
+      return res;
+    } catch (error: any) {
+      if (this.verbose) {
+        console.log('[SYNC LOGIN EXPERIMENT FAILED]', error.response.data);
+      }
+      throw error;
+    }
+  };
+
+  encryptPassword = async (password: string) => {
+    // https://github.com/dilame/instagram-private-api/blob/master/src/repositories/account.repository.ts#L79
+    const randKey = crypto.randomBytes(32);
+    const iv = crypto.randomBytes(12);
+    const { headers } = await this.syncLoginExperiments();
+
+    if (this.verbose) {
+      console.log('[SYNC LOGIN EXPERIMENT HEADERS]', JSON.stringify(headers));
+    }
+
+    const passwordEncryptionKeyId: number | undefined = headers['ig-set-password-encryption-key-id'];
+    const passwordEncryptionPubKey: string | undefined = headers['ig-set-password-encryption-pub-key'];
+
+    const rsaEncrypted = crypto.publicEncrypt(
+      {
+        key: Buffer.from(passwordEncryptionPubKey || '', 'base64').toString(),
+        padding: crypto.constants.RSA_PKCS1_PADDING,
+      },
+      randKey,
+    );
+    const cipher = crypto.createCipheriv('aes-256-gcm', randKey, iv);
+    const time = Math.floor(Date.now() / 1000).toString();
+    cipher.setAAD(Buffer.from(time));
+
+    const aesEncrypted = Buffer.concat([cipher.update(password, 'utf8'), cipher.final()]);
+    const sizeBuffer = Buffer.alloc(2, 0);
+    sizeBuffer.writeInt16LE(rsaEncrypted.byteLength, 0);
+
+    const authTag = cipher.getAuthTag();
+    return {
+      time,
+      password: Buffer.concat([
+        Buffer.from([1, passwordEncryptionKeyId || 0]),
+        iv,
+        sizeBuffer,
+        rsaEncrypted,
+        authTag,
+        aesEncrypted,
+      ]).toString('base64'),
+    };
+  };
+
+  login = async () => {
+    const loginUrl = '/bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/';
+    const encryptedPassword = await this.encryptPassword(this.password!);
+
+    const params = encodeURIComponent(
+      JSON.stringify({
+        client_input_params: {
+          password: `#PWD_INSTAGRAM:4:${encryptedPassword.time}:${encryptedPassword.password}`,
+          contact_point: this.username,
+          device_id: this.deviceID,
+        },
+        server_params: {
+          credential_type: 'password',
+          device_id: this.deviceID,
+        },
+      }),
+    );
+
+    const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
+    const bkClientContext = encodeURIComponent(
+      JSON.stringify({
+        bloks_version: blockVersion,
+        styles_id: 'instagram',
+      }),
+    );
+    const requestConfig: AxiosRequestConfig = {
+      method: 'POST',
+      headers: this._getAppHeaders(),
+      responseType: 'text',
+      data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
+    };
+
+    let { data } = await axios<string>(BASE_API_URL + loginUrl, requestConfig);
+    data = JSON.stringify(data.replaceAll('\\', ''));
+
+    const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
+    const userID = data.match(/pk_id":"(\d+)/)?.[1];
+
+    if (!this.noUpdateToken) {
+      if (this.verbose) {
+        console.debug('[token] UPDATED', token);
+      }
+      this.token = token;
+    }
+
+    this.userID = userID;
+    if (this.verbose) {
+      console.debug('[userID] UPDATED', this.userID);
+    }
+
+    return { token, userID };
+  };
 
   _getAppHeaders = () => ({
     'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
@@ -673,7 +806,7 @@ export class ThreadsAPI {
     const imageHeaders: any = {
       ...this._getDefaultHeaders(),
       'Content-Type': 'application/octet-stream',
-      X_FB_PHOTO_WATERFALL_ID: uuidV4(),
+      X_FB_PHOTO_WATERFALL_ID: uuidv4(),
       'X-Entity-Type': mime_type!! !== undefined ? `image/${mime_type!!}` : 'image/jpeg',
       Offset: '0',
       'X-Instagram-Rupload-Params': JSON.stringify(x_instagram_rupload_params),
