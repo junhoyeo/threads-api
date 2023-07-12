@@ -625,44 +625,8 @@ export class ThreadsAPI {
     if (!this.username || !this.password) {
       throw new Error('Username and password are required');
     }
-
-    const params = encodeURIComponent(
-      JSON.stringify({
-        client_input_params: {
-          password: this.password,
-          contact_point: this.username,
-          device_id: `${this.deviceID}`,
-        },
-        server_params: {
-          credential_type: 'password',
-          device_id: `${this.deviceID}`,
-        },
-      }),
-    );
-
-    const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
-    const bkClientContext = encodeURIComponent(
-      JSON.stringify({
-        bloks_version: blockVersion,
-        styles_id: 'instagram',
-      }),
-    );
-    const requestConfig: AxiosRequestConfig = {
-      method: 'POST',
-      headers: this._getAppHeaders(),
-      responseType: 'text',
-      data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
-    };
-
-    const { data } = await axios<string>(LOGIN_URL, requestConfig);
-    const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
-    if (!this.noUpdateToken) {
-      if (this.verbose) {
-        console.debug('[token] UPDATED', token);
-      }
-      this.token = token;
-    }
-    return token;
+    await this.login();
+    return this.token;
   };
 
   publish = async (rawOptions: ThreadsAPIPublishOptions | string): Promise<string | undefined> => {
