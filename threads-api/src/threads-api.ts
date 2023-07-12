@@ -244,6 +244,9 @@ export class ThreadsAPI {
   };
 
   login = async () => {
+    if (this.verbose) {
+      console.log('[LOGIN] Logging in...');
+    }
     const encryptedPassword = await this.encryptPassword(this.password!);
 
     const params = encodeURIComponent(
@@ -280,22 +283,33 @@ export class ThreadsAPI {
     );
     data = JSON.stringify(data.replaceAll('\\', ''));
 
-    const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
-    const userID = data.match(/pk_id":"(\d+)/)?.[1];
-
-    if (!this.noUpdateToken) {
-      if (this.verbose) {
-        console.debug('[token] UPDATED', token);
-      }
-      this.token = token;
-    }
-
-    this.userID = userID;
     if (this.verbose) {
-      console.debug('[userID] UPDATED', this.userID);
+      console.log('[LOGIN] Cleaned output', data);
     }
 
-    return { token, userID };
+    try {
+      const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
+      const userID = data.match(/pk_id":"(\d+)/)?.[1];
+
+      if (!this.noUpdateToken) {
+        if (this.verbose) {
+          console.debug('[token] UPDATED', token);
+        }
+        this.token = token;
+      }
+
+      this.userID = userID;
+      if (this.verbose) {
+        console.debug('[userID] UPDATED', this.userID);
+      }
+
+      return { token, userID };
+    } catch (error) {
+      if (this.verbose) {
+        console.error('[LOGIN] Failed to login', error);
+      }
+      throw error;
+    }
   };
 
   _getAppHeaders = () => ({
