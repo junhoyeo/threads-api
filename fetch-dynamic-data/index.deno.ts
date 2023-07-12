@@ -1,6 +1,6 @@
 // * Run this file to fetch dynamic data (such as app versions) and save it to the api
 // * This allows user agent formulating to be more accurate and less likely to be detected
-//? RUN COMMAND: deno run --allow-read --allow-write --allow-env --allow-net index.ts
+//? RUN COMMAND: deno run --allow-read --allow-write --allow-env --allow-net index.deno.ts
 import * as path from 'https://deno.land/std@0.177.0/path/mod.ts';
 
 let androidData = await fetch('https://m.apkpure.com/threads-an-instagram-app/com.instagram.barcelona', {
