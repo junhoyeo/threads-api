@@ -7,7 +7,7 @@ test('getUserProfile', async () => {
   const userID = '5438123050';
 
   // when
-  const user = await threadsAPI.getUserProfile(username, userID);
+  const user = await threadsAPI.getUserProfile(userID);
 
   // then
   expect(user.username).toBe(username);
