@@ -107,6 +107,7 @@ export type ThreadsAPIOptions = {
   deviceID?: string;
   device?: AndroidDevice;
   userID?: string;
+  locale?: string;
 };
 
 export type ThreadsAPIPublishOptions =
@@ -149,6 +150,8 @@ export class ThreadsAPI {
 
   userID: string | undefined = undefined;
 
+  locale?: string | undefined = undefined;
+
   constructor(options?: ThreadsAPIOptions) {
     if (options?.token) this.token = options.token;
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
@@ -166,6 +169,13 @@ export class ThreadsAPI {
     if (options?.deviceID) this.deviceID = options.deviceID;
     this.device = options?.device;
     this.userID = options?.userID;
+
+    if (options?.locale) {
+      this.locale = options.locale;
+    } else {
+      const detectedLocale: string = Intl.DateTimeFormat().resolvedOptions().locale;
+      this.locale = detectedLocale;
+    }
   }
 
   sign(payload: object | string) {
@@ -322,7 +332,7 @@ export class ThreadsAPI {
     ...this._getAppHeaders(),
     authority: 'www.threads.net',
     accept: '*/*',
-    'accept-language': 'ko',
+    'accept-language': this.locale,
     'cache-control': 'no-cache',
     origin: 'https://www.threads.net',
     pragma: 'no-cache',
