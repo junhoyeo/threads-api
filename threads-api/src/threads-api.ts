@@ -122,11 +122,11 @@ export const DEFAULT_DEVICE: AndroidDevice = {
   os_release: '7.1.1',
 };
 
-interface GetUserProfile {
-  (userID: string, options?: AxiosRequestConfig): Promise<ThreadsUser>;
+interface UserIDQuerier<T extends any> {
+  (userID: string, options?: AxiosRequestConfig): Promise<T>;
 
   // deprecated
-  (username: string, userID: string, options?: AxiosRequestConfig): Promise<ThreadsUser>;
+  (username: string, userID: string, options?: AxiosRequestConfig): Promise<T>;
 }
 
 export class ThreadsAPI {
@@ -286,18 +286,25 @@ export class ThreadsAPI {
       ...options,
     });
 
-  getUserProfile: GetUserProfile = async (...params) => {
+  _destructureFromUserIDQuerier = (params: any) => {
+    const typedParams = params as
+      | [string, AxiosRequestConfig | undefined]
+      | [string, string, AxiosRequestConfig | undefined];
     let userID: string;
     let options: AxiosRequestConfig | undefined;
-    if (params.length === 3) {
-      // username = params[0]
-      userID = params[1] as string;
-      options = params[2] as AxiosRequestConfig | undefined;
+    if (typedParams.length === 3) {
+      // username = typedParams[0]
+      userID = typedParams[1];
+      options = typedParams[2];
     } else {
-      userID = params[0];
-      options = params[1] as AxiosRequestConfig | undefined;
+      userID = typedParams[0];
+      options = typedParams[1];
     }
+    return { userID, options };
+  };
 
+  getUserProfile: UserIDQuerier<ThreadsUser> = async (...params) => {
+    const { userID, options } = this._destructureFromUserIDQuerier(params);
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
@@ -315,7 +322,8 @@ export class ThreadsAPI {
     return user;
   };
 
-  getUserProfileThreads = async (username: string, userID: string, options?: AxiosRequestConfig) => {
+  getUserProfileThreads: UserIDQuerier<Thread[]> = async (...params) => {
+    const { userID, options } = this._destructureFromUserIDQuerier(params);
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
@@ -333,7 +341,8 @@ export class ThreadsAPI {
     return threads;
   };
 
-  getUserProfileReplies = async (username: string, userID: string, options?: AxiosRequestConfig) => {
+  getUserProfileReplies: UserIDQuerier<Thread[]> = async (...params) => {
+    const { userID, options } = this._destructureFromUserIDQuerier(params);
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
