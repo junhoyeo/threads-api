@@ -1,9 +1,10 @@
-"use client";
-import { AppProps } from "next/app";
-import { GlobalStyle } from "@/components/GlobalStyle";
-import "./globals.css";
+'use client';
 
-export default function Home({ Component, pageProps }: AppProps) {
+import { AppProps } from 'next/app';
+import { GlobalStyle } from '@/components/GlobalStyle';
+import './globals.css';
+
+export default function Home() {
   return (
     <>
       <GlobalStyle />
@@ -13,9 +14,7 @@ export default function Home({ Component, pageProps }: AppProps) {
             Making Threads <br />
             Work in Code
           </h1>
-          <p className="text-slate-400">
-            Unofficial, Reverse-Engineered Clients for Threads.
-          </p>
+          <p className="text-slate-400">Unofficial, Reverse-Engineered Clients for Threads.</p>
         </header>
 
         <div className="bg-[rgba(243,245,247,0.15)] w-[200px] h-[200px] rounded-[30px]"></div>

@@ -1,13 +1,9 @@
-import Image from "next/image";
-import React from "react";
-import { Thread, ThreadsIcons } from "react-threads";
-import { ThreadsAPI } from "threads-api";
+import Image from 'next/image';
+import React from 'react';
+import { Thread, ThreadsIcons } from 'react-threads';
+import { ThreadsAPI } from 'threads-api';
 
-const UserProfilePage = async ({
-  params,
-}: {
-  params: { username: string };
-}) => {
+const UserProfilePage = async ({ params }: { params: { username: string } }) => {
   const threadsAPI = new ThreadsAPI();
   const username = params.username;
 
@@ -20,11 +16,11 @@ const UserProfilePage = async ({
     return <div>No user with the given username</div>;
   }
 
-  const values: [string, string] = [username, userID];
+  const userInfo: [string, string] = [username, userID];
 
   const [userProfile, userThreads] = await Promise.all([
-    threadsAPI.getUserProfile(...values),
-    threadsAPI.getUserProfileThreads(...values),
+    threadsAPI.getUserProfile(...userInfo),
+    threadsAPI.getUserProfileThreads(...userInfo),
   ]);
 
   return (
@@ -33,12 +29,8 @@ const UserProfilePage = async ({
         <div className="flex items-center">
           <div className="flex flex-col flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-[24px] leading-[30px] font-bold">
-                {userProfile.full_name}
-              </span>
-              {userProfile.is_verified && (
-                <ThreadsIcons.Verified width={20} height={20} />
-              )}
+              <span className="text-[24px] leading-[30px] font-bold">{userProfile.full_name}</span>
+              {userProfile.is_verified && <ThreadsIcons.Verified width={20} height={20} />}
             </div>
             <div className="flex items-center gap-1 mt-[2px]">
               <span className="text-[15px]">{userProfile.username}</span>
@@ -57,9 +49,7 @@ const UserProfilePage = async ({
           />
         </div>
 
-        <p className="mt-4 whitespace-break-spaces text-[15px] leading-[21px]">
-          {userProfile.biography}
-        </p>
+        <p className="mt-4 whitespace-break-spaces text-[15px] leading-[21px]">{userProfile.biography}</p>
 
         <div className="mt-[18px] text-[15px] leading-[21px] text-[rgb(97,97,97)]">
           <span>{userProfile.follower_count.toLocaleString()} followers</span>
