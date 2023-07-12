@@ -404,11 +404,19 @@ export class ThreadsAPI {
     if (!this.username) {
       throw new Error('username is not defined');
     }
-    this.userID = await this.getUserIDfromUsername(this.username, options);
-    if (this.verbose) {
-      console.debug('[userID] UPDATED', this.userID);
+    try {
+      this.userID = await this.getUserIDfromUsername(this.username, options);
+      if (this.verbose) {
+        console.debug('[userID] UPDATED', this.userID);
+      }
+      return this.userID;
+    } catch (e) {
+      if (this.verbose) {
+        console.error('[userID] Failed to fetch userID, Fallbacking to login', e);
+      }
+      const { userID } = await this.login();
+      return userID;
     }
-    return this.userID;
   };
 
   _requestQuery = <T extends any>(url: string, data: Record<string, string>, options?: AxiosRequestConfig) =>
