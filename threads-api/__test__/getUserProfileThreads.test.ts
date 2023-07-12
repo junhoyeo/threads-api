@@ -3,11 +3,10 @@ import { ThreadsAPI } from '../src/threads-api';
 test('getUserProfileThreads', async () => {
   // given
   const threadsAPI = new ThreadsAPI();
-  const username = '_junhoyeo';
   const userID = '5438123050';
 
   // when
-  const posts = await threadsAPI.getUserProfileThreads(username, userID);
+  const posts = await threadsAPI.getUserProfileThreads(userID);
 
   // then
   expect(Array.isArray(posts)).toBe(true);

@@ -35,7 +35,7 @@ describe('getUserIDfromUsername', () => {
         const latestLSDToken = threadsAPI.fbLSDToken;
 
         // when
-        await threadsAPI.getUserProfile('_junhoyeo', '5438123050');
+        await threadsAPI.getUserProfile('5438123050');
 
         // then
         const call = mockAxios.mock.calls[0];
