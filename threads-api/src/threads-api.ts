@@ -442,17 +442,20 @@ export class ThreadsAPI {
 
   _destructureFromUserIDQuerier = (params: any) => {
     const typedParams = params as
+      | [string]
       | [string, AxiosRequestConfig | undefined]
-      | [string, string, AxiosRequestConfig | undefined];
+      | [string, string] // old
+      | [string, string, AxiosRequestConfig | undefined]; // old
     let userID: string;
     let options: AxiosRequestConfig | undefined;
-    if (typedParams.length === 3) {
+    if (typeof typedParams[0] === 'string' && typeof typedParams[1] === 'string') {
+      // old
       // username = typedParams[0]
       userID = typedParams[1];
       options = typedParams[2];
     } else {
       userID = typedParams[0];
-      options = typedParams[1];
+      options = typedParams[1] as AxiosRequestConfig | undefined;
     }
     return { userID, options };
   };
