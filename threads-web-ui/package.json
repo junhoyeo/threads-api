@@ -16,7 +16,7 @@
     "clsx": "^1.2.1",
     "emotion-reset": "^3.0.1",
     "lucide-react": "^0.258.0",
-    "next": "13.4.4",
+    "next": "^13.4.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-is": "^18.2.0",
