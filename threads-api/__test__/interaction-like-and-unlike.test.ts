@@ -16,7 +16,6 @@ describeIf(!!credentials)('Like/Unlike', () => {
 
       // given
       const threadURL = 'https://www.threads.net/t/CugDXa1hMza';
-      const userID = (await threadsAPI.getUserIDfromUsername(threadsAPI.username || '')) || '';
       const postID = (await threadsAPI.getPostIDfromURL(threadURL)) || '';
 
       // like
