@@ -108,6 +108,7 @@ export type ThreadsAPIOptions = {
   device?: AndroidDevice;
   userID?: string;
   locale?: string;
+  maxRetries?: number;
 };
 
 export type ThreadsAPIPublishOptions =
@@ -152,6 +153,8 @@ export class ThreadsAPI {
 
   locale?: string | undefined = undefined;
 
+  maxRetries?: number = 1;
+
   constructor(options?: ThreadsAPIOptions) {
     if (options?.token) this.token = options.token;
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
@@ -176,6 +179,8 @@ export class ThreadsAPI {
       const detectedLocale: string = Intl.DateTimeFormat().resolvedOptions().locale;
       this.locale = detectedLocale;
     }
+
+    this.maxRetries = options?.maxRetries || this.maxRetries;
   }
 
   sign(payload: object | string) {
@@ -254,72 +259,91 @@ export class ThreadsAPI {
   };
 
   login = async () => {
-    if (this.verbose) {
-      console.log('[LOGIN] Logging in...');
-    }
-    const encryptedPassword = await this.encryptPassword(this.password!);
+    let retries = 0;
 
-    const params = encodeURIComponent(
-      JSON.stringify({
-        client_input_params: {
-          password: `#PWD_INSTAGRAM:4:${encryptedPassword.time}:${encryptedPassword.password}`,
-          contact_point: this.username,
-          device_id: this.deviceID,
-        },
-        server_params: {
-          credential_type: 'password',
-          device_id: this.deviceID,
-        },
-      }),
-    );
+    const _login = async () => {
+      if (this.verbose) {
+        console.log('[LOGIN] Logging in...');
+      }
+      const encryptedPassword = await this.encryptPassword(this.password!);
 
-    const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
-    const bkClientContext = encodeURIComponent(
-      JSON.stringify({
-        bloks_version: blockVersion,
-        styles_id: 'instagram',
-      }),
-    );
-    const requestConfig: AxiosRequestConfig = {
-      method: 'POST',
-      headers: this._getAppHeaders(),
-      responseType: 'text',
-      data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
+      const params = encodeURIComponent(
+        JSON.stringify({
+          client_input_params: {
+            password: `#PWD_INSTAGRAM:4:${encryptedPassword.time}:${encryptedPassword.password}`,
+            contact_point: this.username,
+            device_id: this.deviceID,
+          },
+          server_params: {
+            credential_type: 'password',
+            device_id: this.deviceID,
+          },
+        }),
+      );
+
+      const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
+      const bkClientContext = encodeURIComponent(
+        JSON.stringify({
+          bloks_version: blockVersion,
+          styles_id: 'instagram',
+        }),
+      );
+      const requestConfig: AxiosRequestConfig = {
+        method: 'POST',
+        headers: this._getAppHeaders(),
+        responseType: 'text',
+        data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
+      };
+
+      let { data } = await axios<string>(
+        `${BASE_API_URL}/api/v1/bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/`,
+        requestConfig,
+      );
+      data = JSON.stringify(data.replaceAll('\\', ''));
+
+      if (this.verbose) {
+        console.log('[LOGIN] Cleaned output', data);
+      }
+
+      try {
+        const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
+        const userID = data.match(/pk_id":"(\d+)/)?.[1];
+
+        if (!this.noUpdateToken) {
+          if (this.verbose) {
+            console.debug('[token] UPDATED', token);
+          }
+          this.token = token;
+        }
+
+        this.userID = userID;
+        if (this.verbose) {
+          console.debug('[userID] UPDATED', this.userID);
+        }
+
+        return { token, userID };
+      } catch (error) {
+        if (this.verbose) {
+          console.error('[LOGIN] Failed to login', error);
+        }
+        throw error;
+      }
     };
 
-    let { data } = await axios<string>(
-      `${BASE_API_URL}/api/v1/bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/`,
-      requestConfig,
-    );
-    data = JSON.stringify(data.replaceAll('\\', ''));
-
-    if (this.verbose) {
-      console.log('[LOGIN] Cleaned output', data);
-    }
-
-    try {
-      const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
-      const userID = data.match(/pk_id":"(\d+)/)?.[1];
-
-      if (!this.noUpdateToken) {
+    // try to login maxRetries times
+    while (retries < this.maxRetries!) {
+      try {
+        return _login();
+      } catch (error) {
         if (this.verbose) {
-          console.debug('[token] UPDATED', token);
+          console.error(`[LOGIN] Failed to login, retrying... (${retries + 1}/${this.maxRetries})`);
+          throw error;
         }
-        this.token = token;
+        retries++;
       }
-
-      this.userID = userID;
-      if (this.verbose) {
-        console.debug('[userID] UPDATED', this.userID);
-      }
-
-      return { token, userID };
-    } catch (error) {
-      if (this.verbose) {
-        console.error('[LOGIN] Failed to login', error);
-      }
-      throw error;
     }
+
+    throw new Error(`[LOGIN] Failed to login after ${this.maxRetries} retries`);
   };
 
   _getAppHeaders = () => ({
