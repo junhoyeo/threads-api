@@ -339,6 +339,8 @@ export class ThreadsAPI {
           console.error(`[LOGIN] Failed to login, retrying... (${retries + 1}/${this.maxRetries})`);
           throw error;
         }
+        const delay = Math.pow(2, retries) * 1000; // exponential backoff with base 2
+        await new Promise((resolve) => setTimeout(resolve, delay));
         retries++;
       }
     }
