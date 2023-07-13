@@ -543,8 +543,6 @@ export class ThreadsAPI {
     return threads;
   };
 
-  // Supports pagination
-  // nextCursor returns null if no more posts
   getUserProfileThreadsLoggedIn: PaginationUserIDQuerier<{
     threads: Thread[];
     nextCursor?: string;
@@ -596,8 +594,6 @@ export class ThreadsAPI {
     return threads;
   };
 
-  // Supports pagination
-  // nextCursor returns null if no more posts
   getUserProfileRepliesLoggedIn: PaginationUserIDQuerier<{
     threads: Thread[];
     nextCursor?: string;
