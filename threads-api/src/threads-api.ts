@@ -2,8 +2,15 @@ import axios, { AxiosRequestConfig } from 'axios';
 import * as crypto from 'crypto';
 import mimeTypes from 'mrmime';
 import { v4 as uuidv4 } from 'uuid';
-import { POST_URL, POST_WITH_IMAGE_URL, DEFAULT_LSD_TOKEN, DEFAULT_DEVICE_ID, BASE_API_URL, LOGIN_EXPERIMENTS, SIGNATURE_KEY } from './constants';
-import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
+import {
+  POST_URL,
+  POST_WITH_IMAGE_URL,
+  DEFAULT_LSD_TOKEN,
+  DEFAULT_DEVICE_ID,
+  BASE_API_URL,
+  LOGIN_EXPERIMENTS,
+  SIGNATURE_KEY,
+} from './constants';import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
 
 
