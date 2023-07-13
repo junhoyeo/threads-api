@@ -602,9 +602,9 @@ export class ThreadsAPI {
     userID,
     maxID = '',
     options = {},
-  ): Promise<{ threads: Thread[]; nextMaxID?: string | null; error?: string }> => {
+  ): Promise<{ threads: Thread[]; nextCursor?: string; success: boolean; error?: string }> => {
     if (!this.token) {
-      return { error: 'Not logged in.', threads: [] };
+      return { success: false, error: 'Not logged in.', threads: [] };
     }
 
     const result = await axios.get(
@@ -619,10 +619,10 @@ export class ThreadsAPI {
     );
 
     if (result.data.status !== 'ok') {
-      return { error: result.data.error_title, threads: [] };
+      return { success: false, error: result.data.error_title, threads: [] };
     }
 
-    return { threads: result.data.threads, nextMaxID: result.data.next_max_id };
+    return { success: true, threads: result.data.threads, nextCursor: result.data.next_max_id };
   };
 
   getPostIDfromThreadID = async (
