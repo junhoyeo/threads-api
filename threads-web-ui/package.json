@@ -11,11 +11,8 @@
     "format": "prettier --write \"**/*.js\" \"**/*.ts\" \"**/*.tsx\" \"**/*.css\" \"./app/**/*.js\" \"./app/**/*.ts\" \"./app/**/*.tsx\" \"./app/**/*.css\""
   },
   "dependencies": {
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
     "class-variance-authority": "^0.6.1",
     "clsx": "^1.2.1",
-    "emotion-reset": "^3.0.1",
     "lucide-react": "^0.258.0",
     "next": "13.4.9",
     "prettier": "^3.0.0",

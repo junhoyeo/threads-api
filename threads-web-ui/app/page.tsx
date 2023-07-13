@@ -1,13 +1,8 @@
-'use client';
-
-import { AppProps } from 'next/app';
-import { GlobalStyle } from '@/components/GlobalStyle';
 import './globals.css';
 
 export default function Home() {
   return (
     <>
-      <GlobalStyle />
       <div className="flex flex-col items-center">
         <header className="flex flex-col gap-5 pt-[64px] pb-12 px-4 items-center rounded-3xl">
           <h1 className="text-6xl font-black tracking-tight text-center">
