@@ -2,12 +2,13 @@
   "name": "threads-web-ui",
   "version": "1.0.0",
   "private": true,
-  "repository": "https://github.com/junhoyeo/threads-web-ui",
+  "repository": "",
   "author": "Junho Yeo <i@junho.io>",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "format": "prettier --write \"**/*.js\" \"**/*.ts\" \"**/*.tsx\" \"**/*.css\" \"./app/**/*.js\" \"./app/**/*.ts\" \"./app/**/*.tsx\" \"./app/**/*.css\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -16,14 +17,15 @@
     "clsx": "^1.2.1",
     "emotion-reset": "^3.0.1",
     "lucide-react": "^0.258.0",
-    "next": "^13.4.4",
+    "next": "13.4.9",
+    "prettier": "^3.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-is": "^18.2.0",
     "react-threads": "^1.0.6",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6",
-    "threads-api": "^1.0.3"
+    "threads-api": "^1.3.1"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^13.4.8",
