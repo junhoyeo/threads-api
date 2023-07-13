@@ -133,6 +133,10 @@ interface UserIDQuerier<T extends any> {
   (username: string, userID: string, options?: AxiosRequestConfig): Promise<T>;
 }
 
+interface PaginationUserIDQuerier<T extends any> {
+  (userID: string, cursor?: string, options?: AxiosRequestConfig): Promise<T>;
+}
+
 export class ThreadsAPI {
   verbose: boolean = false;
   token?: string = undefined;
@@ -351,7 +355,8 @@ export class ThreadsAPI {
   _getAppHeaders = () => ({
     'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-    ...(this.token ? { Authorization: `Bearer IGT:2:${this.token}` } : undefined),
+    ...(this.token && { Authorization: `Bearer IGT:2:${this.token}` }),
+    ...(this.userID && { 'Ig-U-Ds-User-Id': this.userID, 'Ig-Intended-User-Id': this.userID }),
   });
 
   _getDefaultHeaders = (username?: string) => ({
@@ -534,6 +539,40 @@ export class ThreadsAPI {
     return threads;
   };
 
+  // Supports pagination
+  // nextCursor returns null if no more posts
+  getUserProfileThreadsLoggedIn: PaginationUserIDQuerier<{
+    threads: Thread[];
+    nextCursor?: string;
+    success: boolean;
+    error?: string;
+  }> = async (
+    userID,
+    cursor = '',
+    options = {},
+  ): Promise<{ threads: Thread[]; nextCursor?: string; success: boolean; error?: string }> => {
+    if (!this.token) {
+      return { success: false, error: 'Not logged in.', threads: [] };
+    }
+
+    const result = await axios.get(
+      `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/${cursor && `?max_id=${cursor}`}`,
+      {
+        ...options,
+        headers: {
+          ...this._getAppHeaders(),
+          ...options?.headers,
+        },
+      },
+    );
+
+    if (result.data.status !== 'ok') {
+      return { success: false, error: result.data.error_title, threads: [] };
+    }
+
+    return { success: true, threads: result.data.threads, nextCursor: result.data.next_max_id };
+  };
+
   getUserProfileReplies: UserIDQuerier<Thread[]> = async (...params) => {
     const { userID, options } = this._destructureFromUserIDQuerier(params);
     if (this.verbose) {
@@ -551,6 +590,39 @@ export class ThreadsAPI {
     );
     const threads = res.data.data?.mediaData?.threads || [];
     return threads;
+  };
+
+  // Supports pagination
+  // nextCursor returns null if no more posts
+  getUserProfileRepliesLoggedIn: PaginationUserIDQuerier<{
+    threads: Thread[];
+    nextCursor?: string;
+    error?: string;
+  }> = async (
+    userID,
+    maxID = '',
+    options = {},
+  ): Promise<{ threads: Thread[]; nextMaxID?: string | null; error?: string }> => {
+    if (!this.token) {
+      return { error: 'Not logged in.', threads: [] };
+    }
+
+    const result = await axios.get(
+      `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${maxID && `?max_id=${maxID}`}`,
+      {
+        ...options,
+        headers: {
+          ...this._getAppHeaders(),
+          ...options?.headers,
+        },
+      },
+    );
+
+    if (result.data.status !== 'ok') {
+      return { error: result.data.error_title, threads: [] };
+    }
+
+    return { threads: result.data.threads, nextMaxID: result.data.next_max_id };
   };
 
   getPostIDfromThreadID = async (
