@@ -666,7 +666,7 @@ export class ThreadsAPI {
   publish = async (rawOptions: ThreadsAPIPublishOptions | string): Promise<string | undefined> => {
     const options: ThreadsAPIPublishOptions =
       typeof rawOptions === 'string' ? { text: rawOptions } : rawOptions;
-    if (!this.username || !this.password) {
+    if (!this.token && (!this.username || !this.password)) {
       throw new Error('Username or password not set');
     }
 
