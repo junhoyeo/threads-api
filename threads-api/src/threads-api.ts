@@ -2,17 +2,10 @@ import axios, { AxiosRequestConfig } from 'axios';
 import * as crypto from 'crypto';
 import mimeTypes from 'mrmime';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  POST_URL,
-  POST_WITH_IMAGE_URL,
-  DEFAULT_LSD_TOKEN,
-  DEFAULT_DEVICE_ID,
-  BASE_API_URL,
-  LOGIN_EXPERIMENTS,
-  SIGNATURE_KEY,
-} from './constants';
+import { POST_URL, POST_WITH_IMAGE_URL, DEFAULT_LSD_TOKEN, DEFAULT_DEVICE_ID, BASE_API_URL, LOGIN_EXPERIMENTS, SIGNATURE_KEY } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
+
 
 export type AndroidDevice = {
   manufacturer: string;
@@ -356,6 +349,10 @@ export class ThreadsAPI {
     'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
     ...(this.token && { Authorization: `Bearer IGT:2:${this.token}` }),
+  });
+
+  _getInstaHeaders = () => ({
+    ...this._getAppHeaders(),
     ...(this.userID && { 'Ig-U-Ds-User-Id': this.userID, 'Ig-Intended-User-Id': this.userID }),
   });
 
@@ -560,7 +557,7 @@ export class ThreadsAPI {
       {
         ...options,
         headers: {
-          ...this._getAppHeaders(),
+          ...this._getInstaHeaders(),
           ...options?.headers,
         },
       },
@@ -612,7 +609,7 @@ export class ThreadsAPI {
       {
         ...options,
         headers: {
-          ...this._getAppHeaders(),
+          ...this._getInstaHeaders(),
           ...options?.headers,
         },
       },
