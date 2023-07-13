@@ -1,3 +1,5 @@
 {
-  "ignoredFiles": [".github/emojis/*"]
+  "ignoredFiles": [
+    ".github/emojis/*"
+  ]
 }

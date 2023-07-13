@@ -825,6 +825,10 @@ Commands:
 
 </div>
 
+### [🤖 `thread-year-prog-bot`: Bot weaving the fabric of time](https://github.com/SethuSenthil/thread-year-prog-bot)
+
+ <img src="https://raw.githubusercontent.com/SethuSenthil/thread-year-prog-bot/main/assets/full-preview.PNG" height="600">
+
 ## License
 
 <p align="center">
