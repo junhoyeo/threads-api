@@ -10,9 +10,9 @@ import {
   BASE_API_URL,
   LOGIN_EXPERIMENTS,
   SIGNATURE_KEY,
-} from './constants';import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
+} from './constants';
+import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
-
 
 export type AndroidDevice = {
   manufacturer: string;
