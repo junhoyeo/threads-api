@@ -774,39 +774,25 @@ export class ThreadsAPI {
     return data;
   };
 
-  getPostIDfromThreadID = async (
-    threadID: string,
-    options?: AxiosRequestConfig,
-  ): Promise<string | undefined> => {
+  getPostIDfromThreadID = (threadID: string): string => {
     threadID = threadID.split('?')[0];
     threadID = threadID.replace(/\s/g, '');
     threadID = threadID.replace(/\//g, '');
-    const postURL = `https://www.threads.net/t/${threadID}`;
-    return this.getPostIDfromURL(postURL, options);
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    let postID = 0n;
+    for (const letter of threadID) {
+      postID = postID * 64n + BigInt(alphabet.indexOf(letter));
+    }
+    return postID.toString();
   };
 
-  getPostIDfromURL = async (postURL: string, options?: AxiosRequestConfig): Promise<string | undefined> => {
-    const res = await axios.get(postURL, {
-      ...options,
-      httpAgent: this.httpAgent,
-      httpsAgent: this.httpsAgent,
-    });
-
-    let text: string = res.data;
-    text = text.replace(/\s/g, '');
-    text = text.replace(/\n/g, '');
-
-    const postID: string | undefined = text.match(/{"post_id":"(.*?)"}/)?.[1];
-    const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
-
-    if (!this.noUpdateLSD && !!lsdToken) {
-      this.fbLSDToken = lsdToken;
-      if (this.verbose) {
-        console.debug('[fbLSDToken] UPDATED', this.fbLSDToken);
-      }
+  getPostIDfromURL = (postURL: string): string => {
+    let threadID = postURL?.split('?')[0];
+    if (threadID?.endsWith('/')) {
+      threadID = threadID.slice(0, -1);
     }
-
-    return postID;
+    threadID = threadID?.split('/').pop() || '';
+    return this.getPostIDfromThreadID((threadID as any) || '');
   };
 
   getThreads = async (postID: string, options?: AxiosRequestConfig) => {

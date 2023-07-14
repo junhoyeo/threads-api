@@ -11,7 +11,7 @@ describe('getPostIDfromThreadID', () => {
       const threadID = 'CuX_UYABrr7';
 
       // when
-      postID = await threadsAPI.getPostIDfromThreadID(threadID);
+      postID = threadsAPI.getPostIDfromThreadID(threadID);
     });
 
     it('should return postID', async () => {
