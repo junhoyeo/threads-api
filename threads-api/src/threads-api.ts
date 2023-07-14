@@ -247,7 +247,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[SYNC LOGIN EXPERIMENT FAILED]', error.response.data);
       }
-      throw error;
+      throw Error('Sync login experiment failed');
     }
   };
 
@@ -361,7 +361,7 @@ export class ThreadsAPI {
         if (this.verbose) {
           console.error('[LOGIN] Failed to login', error);
         }
-        throw error;
+        throw Error('Login Failed');
       }
     };
 
@@ -372,7 +372,6 @@ export class ThreadsAPI {
       } catch (error) {
         if (this.verbose) {
           console.error(`[LOGIN] Failed to login, retrying... (${retries + 1}/${this.maxRetries})`);
-          throw error;
         }
         const delay = Math.pow(2, retries) * 1000; // exponential backoff with base 2
         await new Promise((resolve) => setTimeout(resolve, delay));
@@ -603,7 +602,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[USER FEED] Failed to fetch', res.data);
       }
-      throw Error('Failed to fetch user feed: ' + JSON.stringify(res.data));
+      throw new Error('Failed to fetch user feed: ' + JSON.stringify(res.data));
     }
     return res.data;
   };
@@ -647,7 +646,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[USER FEED] Failed to fetch', res.data);
       }
-      throw Error('Failed to fetch user feed: ' + JSON.stringify(res.data));
+      throw new Error('Failed to fetch user feed: ' + JSON.stringify(res.data));
     }
     return res.data;
   };
@@ -975,7 +974,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log(`[UPLOAD_IMAGE] FAILED`, error.response.data);
       }
-      throw error;
+      throw Error('Upload image failed');
     }
   };
 }
