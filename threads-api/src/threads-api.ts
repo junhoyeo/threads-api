@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as crypto from 'crypto';
+import 'dotenv/config';
 import mimeTypes from 'mrmime';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -170,10 +171,20 @@ export class ThreadsAPI {
     this.httpAgent = options?.httpAgent;
     this.httpsAgent = options?.httpsAgent;
 
-    this.username = options?.username;
-    this.password = options?.password;
+    this.username = options?.username ?? process.env.THREADS_USERNAME;
+    this.password = options?.password ?? process.env.THREADS_PASSWORD;
 
     if (options?.deviceID) this.deviceID = options.deviceID;
+    if (process.env.THREADS_DEVICE_ID) this.deviceID = process.env.THREADS_DEVICE_ID;
+
+    if (options?.deviceID ?? process.env.THREADS_DEVICE_ID) {
+      console.warn(
+        `⚠️ WARNING: deviceID not provided, automatically generating device id '${this.deviceID}'`,
+        'Please save this device id and use it for future uses to prevent login issues.',
+        'You can provide this device id by passing it to the constructor or setting the THREADS_DEVICE_ID environment variable (.env file)',
+      );
+    }
+
     this.device = options?.device;
     this.userID = options?.userID;
 
