@@ -12,3 +12,8 @@ export const BASE_FOLLOW_PARAMS = {
   include_user_count: 'true',
   search_surface: 'barcelona_following_graph_page',
 };
+
+export const IG_APP_ID = '3419628305025917';
+export const BLOKS_VERSION = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
+export const FOLLOW_NAV_CHAIN =
+  'BarcelonaNavigationLogger$logNavigationCompleted$1:ig_text_feed_timeline:1:cold_start:1689291307.290::,BarcelonaNavigationLogger$logNavigationCompleted$1:ig_text_feed_timeline:2:button:1689291307.376::,BarcelonaNavigationLogger$logNavigationCompleted$1:ig_text_feed_profile:3:button:1689291309.4::,BarcelonaNavigationLogger$logNavigationCompleted$1:ig_text_feed_follow_list:4:button:1689291314.134::';

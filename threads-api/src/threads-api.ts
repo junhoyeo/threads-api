@@ -12,6 +12,9 @@ import {
   LOGIN_EXPERIMENTS,
   SIGNATURE_KEY,
   BASE_FOLLOW_PARAMS,
+  BLOKS_VERSION,
+  IG_APP_ID,
+  FOLLOW_NAV_CHAIN,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
@@ -336,10 +339,9 @@ export class ThreadsAPI {
         }),
       );
 
-      const blockVersion = '5f56efad68e1edec7801f630b5c122704ec5378adbee6609a448f105f34a9c73';
       const bkClientContext = encodeURIComponent(
         JSON.stringify({
-          bloks_version: blockVersion,
+          bloks_version: BLOKS_VERSION,
           styles_id: 'instagram',
         }),
       );
@@ -347,7 +349,7 @@ export class ThreadsAPI {
         method: 'POST',
         headers: this._getAppHeaders(),
         responseType: 'text',
-        data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${blockVersion}`,
+        data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${BLOKS_VERSION}`,
       };
 
       let { data } = await axios<string>(
@@ -410,7 +412,18 @@ export class ThreadsAPI {
 
   _getInstaHeaders = () => ({
     ...this._getAppHeaders(),
+    'X-Bloks-Is-Layout-Rtl': 'false',
+    'X-Bloks-Version-Id': BLOKS_VERSION,
+    'X-Ig-Android-Id': this.deviceID,
+    'X-Ig-App-Id': IG_APP_ID,
+    'Accept-Language': this.locale || 'en-US',
     ...(this.userID && { 'Ig-U-Ds-User-Id': this.userID, 'Ig-Intended-User-Id': this.userID }),
+    ...(this.locale && {
+      // strangely different from normal locale
+      'X-Ig-App-Locale': this.locale.replace('-', '_'),
+      'X-Ig-Device-Locale': this.locale.replace('-', '_'),
+      'X-Ig-Mapped-Locale': this.locale.replace('-', '_'),
+    }),
   });
 
   _getDefaultHeaders = (username?: string) => ({
@@ -702,7 +715,10 @@ export class ThreadsAPI {
     try {
       const res = await axios.get<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
         `https://i.instagram.com/api/v1/friendships/${userID}/followers/?${params.toString()}`,
-        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+        {
+          ...options,
+          headers: { ...this._getInstaHeaders(), 'X-Ig-Nav-Chain': FOLLOW_NAV_CHAIN, ...options?.headers },
+        },
       );
       data = res.data;
     } catch (error: any) {
@@ -739,7 +755,10 @@ export class ThreadsAPI {
     try {
       const res = await axios.get<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
         `https://i.instagram.com/api/v1/friendships/${userID}/following/?${params.toString()}`,
-        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+        {
+          ...options,
+          headers: { ...this._getInstaHeaders(), 'X-Ig-Nav-Chain': FOLLOW_NAV_CHAIN, ...options?.headers },
+        },
       );
       data = res.data;
     } catch (error: any) {
