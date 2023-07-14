@@ -5,6 +5,7 @@ export const rawCredentials =
     ? null
     : { username: process.env.USERNAME, password: process.env.PASSWORD };
 
-export const credentials = !process.env.TOKEN //
-  ? rawCredentials
-  : { token: process.env.TOKEN };
+export const credentials =
+  !process.env.USERNAME || !process.env.TOKEN //
+    ? rawCredentials
+    : { username: process.env.USERNAME, token: process.env.TOKEN };
