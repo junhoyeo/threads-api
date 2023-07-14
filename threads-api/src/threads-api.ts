@@ -261,7 +261,7 @@ export class ThreadsAPI {
       console.log('[SYNC LOGIN EXPERIMENT HEADERS]', JSON.stringify(headers));
     }
 
-    const passwordEncryptionKeyId: number | undefined = headers['ig-set-password-encryption-key-id'];
+    const passwordEncryptionKeyID: number | undefined = headers['ig-set-password-encryption-key-id'];
     const passwordEncryptionPubKey: string | undefined = headers['ig-set-password-encryption-pub-key'];
 
     const rsaEncrypted = crypto.publicEncrypt(
@@ -283,7 +283,7 @@ export class ThreadsAPI {
     return {
       time,
       password: Buffer.concat([
-        Buffer.from([1, passwordEncryptionKeyId || 0]),
+        Buffer.from([1, passwordEncryptionKeyID || 0]),
         iv,
         sizeBuffer,
         rsaEncrypted,
@@ -731,7 +731,7 @@ export class ThreadsAPI {
     return likers;
   };
 
-  getTimeline = async (maxId: string = '', options?: AxiosRequestConfig): Promise<GetTimelineResponse> => {
+  getTimeline = async (maxID: string = '', options?: AxiosRequestConfig): Promise<GetTimelineResponse> => {
     if (!this.token && (!this.username || !this.password)) {
       throw new Error('Username or password not set');
     }
@@ -744,7 +744,7 @@ export class ThreadsAPI {
     try {
       const res = await this._requestQuery<GetTimelineResponse>(
         `${BASE_API_URL}/api/v1/feed/text_post_app_timeline/`,
-        { pagination_source: 'text_post_feed_threads', max_id: maxId || undefined },
+        { pagination_source: 'text_post_feed_threads', max_id: maxID || undefined },
         { ...options, headers: this._getAppHeaders() },
       );
       return res.data;
@@ -855,8 +855,8 @@ export class ThreadsAPI {
 
     if ('image' in options && !!options.image) {
       url = POST_WITH_IMAGE_URL;
-      const { upload_id: uploadId } = await this.uploadImage(options.image);
-      data.upload_id = uploadId;
+      const { upload_id: uploadID } = await this.uploadImage(options.image);
+      data.upload_id = uploadID;
       data.scene_capture_type = '';
     } else if ('url' in options && !!options.url) {
       data.text_post_app_info.link_attachment_url = options.url;
@@ -918,8 +918,8 @@ export class ThreadsAPI {
   };
 
   uploadImage = async (image: string | ThreadsAPIImage): Promise<InstagramImageUploadResponse> => {
-    const uploadId = Date.now().toString();
-    const name = `${uploadId}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
+    const uploadID = Date.now().toString();
+    const name = `${uploadID}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
     const url: string = `https://www.instagram.com/rupload_igphoto/${name}`;
 
     let content: Buffer;
@@ -945,7 +945,7 @@ export class ThreadsAPI {
     }
 
     const x_instagram_rupload_params = {
-      upload_id: uploadId,
+      upload_id: uploadID,
       media_type: '1',
       sticker_burnin_params: JSON.stringify([]),
       image_compression: JSON.stringify({ lib_name: 'moz', lib_version: '3.1.m', quality: '80' }),
@@ -973,7 +973,7 @@ export class ThreadsAPI {
     };
 
     if (this.verbose) {
-      console.log(`[UPLOAD_IMAGE] Uploading ${contentLength.toLocaleString()}b as ${uploadId}...`);
+      console.log(`[UPLOAD_IMAGE] Uploading ${contentLength.toLocaleString()}b as ${uploadID}...`);
     }
 
     try {
