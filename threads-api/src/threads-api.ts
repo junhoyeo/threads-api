@@ -68,6 +68,25 @@ export type GetThreadLikersResponse = {
   extensions: Extensions;
 };
 
+export type GetTimelineResponse = {
+  num_results: number;
+  more_available: boolean;
+  auto_load_more_enabled: boolean;
+  is_direct_v2_enabled: boolean;
+  next_max_id: string;
+  view_state_version: string;
+  client_feed_changelist_applied: boolean;
+  request_id: string;
+  pull_to_refresh_window_ms: number;
+  preload_distance: number;
+  status: string;
+  pagination_source: string;
+  hide_like_and_view_counts: number;
+  is_shell_response: boolean;
+  items: Thread[];
+  feed_items_media_info: Array<any>;
+};
+
 export type InstagramImageUploadResponse = {
   upload_id: string;
   xsharing_nonces: {};
@@ -488,13 +507,19 @@ export class ThreadsAPI {
     }
   };
 
-  _requestQuery = <T extends any>(url: string, data: Record<string, string>, options?: AxiosRequestConfig) =>
-    axios.post<T>(url, new URLSearchParams(data), {
+  _requestQuery = <T extends any>(
+    url: string,
+    data: Record<string, string | undefined>,
+    options?: AxiosRequestConfig,
+  ) => {
+    Object.keys(data).forEach((key) => data[key] === undefined && delete data[key]);
+    return axios.post<T>(url, new URLSearchParams(data as Record<string, string>), {
       httpAgent: this.httpAgent,
       httpsAgent: this.httpsAgent,
       headers: this._getDefaultHeaders(),
       ...options,
     });
+  };
 
   _destructureFromUserIDQuerier = (params: any) => {
     const typedParams = params as
@@ -705,6 +730,24 @@ export class ThreadsAPI {
     );
     const likers = res.data.data.likers;
     return likers;
+  };
+
+  getTimeline = async (maxId: string = '', options?: AxiosRequestConfig): Promise<GetTimelineResponse> => {
+    if (!this.token && (!this.username || !this.password)) {
+      throw new Error('Username or password not set');
+    }
+
+    const token = await this.getToken();
+    if (!token) {
+      throw new Error('Token not found');
+    }
+
+    const res = await this._requestQuery<GetTimelineResponse>(
+      `${BASE_API_URL}/api/v1/feed/text_post_app_timeline/`,
+      { pagination_source: 'text_post_feed_threads', max_id: maxId || undefined },
+      { ...options, headers: this._getAppHeaders() },
+    );
+    return res.data;
   };
 
   _toggleAuthPostRequest = async <T extends any>(url: string, options?: AxiosRequestConfig) => {
