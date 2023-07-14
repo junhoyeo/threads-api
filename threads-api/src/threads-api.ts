@@ -855,8 +855,7 @@ export class ThreadsAPI {
 
     if ('image' in options && !!options.image) {
       url = POST_WITH_IMAGE_URL;
-      const { upload_id: uploadID } = await this.uploadImage(options.image);
-      data.upload_id = uploadID;
+      data.upload_id = (await this.uploadImage(options.image)).upload_id;
       data.scene_capture_type = '';
     } else if ('url' in options && !!options.url) {
       data.text_post_app_info.link_attachment_url = options.url;
