@@ -55,6 +55,7 @@ const main = async () => {
 };
 main();
 ```
+
 </details>
 
 #### Auth Required
@@ -204,6 +205,7 @@ await new Promise((resolve) => setTimeout(resolve, 5_000));
 await threadsAPI.delete(postID);
 ```
 
+<details>
   <summary>
     <h3>Old API (Deprecated, Still works for backwards compatibility)</h3>
   </summary>
@@ -235,7 +237,7 @@ const threadsAPI = new ThreadsAPI({
 });
 ```
 
-</>
+</details>
 
 ## [<img src="https://github.com/junhoyeo/threads-api/raw/main/.github/emojis/package.png" width="30" height="30" />](https://github.com/junhoyeo) Installation
 
