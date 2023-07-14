@@ -2,14 +2,14 @@ import axios from 'axios';
 import { ThreadsAPI } from '../src/threads-api';
 
 describe('getUserIDfromUsername', () => {
+  const threadsAPI = new ThreadsAPI({ verbose: true });
+
   describe('fetching userID for username', () => {
-    let threadsAPI: ThreadsAPI;
     let userID: string | undefined;
     let previousLSDToken: string;
 
     beforeAll(async () => {
       // given
-      threadsAPI = new ThreadsAPI({ verbose: true });
       const username = '_junhoyeo';
       threadsAPI.fbLSDToken = 'mocked-default-lsd-token';
       previousLSDToken = threadsAPI.fbLSDToken;
