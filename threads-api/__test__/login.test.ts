@@ -1,16 +1,15 @@
 import { ThreadsAPI } from '../src/threads-api';
-import { TIMEOUT, credentials } from './utils/constants';
+import { TIMEOUT, rawCredentials as credentials } from './utils/constants';
 import { describeIf } from './utils/describeIf';
 
 describeIf(!!credentials)('login', () => {
   const threadsAPI = new ThreadsAPI({
     verbose: true,
-    username: process.env.USERNAME,
-    password: process.env.PASSWORD,
+    ...credentials,
   });
 
   it(
-    'Login',
+    'Login and publish text thread.',
     async () => {
       // given
       const text = "🤖 I'm back, Threads.";

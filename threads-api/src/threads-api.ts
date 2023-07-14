@@ -22,6 +22,10 @@ export type AndroidDevice = {
   os_release: string;
 };
 
+export type ErrorResponse = {
+  status: 'error'; // ?
+  error_title: string;
+};
 export type GetUserProfileResponse = {
   data: {
     userData: {
@@ -39,14 +43,11 @@ export type GetUserProfileThreadsResponse = {
   };
   extensions: Extensions;
 };
-
-export type GetUserProfileRepliesResponse = {
-  data: {
-    mediaData?: {
-      threads: Thread[];
-    };
-  };
-  extensions: Extensions;
+export type GetUserProfileThreadsPaginatedResponse = {
+  status: 'ok';
+  next_max_id: string;
+  medias: [];
+  threads: Thread[];
 };
 
 export type GetUserProfileThreadResponse = {
@@ -246,7 +247,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[SYNC LOGIN EXPERIMENT FAILED]', error.response.data);
       }
-      throw error;
+      throw Error('Sync login experiment failed');
     }
   };
 
@@ -360,7 +361,7 @@ export class ThreadsAPI {
         if (this.verbose) {
           console.error('[LOGIN] Failed to login', error);
         }
-        throw error;
+        throw Error('Login Failed');
       }
     };
 
@@ -371,7 +372,6 @@ export class ThreadsAPI {
       } catch (error) {
         if (this.verbose) {
           console.error(`[LOGIN] Failed to login, retrying... (${retries + 1}/${this.maxRetries})`);
-          throw error;
         }
         const delay = Math.pow(2, retries) * 1000; // exponential backoff with base 2
         await new Promise((resolve) => setTimeout(resolve, delay));
@@ -579,36 +579,35 @@ export class ThreadsAPI {
     return threads;
   };
 
-  getUserProfileThreadsLoggedIn: PaginationUserIDQuerier<{
-    threads: Thread[];
-    nextCursor?: string;
-    success: boolean;
-    error?: string;
-  }> = async (
+  getUserProfileThreadsLoggedIn: PaginationUserIDQuerier<GetUserProfileThreadsPaginatedResponse> = async (
     userID,
-    cursor = '',
+    maxID = '',
     options = {},
-  ): Promise<{ threads: Thread[]; nextCursor?: string; success: boolean; error?: string }> => {
+  ): Promise<GetUserProfileThreadsPaginatedResponse> => {
     if (!this.token) {
-      return { success: false, error: 'Not logged in.', threads: [] };
+      await this.getToken();
+    }
+    if (!this.token) {
+      throw new Error('Token not found');
     }
 
-    const result = await axios.get(
-      `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/${cursor && `?max_id=${cursor}`}`,
-      {
-        ...options,
-        headers: {
-          ...this._getInstaHeaders(),
-          ...options?.headers,
-        },
-      },
-    );
-
-    if (result.data.status !== 'ok') {
-      return { success: false, error: result.data.error_title, threads: [] };
+    let data: GetUserProfileThreadsPaginatedResponse | ErrorResponse | undefined = undefined;
+    try {
+      const res = await axios.get<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
+        `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/${maxID && `?max_id=${maxID}`}`,
+        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+      );
+      data = res.data;
+    } catch (error: any) {
+      data = error.response?.data;
     }
-
-    return { success: true, threads: result.data.threads, nextCursor: result.data.next_max_id };
+    if (data?.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[USER FEED] Failed to fetch', data);
+      }
+      throw new Error('Failed to fetch user feed: ' + JSON.stringify(data));
+    }
+    return data;
   };
 
   getUserProfileReplies: UserIDQuerier<Thread[]> = async (...params) => {
@@ -630,35 +629,35 @@ export class ThreadsAPI {
     return threads;
   };
 
-  getUserProfileRepliesLoggedIn: PaginationUserIDQuerier<{
-    threads: Thread[];
-    nextCursor?: string;
-    error?: string;
-  }> = async (
+  getUserProfileRepliesLoggedIn: PaginationUserIDQuerier<GetUserProfileThreadsPaginatedResponse> = async (
     userID,
     maxID = '',
     options = {},
-  ): Promise<{ threads: Thread[]; nextCursor?: string; success: boolean; error?: string }> => {
+  ): Promise<GetUserProfileThreadsPaginatedResponse> => {
     if (!this.token) {
-      return { success: false, error: 'Not logged in.', threads: [] };
+      await this.getToken();
+    }
+    if (!this.token) {
+      throw new Error('Token not found');
     }
 
-    const result = await axios.get(
-      `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${maxID && `?max_id=${maxID}`}`,
-      {
-        ...options,
-        headers: {
-          ...this._getInstaHeaders(),
-          ...options?.headers,
-        },
-      },
-    );
-
-    if (result.data.status !== 'ok') {
-      return { success: false, error: result.data.error_title, threads: [] };
+    let data: GetUserProfileThreadsPaginatedResponse | ErrorResponse | undefined = undefined;
+    try {
+      const res = await axios.get<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
+        `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${maxID && `?max_id=${maxID}`}`,
+        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+      );
+      data = res.data;
+    } catch (error: any) {
+      data = error.response?.data;
     }
-
-    return { success: true, threads: result.data.threads, nextCursor: result.data.next_max_id };
+    if (data?.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[USER FEED] Failed to fetch', data);
+      }
+      throw new Error('Failed to fetch user feed: ' + JSON.stringify(data));
+    }
+    return data;
   };
 
   getPostIDfromThreadID = async (
@@ -742,12 +741,19 @@ export class ThreadsAPI {
       throw new Error('Token not found');
     }
 
-    const res = await this._requestQuery<GetTimelineResponse>(
-      `${BASE_API_URL}/api/v1/feed/text_post_app_timeline/`,
-      { pagination_source: 'text_post_feed_threads', max_id: maxId || undefined },
-      { ...options, headers: this._getAppHeaders() },
-    );
-    return res.data;
+    try {
+      const res = await this._requestQuery<GetTimelineResponse>(
+        `${BASE_API_URL}/api/v1/feed/text_post_app_timeline/`,
+        { pagination_source: 'text_post_feed_threads', max_id: maxId || undefined },
+        { ...options, headers: this._getAppHeaders() },
+      );
+      return res.data;
+    } catch (error: any) {
+      if (this.verbose) {
+        console.log('[TIMELINE FETCH FAILED]', error.response.data);
+      }
+      throw Error('Failed to fetch timeline');
+    }
   };
 
   _toggleAuthPostRequest = async <T extends any>(url: string, options?: AxiosRequestConfig) => {
@@ -984,7 +990,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log(`[UPLOAD_IMAGE] FAILED`, error.response.data);
       }
-      throw error;
+      throw Error('Upload image failed');
     }
   };
 }

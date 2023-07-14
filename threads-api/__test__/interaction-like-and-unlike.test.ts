@@ -5,8 +5,7 @@ import { describeIf } from './utils/describeIf';
 describeIf(!!credentials)('Like/Unlike', () => {
   const threadsAPI = new ThreadsAPI({
     verbose: true,
-    username: process.env.USERNAME,
-    password: process.env.PASSWORD,
+    ...credentials,
   });
 
   it(

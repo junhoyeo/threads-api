@@ -727,7 +727,7 @@ const threadsAPI = new ThreadsAPI.ThreadsAPI({});
   - [x] ✅ Fetch UserID(`314216`) via username(`zuck`)
   - [x] ✅ Read User Profile Info
   - [x] ✅ Read list of User Threads
-  - [x] ✅ Read list of User Repiles
+  - [x] ✅ Read list of User Replies
   - [x] ✅ Fetch PostID(`3140957200974444958`) via PostID(`CuW6-7KyXme`) or PostURL(`https://www.threads.net/t/CuW6-7KyXme`)
   - [x] ✅ Read Threads via PostID
   - [x] ✅ Read Likers in Thread via PostID

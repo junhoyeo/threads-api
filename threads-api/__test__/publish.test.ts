@@ -5,8 +5,7 @@ import { describeIf } from './utils/describeIf';
 describeIf(!!credentials)('publish', () => {
   const threadsAPI = new ThreadsAPI({
     verbose: true,
-    username: process.env.USERNAME,
-    password: process.env.PASSWORD,
+    ...credentials,
   });
 
   describe('Publish a text post to Threads.', () => {
