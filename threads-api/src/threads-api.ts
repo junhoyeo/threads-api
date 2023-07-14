@@ -11,6 +11,7 @@ import {
   BASE_API_URL,
   LOGIN_EXPERIMENTS,
   SIGNATURE_KEY,
+  BASE_FOLLOW_PARAMS,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
@@ -45,9 +46,19 @@ export type GetUserProfileThreadsResponse = {
 };
 export type GetUserProfileThreadsPaginatedResponse = {
   status: 'ok';
-  next_max_id: string;
+  next_max_id?: string;
   medias: [];
   threads: Thread[];
+};
+
+export type GetUserProfileFollowPaginatedResponse = {
+  status: 'ok';
+  users: ThreadsUser[];
+  big_list: boolean; // seems to be false when next_max_id === undefined
+  page_size: number;
+  next_max_id?: string;
+  // has_more: boolean; this prop is confusing & always is false. use next_max_id === undefined for end of list
+  should_limit_list_of_followers: boolean;
 };
 
 export type GetUserProfileThreadResponse = {
@@ -155,7 +166,16 @@ interface UserIDQuerier<T extends any> {
 }
 
 interface PaginationUserIDQuerier<T extends any> {
-  (userID: string, cursor?: string, options?: AxiosRequestConfig): Promise<T>;
+  (userID: string, maxID?: string, options?: AxiosRequestConfig): Promise<T>;
+}
+
+export type PaginationAndSearchOptions = {
+  maxID?: string;
+  query?: string;
+};
+
+interface PaginationAndSearchUserIDQuerier<T extends any> {
+  (userID: string, params?: PaginationAndSearchOptions, options?: AxiosRequestConfig): Promise<T>;
 }
 
 export class ThreadsAPI {
@@ -656,6 +676,80 @@ export class ThreadsAPI {
         console.log('[USER FEED] Failed to fetch', data);
       }
       throw new Error('Failed to fetch user feed: ' + JSON.stringify(data));
+    }
+    return data;
+  };
+
+  getUserFollowers: PaginationAndSearchUserIDQuerier<GetUserProfileFollowPaginatedResponse> = async (
+    userID,
+    { maxID, query } = {},
+    options?: AxiosRequestConfig,
+  ) => {
+    if (!this.token) {
+      await this.getToken();
+    }
+    if (!this.token) {
+      throw new Error('Token not found');
+    }
+
+    let data: GetUserProfileFollowPaginatedResponse | ErrorResponse | undefined = undefined;
+
+    const params = new URLSearchParams(BASE_FOLLOW_PARAMS);
+
+    if (maxID) params.append('max_id', maxID);
+    if (query) params.append('query', query);
+
+    try {
+      const res = await axios.get<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
+        `https://i.instagram.com/api/v1/friendships/${userID}/followers/?${params.toString()}`,
+        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+      );
+      data = res.data;
+    } catch (error: any) {
+      data = error.response?.data;
+    }
+    if (data?.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[USER FOLLOWERS] Failed to fetch', data);
+      }
+      throw new Error('Failed to fetch user followers: ' + JSON.stringify(data));
+    }
+    return data;
+  };
+
+  getUserFollowing: PaginationAndSearchUserIDQuerier<GetUserProfileFollowPaginatedResponse> = async (
+    userID,
+    { maxID, query } = {},
+    options?: AxiosRequestConfig,
+  ) => {
+    if (!this.token) {
+      await this.getToken();
+    }
+    if (!this.token) {
+      throw new Error('Token not found');
+    }
+
+    let data: GetUserProfileFollowPaginatedResponse | ErrorResponse | undefined = undefined;
+
+    const params = new URLSearchParams(BASE_FOLLOW_PARAMS);
+
+    if (maxID) params.append('max_id', maxID);
+    if (query) params.append('query', query);
+
+    try {
+      const res = await axios.get<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
+        `https://i.instagram.com/api/v1/friendships/${userID}/following/?${params.toString()}`,
+        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+      );
+      data = res.data;
+    } catch (error: any) {
+      data = error.response?.data;
+    }
+    if (data?.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[USER FOLLOWING] Failed to fetch', data);
+      }
+      throw new Error('Failed to fetch user following: ' + JSON.stringify(data));
     }
     return data;
   };
