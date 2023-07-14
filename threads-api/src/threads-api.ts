@@ -22,6 +22,10 @@ export type AndroidDevice = {
   os_release: string;
 };
 
+export type ErrorResponse = {
+  status: 'error'; // ?
+  error_title: string;
+};
 export type GetUserProfileResponse = {
   data: {
     userData: {
@@ -39,14 +43,11 @@ export type GetUserProfileThreadsResponse = {
   };
   extensions: Extensions;
 };
-
-export type GetUserProfileRepliesResponse = {
-  data: {
-    mediaData?: {
-      threads: Thread[];
-    };
-  };
-  extensions: Extensions;
+export type GetUserProfileThreadsPaginatedResponse = {
+  status: 'ok';
+  next_max_id: string;
+  medias: [];
+  threads: Thread[];
 };
 
 export type GetUserProfileThreadResponse = {
@@ -579,36 +580,32 @@ export class ThreadsAPI {
     return threads;
   };
 
-  getUserProfileThreadsLoggedIn: PaginationUserIDQuerier<{
-    threads: Thread[];
-    nextCursor?: string;
-    success: boolean;
-    error?: string;
-  }> = async (
+  getUserProfileThreadsLoggedIn: PaginationUserIDQuerier<GetUserProfileThreadsPaginatedResponse> = async (
     userID,
-    cursor = '',
+    maxID = '',
     options = {},
-  ): Promise<{ threads: Thread[]; nextCursor?: string; success: boolean; error?: string }> => {
+  ): Promise<GetUserProfileThreadsPaginatedResponse> => {
     if (!this.token) {
-      return { success: false, error: 'Not logged in.', threads: [] };
+      await this.getToken();
+    }
+    if (!this.token) {
+      throw new Error('Token not found');
     }
 
-    const result = await axios.get(
-      `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/${cursor && `?max_id=${cursor}`}`,
+    const res = await axios.get<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
+      `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/${maxID && `?max_id=${maxID}`}`,
       {
         ...options,
-        headers: {
-          ...this._getInstaHeaders(),
-          ...options?.headers,
-        },
+        headers: { ...this._getInstaHeaders(), ...options?.headers },
       },
     );
-
-    if (result.data.status !== 'ok') {
-      return { success: false, error: result.data.error_title, threads: [] };
+    if (res.data.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[USER FEED] Failed to fetch', res.data);
+      }
+      throw Error('Failed to fetch user feed: ' + JSON.stringify(res.data));
     }
-
-    return { success: true, threads: result.data.threads, nextCursor: result.data.next_max_id };
+    return res.data;
   };
 
   getUserProfileReplies: UserIDQuerier<Thread[]> = async (...params) => {
@@ -630,35 +627,29 @@ export class ThreadsAPI {
     return threads;
   };
 
-  getUserProfileRepliesLoggedIn: PaginationUserIDQuerier<{
-    threads: Thread[];
-    nextCursor?: string;
-    error?: string;
-  }> = async (
+  getUserProfileRepliesLoggedIn: PaginationUserIDQuerier<GetUserProfileThreadsPaginatedResponse> = async (
     userID,
     maxID = '',
     options = {},
-  ): Promise<{ threads: Thread[]; nextCursor?: string; success: boolean; error?: string }> => {
+  ): Promise<GetUserProfileThreadsPaginatedResponse> => {
     if (!this.token) {
-      return { success: false, error: 'Not logged in.', threads: [] };
+      await this.getToken();
+    }
+    if (!this.token) {
+      throw new Error('Token not found');
     }
 
-    const result = await axios.get(
+    const res = await axios.get<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
       `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${maxID && `?max_id=${maxID}`}`,
-      {
-        ...options,
-        headers: {
-          ...this._getInstaHeaders(),
-          ...options?.headers,
-        },
-      },
+      { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
     );
-
-    if (result.data.status !== 'ok') {
-      return { success: false, error: result.data.error_title, threads: [] };
+    if (res.data.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[USER FEED] Failed to fetch', res.data);
+      }
+      throw Error('Failed to fetch user feed: ' + JSON.stringify(res.data));
     }
-
-    return { success: true, threads: result.data.threads, nextCursor: result.data.next_max_id };
+    return res.data;
   };
 
   getPostIDfromThreadID = async (
