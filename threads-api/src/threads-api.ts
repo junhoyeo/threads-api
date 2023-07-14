@@ -756,12 +756,16 @@ export class ThreadsAPI {
     }
   };
 
-  _toggleAuthPostRequest = async <T extends any>(url: string, options?: AxiosRequestConfig) => {
+  _toggleAuthPostRequest = async <T extends any>(
+    url: string,
+    data?: Record<string, string>,
+    options?: AxiosRequestConfig,
+  ) => {
     const token = await this.getToken();
     if (!token) {
       throw new Error('Token not found');
     }
-    const res = await axios.post<T>(url, undefined, {
+    const res = await axios.post<T>(url, !data ? undefined : new URLSearchParams(data), {
       ...options,
       httpAgent: this.httpAgent,
       httpsAgent: this.httpsAgent,
@@ -773,6 +777,7 @@ export class ThreadsAPI {
     const userID = await this.getCurrentUserID();
     const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
       `${BASE_API_URL}/api/v1/media/${postID}_${userID}/like/`,
+      undefined,
       options,
     );
     return res.data.status === 'ok';
@@ -781,6 +786,7 @@ export class ThreadsAPI {
     const userID = await this.getCurrentUserID();
     const res = await this._toggleAuthPostRequest<{ status: 'ok' | string }>(
       `${BASE_API_URL}/api/v1/media/${postID}_${userID}/unlike/`,
+      undefined,
       options,
     );
     return res.data.status === 'ok';
@@ -788,6 +794,7 @@ export class ThreadsAPI {
   follow = async (userID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
       `${BASE_API_URL}/api/v1/friendships/create/${userID}/`,
+      undefined,
       options,
     );
     if (this.verbose) {
@@ -798,10 +805,33 @@ export class ThreadsAPI {
   unfollow = async (userID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
       `${BASE_API_URL}/api/v1/friendships/destroy/${userID}/`,
+      undefined,
       options,
     );
     if (this.verbose) {
       console.debug('[UNFOLLOW]', res.data);
+    }
+    return res.data;
+  };
+  repost = async (postID: string, options?: AxiosRequestConfig) => {
+    const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
+      `${BASE_API_URL}api/v1/repost/create_repost/`,
+      { media_id: postID },
+      options,
+    );
+    if (this.verbose) {
+      console.debug('[REPOST]', res.data);
+    }
+    return res.data;
+  };
+  unrepost = async (originalPostID: string, options?: AxiosRequestConfig) => {
+    const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
+      `${BASE_API_URL}/api/v1/repost/delete_text_app_repost/`,
+      { original_media_id: originalPostID },
+      options,
+    );
+    if (this.verbose) {
+      console.debug('[UNREPOST]', res.data);
     }
     return res.data;
   };
