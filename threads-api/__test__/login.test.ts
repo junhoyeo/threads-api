@@ -10,7 +10,7 @@ describeIf(!!credentials)('login', () => {
   });
 
   it(
-    'Login',
+    'Login and publish text thread.',
     async () => {
       // given
       const text = "🤖 I'm back, Threads.";
