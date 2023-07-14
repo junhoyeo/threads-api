@@ -5,8 +5,7 @@ import { describeIf } from './utils/describeIf';
 describeIf(!!credentials)('login', () => {
   const threadsAPI = new ThreadsAPI({
     verbose: true,
-    username: process.env.USERNAME,
-    password: process.env.PASSWORD,
+    ...credentials,
   });
 
   it(

@@ -11,8 +11,7 @@ describeIf(!!credentials)('getToken', () => {
       // given
       threadsAPI = new ThreadsAPI({
         verbose: true,
-        username: process.env.USERNAME,
-        password: process.env.PASSWORD,
+        ...credentials,
       });
 
       // when
