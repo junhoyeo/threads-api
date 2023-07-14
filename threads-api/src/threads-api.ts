@@ -507,13 +507,19 @@ export class ThreadsAPI {
     }
   };
 
-  _requestQuery = <T extends any>(url: string, data: Record<string, string>, options?: AxiosRequestConfig) =>
-    axios.post<T>(url, new URLSearchParams(data), {
+  _requestQuery = <T extends any>(
+    url: string,
+    data: Record<string, string | undefined>,
+    options?: AxiosRequestConfig,
+  ) => {
+    Object.keys(data).forEach((key) => data[key] === undefined && delete data[key]);
+    return axios.post<T>(url, new URLSearchParams(data as Record<string, string>), {
       httpAgent: this.httpAgent,
       httpsAgent: this.httpsAgent,
       headers: this._getDefaultHeaders(),
       ...options,
     });
+  };
 
   _destructureFromUserIDQuerier = (params: any) => {
     const typedParams = params as
@@ -726,7 +732,7 @@ export class ThreadsAPI {
     return likers;
   };
 
-  getTimeline = async (options?: AxiosRequestConfig) => {
+  getTimeline = async (maxId: string = '', options?: AxiosRequestConfig) => {
     if (!this.token && (!this.username || !this.password)) {
       throw new Error('Username or password not set');
     }
@@ -738,8 +744,8 @@ export class ThreadsAPI {
 
     const res = await this._requestQuery<GetTimelineResponse>(
       `${BASE_API_URL}/api/v1/feed/text_post_app_timeline/`,
-      { pagination_source: 'text_post_feed_threads' },
-      options,
+      { pagination_source: 'text_post_feed_threads', max_id: maxId || undefined },
+      { ...options, headers: this._getAppHeaders() },
     );
     return res.data;
   };
