@@ -732,7 +732,7 @@ export class ThreadsAPI {
     return likers;
   };
 
-  getTimeline = async (maxId: string = '', options?: AxiosRequestConfig) => {
+  getTimeline = async (maxId: string = '', options?: AxiosRequestConfig): Promise<GetTimelineResponse> => {
     if (!this.token && (!this.username || !this.password)) {
       throw new Error('Username or password not set');
     }
