@@ -2,34 +2,17 @@ import { ThreadsAPI } from '../src/threads-api';
 import { TIMEOUT, credentials } from './utils/constants';
 import { describeIf } from './utils/describeIf';
 
-test('getUserProfileReplies (without auth)', async () => {
-  // given
-  const threadsAPI = new ThreadsAPI();
-  const userID = '5438123050';
-
-  // when
-  const posts = await threadsAPI.getUserProfileReplies(userID);
-
-  // then
-  expect(Array.isArray(posts)).toBe(true);
-  expect(posts[0]).toHaveProperty('thread_items');
-  expect(posts[0].thread_items.length).toBeGreaterThanOrEqual(2);
-});
-
-describeIf(!!credentials)('getUserProfileRepliesLoggedIn (with auth)', () => {
+describeIf(!!credentials)('getTimeline', () => {
   const threadsAPI = new ThreadsAPI({
     verbose: true,
     ...credentials,
   });
 
   it(
-    'Fetch user replies with pagination.',
+    'Fetch timeline feed',
     async () => {
-      // given
-      const userID = '5438123050';
-
       // when
-      let { threads, next_max_id } = await threadsAPI.getUserProfileRepliesLoggedIn(userID);
+      let { items: threads, next_max_id } = await threadsAPI.getTimeline();
       const firstPageNextMaxID = next_max_id;
       console.log('[FIRST PAGE]', next_max_id);
 
@@ -40,8 +23,8 @@ describeIf(!!credentials)('getUserProfileRepliesLoggedIn (with auth)', () => {
       expect(next_max_id).toBeTruthy();
 
       // next page
-      const res = await threadsAPI.getUserProfileRepliesLoggedIn(userID);
-      threads = res.threads;
+      const res = await threadsAPI.getTimeline(next_max_id);
+      threads = res.items;
       next_max_id = res.next_max_id;
       console.log('[SECOND PAGE]', next_max_id);
 

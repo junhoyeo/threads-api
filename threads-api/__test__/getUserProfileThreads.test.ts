@@ -19,7 +19,7 @@ test('getUserProfileThreads (without auth)', async () => {
 describeIf(!!credentials)('getUserProfileThreadsLoggedIn (with auth)', () => {
   const threadsAPI = new ThreadsAPI({
     verbose: true,
-    token: process.env.TOKEN,
+    ...credentials,
   });
 
   it(
