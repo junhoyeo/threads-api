@@ -23,7 +23,7 @@ describeIf(!!credentials)('getUserProfileRepliesLoggedIn (with auth)', () => {
   });
 
   it(
-    'Fetch user repiles with pagination.',
+    'Fetch user replies with pagination.',
     async () => {
       // given
       const userID = '5438123050';
