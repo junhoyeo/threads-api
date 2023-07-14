@@ -15,7 +15,7 @@ describeIf(!!credentials)('Like/Unlike', () => {
 
       // given
       const threadURL = 'https://www.threads.net/t/CugDXa1hMza';
-      const postID = (await threadsAPI.getPostIDfromURL(threadURL)) || '';
+      const postID = threadsAPI.getPostIDfromURL(threadURL) || '';
 
       // like
       await new Promise((resolve) => setTimeout(resolve, 1_000)); // delay for safety

@@ -11,7 +11,7 @@ describe('getPostIDfromURL', () => {
       const postURL = 'https://www.threads.net/t/CuX_UYABrr7/?igshid=MzRlODBiNWFlZA==';
 
       // when
-      postID = await threadsAPI.getPostIDfromURL(postURL);
+      postID = threadsAPI.getPostIDfromURL(postURL);
     });
 
     it('should return postID', async () => {

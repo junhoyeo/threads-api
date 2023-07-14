@@ -39,7 +39,7 @@ const main = async () => {
   console.log(JSON.stringify(replies));
 
   // 📖 Details for a specific thread
-  const postID = await threadsAPI.getPostIDfromURL(
+  const postID = threadsAPI.getPostIDfromURL(
     'https://www.threads.net/t/CuX_UYABrr7/?igshid=MzRlODBiNWFlZA==',
   );
   // or use `threadsAPI.getPostIDfromThreadID('CuX_UYABrr7')`
@@ -134,7 +134,7 @@ await threadsAPI.publish({
 
 ```ts
 const parentURL = 'https://www.threads.net/t/CugF-EjhQ3r';
-const parentPostID = await threadsAPI.getPostIDfromURL(parentURL); // or use `getPostIDfromThreadID`
+const parentPostID = threadsAPI.getPostIDfromURL(parentURL); // or use `getPostIDfromThreadID`
 
 await threadsAPI.publish({
   text: '🤖 Beep',
@@ -153,7 +153,7 @@ await threadsAPI.publish({
 
 ```ts
 const threadURL = 'https://www.threads.net/t/CuqbBI8h19H';
-const postIDToQuote = await threadsAPI.getPostIDfromURL(threadURL); // or use `getPostIDfromThreadID`
+const postIDToQuote = threadsAPI.getPostIDfromURL(threadURL); // or use `getPostIDfromThreadID`
 
 await threadsAPI.publish({
   text: '🤖 Quote a Thread',
@@ -165,7 +165,7 @@ await threadsAPI.publish({
 
 ```ts
 const threadURL = 'https://www.threads.net/t/CugK35fh6u2';
-const postIDToLike = await threadsAPI.getPostIDfromURL(threadURL); // or use `getPostIDfromThreadID`
+const postIDToLike = threadsAPI.getPostIDfromURL(threadURL); // or use `getPostIDfromThreadID`
 
 // 💡 Uses current credentials
 await threadsAPI.like(postIDToLike);
@@ -186,7 +186,7 @@ await threadsAPI.unfollow(userIDToFollow);
 
 ```ts
 const threadURL = 'https://www.threads.net/t/CugK35fh6u2';
-const postIDToRepost = await threadsAPI.getPostIDfromURL(threadURL); // or use `getPostIDfromThreadID`
+const postIDToRepost = threadsAPI.getPostIDfromURL(threadURL); // or use `getPostIDfromThreadID`
 
 // 💡 Uses current credentials
 await threadsAPI.repost(postIDToRepost);
