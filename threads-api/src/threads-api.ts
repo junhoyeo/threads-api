@@ -136,6 +136,7 @@ export type ThreadsAPIPublishOptions =
   | {
       text?: string;
       parentPostID?: string;
+      quotedPostID?: string;
     } & ({ url?: string } | { image?: string | ThreadsAPIImage });
 
 export type ThreadsAPIImage = { path: string } | { type: string; data: Buffer };
@@ -893,6 +894,9 @@ export class ThreadsAPI {
 
     if (!!options.parentPostID) {
       data.text_post_app_info.reply_id = options.parentPostID;
+    }
+    if (!!options.quotedPostID) {
+      data.text_post_app_info.quoted_post_id = options.quotedPostID;
     }
     if (!(options as any).image) {
       data.publish_mode = 'text_post';
