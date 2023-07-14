@@ -638,6 +638,18 @@ await threadsAPI.publish({
   </a>
 </p>
 
+#### ✨ Quote a Thread (from v1.4.2)
+
+```ts
+const threadURL = 'https://www.threads.net/t/CuqbBI8h19H';
+const postIDToQuote = await threadsAPI.getPostIDfromURL(threadURL); // or use `getPostIDfromThreadID`
+
+await threadsAPI.publish({
+  text: '🤖 Quote a Thread',
+  quotedPostID: postIDToQuote,
+});
+```
+
 #### ✨ Like/Unlike a Thread (from v1.3.0)
 
 ```ts
@@ -657,6 +669,17 @@ const userIDToFollow = await threadsAPI.getUserIDfromUsername('junhoyeo');
 // 💡 Uses current credentials
 await threadsAPI.follow(userIDToFollow);
 await threadsAPI.unfollow(userIDToFollow);
+```
+
+#### ✨ Repost/Unrepost a Thread (from v1.4.2)
+
+```ts
+const threadURL = 'https://www.threads.net/t/CugK35fh6u2';
+const postIDToRepost = await threadsAPI.getPostIDfromURL(threadURL); // or use `getPostIDfromThreadID`
+
+// 💡 Uses current credentials
+await threadsAPI.repost(postIDToRepost);
+await threadsAPI.unrepost(postIDToRepost);
 ```
 
 #### ✨ Delete a Post (from v1.3.1)
