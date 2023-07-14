@@ -1,5 +1,5 @@
 import { ThreadsAPI } from '../src/threads-api';
-import { TIMEOUT, credentials } from './utils/constants';
+import { TIMEOUT, rawCredentials as credentials } from './utils/constants';
 import { describeIf } from './utils/describeIf';
 
 describeIf(!!credentials)('login', () => {
