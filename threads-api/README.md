@@ -10,10 +10,10 @@
   <img src="https://github.com/junhoyeo/threads-api/raw/main/.github/cover.jpg" alt="cover" width="500px" />
 </p>
 
-<details>
-<summary><h3>🚀 Usage (Read)</h3></summary>
+### 🚀 Usage (Read)
 
-#### Public
+<details>
+<summary><h4>Read: Public</h4></summary>
 
 ```ts
 import { ThreadsAPI } from 'threads-api';
@@ -58,7 +58,7 @@ main();
 
 </details>
 
-#### Auth Required
+#### Read: Private(Auth Required)
 
 ##### 💡 Get Timeline
 
