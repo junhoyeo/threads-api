@@ -7,7 +7,6 @@ import {
   POST_URL,
   POST_WITH_IMAGE_URL,
   DEFAULT_LSD_TOKEN,
-  DEFAULT_DEVICE_ID,
   BASE_API_URL,
   LOGIN_EXPERIMENTS,
   SIGNATURE_KEY,
@@ -18,6 +17,8 @@ import {
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
+
+const generateDeviceID = () => `android-${(Math.random() * 1e24).toString(36)}`;
 
 export type AndroidDevice = {
   manufacturer: string;
@@ -195,7 +196,7 @@ export class ThreadsAPI {
 
   username?: string;
   password?: string;
-  deviceID: string = DEFAULT_DEVICE_ID;
+  deviceID: string;
   device?: AndroidDevice = DEFAULT_DEVICE;
 
   userID: string | undefined = undefined;
@@ -218,10 +219,10 @@ export class ThreadsAPI {
     this.username = options?.username ?? process.env.THREADS_USERNAME;
     this.password = options?.password ?? process.env.THREADS_PASSWORD;
 
-    if (options?.deviceID) this.deviceID = options.deviceID;
-    if (process.env.THREADS_DEVICE_ID) this.deviceID = process.env.THREADS_DEVICE_ID;
+    this.deviceID = options?.deviceID ?? process.env.THREADS_DEVICE_ID ?? '';
 
-    if (options?.deviceID ?? process.env.THREADS_DEVICE_ID) {
+    if (!this.deviceID) {
+      this.deviceID = generateDeviceID();
       console.warn(
         `⚠️ WARNING: deviceID not provided, automatically generating device id '${this.deviceID}'`,
         'Please save this device id and use it for future uses to prevent login issues.',
