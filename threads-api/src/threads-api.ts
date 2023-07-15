@@ -735,7 +735,7 @@ export class ThreadsAPI {
     return data;
   };
 
-  getUserFollowing: PaginationAndSearchUserIDQuerier<GetUserProfileFollowPaginatedResponse> = async (
+  getUserFollowings: PaginationAndSearchUserIDQuerier<GetUserProfileFollowPaginatedResponse> = async (
     userID,
     { maxID, query } = {},
     options?: AxiosRequestConfig,
