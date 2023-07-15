@@ -260,20 +260,22 @@ const threadsAPI = new ThreadsAPI.ThreadsAPI({});
 
 - [x] ✅ Read public data
   - [x] ✅ Fetch UserID(`314216`) via username(`zuck`)
+  - [x] ✅ Read timeline feed
   - [x] ✅ Read User Profile Info
   - [x] ✅ Read list of User Threads
+    - [x] ✅ With Pagination (If auth provided)
   - [x] ✅ Read list of User Replies
+    - [x] ✅ With Pagination (If auth provided)
   - [x] ✅ Fetch PostID(`3140957200974444958`) via PostID(`CuW6-7KyXme`) or PostURL(`https://www.threads.net/t/CuW6-7KyXme`)
   - [x] ✅ Read Threads via PostID
   - [x] ✅ Read Likers in Thread via PostID
-  - [ ] 🚧 Read User Followers
-  - [ ] 🚧 Read User Followings
-- [ ] 🚧 Read private data
+  - [x] ✅ Read User Followers
+  - [x] ✅ Read User Followings
 - [x] ✅ Write data (i.e. write automated Threads)
   - [x] ✅ Create new Thread with text
     - [x] ✅ Make link previews to get shown
   - [x] ✅ Create new Thread with a single image
-  - [ ] 🚧 Create new Thread with a multiple images
+  - [ ] 🚧 Create new Thread with multiple images
   - [x] ✅ Reply to existing Thread
   - [x] ✅ Delete Thread
 - [x] ✅ Friendships
