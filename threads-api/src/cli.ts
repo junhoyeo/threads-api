@@ -63,7 +63,7 @@ program
   .alias('p')
   .description('get post ID from URL')
   .action(async (postURL: string) => {
-    const postID = await Threads.getPostIDfromURL(postURL, { timeout: 10000 });
+    const postID = Threads.getPostIDfromURL(postURL);
     console.log(`Post ID for ${postURL}: ${postID}`);
   });
 
