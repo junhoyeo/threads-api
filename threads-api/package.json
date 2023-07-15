@@ -1,6 +1,6 @@
 {
   "name": "threads-api",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "Unofficial, Reverse-Engineered Node.js/TypeScript client for Meta's [Threads](https://threads.net).",
   "author": "Junho Yeo <i@junho.io>",
   "repository": "junhoyeo/threads-api",
