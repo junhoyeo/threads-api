@@ -67,7 +67,7 @@ const { items: threads, next_max_id: cursor } = await threadsAPI.getTimeline();
 console.log(JSON.stringify(threads));
 ```
 
-##### 💡 Get Threads/Replies from User (with pagination)
+##### 💡 Get Threads/Replies from a User (with pagination)
 
 ```ts
 const { threads, next_max_id: cursor } = await threadsAPI.getUserProfileThreadsLoggedIn(userID);
@@ -77,6 +77,18 @@ console.log(JSON.stringify(threads));
 ```ts
 const { threads, next_max_id: cursor } = await threadsAPI.getUserProfileRepliesLoggedIn(userID);
 console.log(JSON.stringify(threads));
+```
+
+##### 💡 Get Followers/Followings of a User (with Pagination)
+
+```ts
+const { users, next_max_id: cursor } = await threadsAPI.getUserFollowers(userID);
+console.log(JSON.stringify(users));
+```
+
+```ts
+const { users, next_max_id: cursor } = await threadsAPI.getUserFollowings(userID);
+console.log(JSON.stringify(users));
 ```
 
 ### 🚀 Usage (Write)
