@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import React from 'react';
 import { Thread, ThreadsIcons } from 'react-threads';
-import { ThreadsAPI } from 'threads-api';
+import { Thread as ThreadType, ThreadsAPI, ThreadsUser } from 'threads-api';
 
 const threadsAPI = new ThreadsAPI({ verbose: true });
 
@@ -17,10 +17,17 @@ const UserProfilePage = async ({ params }: { params: { username: string } }) => 
     return <div>No user with the given username</div>;
   }
 
-  const [userProfile, userThreads] = await Promise.all([
-    threadsAPI.getUserProfile(userID),
-    threadsAPI.getUserProfileThreads(userID),
-  ]);
+  let userProfile: ThreadsUser;
+  let userThreads: ThreadType[]
+  try {
+    [userProfile, userThreads] = await Promise.all([
+      threadsAPI.getUserProfile(userID),
+      threadsAPI.getUserProfileThreads(userID),
+    ]);
+  } catch (e) {
+    console.log(e)
+    return <div>Failed to fetch Threads account</div>;
+  }
 
   return (
     <div className="flex flex-col max-w-xl mx-auto my-12 text-[rgb(243,245,247)]">
