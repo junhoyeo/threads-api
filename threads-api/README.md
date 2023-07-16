@@ -278,7 +278,7 @@ const threadsAPI = new ThreadsAPI.ThreadsAPI({});
     - [x] ✅ With Pagination (If auth provided)
   - [x] ✅ Read list of User Replies
     - [x] ✅ With Pagination (If auth provided)
-  - [x] ✅ Fetch PostID(`3140957200974444958`) via PostID(`CuW6-7KyXme`) or PostURL(`https://www.threads.net/t/CuW6-7KyXme`)
+  - [x] ✅ Fetch PostID(`3140957200974444958`) via ThreadID(`CuW6-7KyXme`) or PostURL(`https://www.threads.net/t/CuW6-7KyXme`)
   - [x] ✅ Read Threads via PostID
   - [x] ✅ Read Likers in Thread via PostID
   - [x] ✅ Read User Followers
