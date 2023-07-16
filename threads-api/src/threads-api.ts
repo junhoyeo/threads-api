@@ -147,9 +147,18 @@ export type ThreadsAPIOptions = {
   maxRetries?: number;
 };
 
+export type ThreadsAPIPostReplyControl = 'everyone' | 'accounts_you_follow' | 'mentioned_only';
+
+const REPLY_CONTROL_IDS: Record<ThreadsAPIPostReplyControl, number> = {
+  everyone: 0,
+  accounts_you_follow: 1,
+  mentioned_only: 2,
+};
+
 export type ThreadsAPIPublishOptions =
   | {
       text?: string;
+      replyControl?: ThreadsAPIPostReplyControl;
       parentPostID?: string;
       quotedPostID?: string;
     } & ({ url?: string } | { image?: string | ThreadsAPIImage });
@@ -973,7 +982,9 @@ export class ThreadsAPI {
     const timezoneOffset = -now.getTimezoneOffset() * 60;
 
     let data: any = {
-      text_post_app_info: { reply_control: 0 },
+      text_post_app_info: {
+        reply_control: REPLY_CONTROL_IDS[options.replyControl ?? 'everyone'],
+      },
       timezone_offset: timezoneOffset.toString(),
       source_type: '4',
       _uid: userID,
