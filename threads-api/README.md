@@ -289,6 +289,7 @@ const threadsAPI = new ThreadsAPI.ThreadsAPI({});
   - [x] ✅ Create new Thread with a single image
   - [ ] 🚧 Create new Thread with multiple images
   - [x] ✅ Reply to existing Thread
+  - [x] ✅ Quote Thread
   - [x] ✅ Delete Thread
 - [x] ✅ Friendships
   - [x] ✅ Follow User
