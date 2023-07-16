@@ -295,11 +295,12 @@ const threadsAPI = new ThreadsAPI.ThreadsAPI({});
   - [x] ✅ Unfollow User
 - [x] ✅ Interactions
   - [x] ✅ Like Thread
-  - [x] ✅ Unike Thread
-- [x] 🏴‍☠️ Restructure project as an monorepo
+  - [x] ✅ Unlike Thread
+- [x] 🏴‍☠️ Restructure the project as a monorepo
   - [x] 🏴‍☠ Add Demo App with Next.js
     - [x] Use components in 🏴‍☠️ [junhoyeo/react-threads](https://github.com/junhoyeo/react-threads)
     - [ ] Make it better
+    - [ ] Package with [:electron: Electron](https://github.com/electron/electron)
   - [x] 🏴‍☠️ Cool CLI App to run Threads in the Terminal
 
 ## [<img src="https://github.com/junhoyeo/threads-api/raw/main/.github/emojis/sewing-needle.png" width="30" height="30" />](https://github.com/junhoyeo) Projects made with `threads-api`
