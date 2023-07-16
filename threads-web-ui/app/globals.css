@@ -105,3 +105,8 @@ body {
 body {
   color: slategray;
 }
+
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+}

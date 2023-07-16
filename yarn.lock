@@ -2955,6 +2955,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cobe@npm:^0.6.3":
+  version: 0.6.3
+  resolution: "cobe@npm:0.6.3"
+  dependencies:
+    phenomenon: ^1.6.0
+  checksum: 6c389512bfade20f924ae7cbd780fc25bbf25f021183ea8a451115cf9447a942d5736a830b9a8de30efe23ded0f72ac509d46fdc65da3a3afcfe772a05db181f
+  languageName: node
+  linkType: hard
+
 "collect-v8-coverage@npm:^1.0.0":
   version: 1.0.2
   resolution: "collect-v8-coverage@npm:1.0.2"
@@ -5406,6 +5415,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"phenomenon@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "phenomenon@npm:1.6.0"
+  checksum: e05ca8223a9df42c5cee02c082103ef96a349424fec18a8478d2171060a63095e21bef394529263c64d8082aff43204a0fa1355211fd7ac2a338c2839fffbca3
+  languageName: node
+  linkType: hard
+
 "picocolors@npm:^1.0.0":
   version: 1.0.0
   resolution: "picocolors@npm:1.0.0"
@@ -6483,6 +6499,7 @@ __metadata:
     autoprefixer: ^10.4.14
     class-variance-authority: ^0.6.1
     clsx: ^1.2.1
+    cobe: ^0.6.3
     lucide-react: ^0.258.0
     next: 13.4.9
     next-composed-plugins: ^1.0.1

@@ -5,7 +5,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Threads',
+  title: 'Threads API: Making Threads Work in Code',
   description: 'Unofficial, Reverse-Engineered Clients for Threads',
 };
 

@@ -13,6 +13,7 @@
   "dependencies": {
     "class-variance-authority": "^0.6.1",
     "clsx": "^1.2.1",
+    "cobe": "^0.6.3",
     "lucide-react": "^0.258.0",
     "next": "13.4.9",
     "prettier": "^3.0.0",
