@@ -3,8 +3,9 @@ import React from 'react';
 import { Thread, ThreadsIcons } from 'react-threads';
 import { ThreadsAPI } from 'threads-api';
 
+const threadsAPI = new ThreadsAPI({ verbose: true });
+
 const UserProfilePage = async ({ params }: { params: { username: string } }) => {
-  const threadsAPI = new ThreadsAPI();
   const username = params.username;
 
   if (!username) {
@@ -16,11 +17,9 @@ const UserProfilePage = async ({ params }: { params: { username: string } }) => 
     return <div>No user with the given username</div>;
   }
 
-  const userInfo: [string, string] = [username, userID];
-
   const [userProfile, userThreads] = await Promise.all([
-    threadsAPI.getUserProfile(...userInfo),
-    threadsAPI.getUserProfileThreads(...userInfo),
+    threadsAPI.getUserProfile(userID),
+    threadsAPI.getUserProfileThreads(userID),
   ]);
 
   return (
