@@ -1,10 +1,12 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React from 'react';
 import { Thread, ThreadsIcons } from 'react-threads';
-import { ThreadsAPI } from 'threads-api';
+import { Thread as ThreadType, ThreadsAPI, ThreadsUser } from 'threads-api';
+
+const threadsAPI = new ThreadsAPI({ verbose: true });
 
 const UserProfilePage = async ({ params }: { params: { username: string } }) => {
-  const threadsAPI = new ThreadsAPI();
   const username = params.username;
 
   if (!username) {
@@ -16,12 +18,17 @@ const UserProfilePage = async ({ params }: { params: { username: string } }) => 
     return <div>No user with the given username</div>;
   }
 
-  const userInfo: [string, string] = [username, userID];
-
-  const [userProfile, userThreads] = await Promise.all([
-    threadsAPI.getUserProfile(...userInfo),
-    threadsAPI.getUserProfileThreads(...userInfo),
-  ]);
+  let userProfile: ThreadsUser;
+  let userThreads: ThreadType[];
+  try {
+    [userProfile, userThreads] = await Promise.all([
+      threadsAPI.getUserProfile(userID),
+      threadsAPI.getUserProfileThreads(userID),
+    ]);
+  } catch (e) {
+    console.log(e);
+    return <div>Failed to fetch Threads account</div>;
+  }
 
   return (
     <div className="flex flex-col max-w-xl mx-auto my-12 text-[rgb(243,245,247)]">
@@ -59,14 +66,14 @@ const UserProfilePage = async ({ params }: { params: { username: string } }) => 
       <div>
         {userThreads.map((thread, index) => {
           return (
-            <React.Fragment key={thread.id}>
+            <Link key={thread.id} href={`/post/${thread.id}`}>
               <div className="-mb-4">
                 <Thread thread={thread} key={thread.id} />
               </div>
               {index !== userThreads.length - 1 && (
                 <div className="w-full h-[0.5px] bg-[rgba(243,245,247,0.15)]" />
               )}
-            </React.Fragment>
+            </Link>
           );
         })}
       </div>
