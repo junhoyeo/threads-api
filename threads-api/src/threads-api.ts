@@ -17,7 +17,7 @@ import {
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Post, Story, Thread, ThreadsUser } from './threads-types';
-import { ThreadsAPIError } from 'error';
+import { ThreadsAPIError } from './error';
 
 const generateDeviceID = () => `android-${(Math.random() * 1e24).toString(36)}`;
 
@@ -1037,7 +1037,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[FOLLOW]', res.data);
     }
-    return res.data;
+    return res.data.status === 'ok';
   };
   unfollow = async (userID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
@@ -1048,18 +1048,18 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[UNFOLLOW]', res.data);
     }
-    return res.data;
+    return res.data.status === 'ok';
   };
   repost = async (postID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
-      `${BASE_API_URL}api/v1/repost/create_repost/`,
+      `${BASE_API_URL}/api/v1/repost/create_repost/`,
       { media_id: postID },
       options,
     );
     if (this.verbose) {
       console.debug('[REPOST]', res.data);
     }
-    return res.data;
+    return res.data.status === 'ok';
   };
   unrepost = async (originalPostID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
@@ -1070,7 +1070,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[UNREPOST]', res.data);
     }
-    return res.data;
+    return res.data.status === 'ok';
   };
   mute = async (muteOptions: {postID?: string, userID?: string}, options?: AxiosRequestConfig): Promise<boolean> => {
     const url = `${BASE_API_URL}/api/v1/friendships/mute_posts_or_story_from_follow/`;
@@ -1091,10 +1091,10 @@ export class ThreadsAPI {
     }
 
     if (muteOptions.postID) {
-      data.media_id = muteOptions.postID;
+      data.media_id = String(muteOptions.postID);
     }
     if (muteOptions.userID) {
-      data.target_posts_author_id = muteOptions.userID;
+      data.target_posts_author_id = String(muteOptions.userID);
     }
 
     const payload = {
@@ -1105,14 +1105,14 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[MUTE]', res.data);
     }
-    return res.data;
+    return res.data.status === 'ok';
   };
   unmute = async (muteOptions: {postID?: string, userID?: string}, options?: AxiosRequestConfig): Promise<boolean> => {
     const url = `${BASE_API_URL}/api/v1/friendships/unmute_posts_or_story_from_follow/`;
     let data = {
       _uid: this.userID,
       _uuid: this.deviceID,
-      container_module: 'ig_text_feed_timeline'
+      container_module: "ig_text_feed_timeline"
     } as {
       media_id?: string;
       _uid: string;
@@ -1126,10 +1126,10 @@ export class ThreadsAPI {
     }
 
     if (muteOptions.postID) {
-      data.media_id = muteOptions.postID;
+      data.media_id = String(muteOptions.postID);
     }
     if (muteOptions.userID) {
-      data.target_posts_author_id = muteOptions.userID;
+      data.target_posts_author_id = String(muteOptions.userID);
     }
 
     const payload = {
@@ -1160,7 +1160,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[MUTE]', res.data);
     }
-    return res.data;
+    return res.data.status === 'ok';
   };
   unblock = async (userID: string, options?: AxiosRequestConfig): Promise<boolean> => {
     const url = `${BASE_API_URL}/api/v1/friendships/unblock/${userID}/`;
@@ -1179,7 +1179,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[MUTE]', res.data);
     }
-    return res.data;
+    return res.data.status === 'ok';
   };
 
   getNotifications: PaginationNotificationsQuerier<GetNotificationsPaginatedResponse> = async (
@@ -1371,7 +1371,7 @@ export class ThreadsAPI {
     }
 
     if (res.data['status'] === 'ok') {
-      return res.data['media']['id'];
+      return res.data;
     }
 
     return undefined;
