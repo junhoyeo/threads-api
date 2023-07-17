@@ -57,7 +57,7 @@ export default async function Home() {
               }}
             >
               <img
-                className="w-[120px] h-[120px] rounded-[32px]"
+                className="w-[120px] h-[120px] rounded-[32px] bg-black"
                 src="https://github.com/junhoyeo/threads-api/raw/main/.github/logo.jpg"
                 style={{
                   boxShadow:
