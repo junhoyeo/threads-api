@@ -1,3 +1,9 @@
+import { AnalyticsTrackerLogView } from '@/components/AnalyticsTracker';
+
 export default async function AppDirectory() {
-  return <></>;
+  return (
+    <>
+      <AnalyticsTrackerLogView event={['view_app_directory', undefined]} />
+    </>
+  );
 }
