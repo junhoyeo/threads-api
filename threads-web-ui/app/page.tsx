@@ -2,7 +2,16 @@ import { BookOpen, Star, Zap } from 'lucide-react';
 import { Globe } from '@/components/Globe';
 import './globals.css';
 
-export default function Home() {
+const getStargazersCount = async (): Promise<number> => {
+  // https://api.github.com/repos/junhoyeo/threads-api
+  const res = await fetch('https://api.github.com/repos/junhoyeo/threads-api');
+  const data = await res.json();
+  return data.stargazers_count;
+};
+
+export default async function Home() {
+  const stargazersCount = await getStargazersCount();
+
   return (
     <>
       <div className="z-0 flex flex-col items-center">
@@ -41,7 +50,7 @@ export default function Home() {
               yarn add <span className="text-slate-50">threads-api</span>
             </span>
             <span className="absolute flex items-center text-sm gap-1 px-1.5 py-0.5 font-medium bg-yellow-200 rounded-sm text-black/80 -right-4 -bottom-3">
-              <Star className="text-zinc-900 fill-zinc-900" size={14} /> 1,306
+              <Star className="text-zinc-900 fill-zinc-900" size={14} /> {stargazersCount.toLocaleString()}
             </span>
           </div>
           <button className="mt-3 px-8 py-4 rounded-[16px] bg-black shadow-xl shadow-slate-900/20 text-slate-300">
@@ -57,11 +66,11 @@ export default function Home() {
         </div>
 
         <ul className="z-10 flex w-full max-w-4xl gap-2">
-          <li className="flex-1 p-4 rounded-xl bg-zinc-900">
-            <BookOpen /> Read Data
+          <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
+            <BookOpen /> <h3 className="mt-3 text-lg font-medium">Read Data</h3>
           </li>
-          <li className="flex-1 p-4 rounded-xl bg-zinc-900">
-            <Zap /> Publish Threads
+          <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
+            <Zap /> <h3 className="mt-3 text-lg font-medium">Publish Threads</h3>
           </li>
         </ul>
       </div>
