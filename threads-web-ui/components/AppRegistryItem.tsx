@@ -3,7 +3,7 @@ import PirateFlagIcon from '@/assets/pirate-flag.png';
 import { ExternalLink, Github } from 'lucide-react';
 import { AppRegistry } from '@/data/apps';
 
-export const AppDirectoryItem: React.FC<AppRegistry> = ({ ...app }) => {
+export const AppRegistryItem: React.FC<AppRegistry> = ({ ...app }) => {
   return (
     <li className="flex p-4 rounded-lg bg-zinc-900">
       {!!app.avatar ? (
