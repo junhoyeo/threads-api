@@ -1004,10 +1004,12 @@ export class ThreadsAPI {
     }
 
     if (!!options.parentPostID) {
-      data.text_post_app_info.reply_id = options.parentPostID;
+      // Ensure no user ID is included in the parent post ID.
+      data.text_post_app_info.reply_id = options.parentPostID.replace(/_\d+$/, '');
     }
     if (!!options.quotedPostID) {
-      data.text_post_app_info.quoted_post_id = options.quotedPostID;
+      // Ensure no user ID is included in the quoted post ID.
+      data.text_post_app_info.quoted_post_id = options.quotedPostID.replace(/_\d+$/, '');
     }
     if (!(options as any).image) {
       data.publish_mode = 'text_post';
