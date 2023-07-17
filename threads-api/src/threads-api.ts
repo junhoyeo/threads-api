@@ -3,17 +3,18 @@ import * as crypto from 'crypto';
 import 'dotenv/config';
 import * as mimeTypes from 'mrmime';
 import { v4 as uuidv4 } from 'uuid';
+
 import {
-  POST_URL,
-  POST_WITH_IMAGE_URL,
-  DEFAULT_LSD_TOKEN,
   BASE_API_URL,
-  LOGIN_EXPERIMENTS,
-  SIGNATURE_KEY,
   BASE_FOLLOW_PARAMS,
   BLOKS_VERSION,
-  IG_APP_ID,
+  DEFAULT_LSD_TOKEN,
   FOLLOW_NAV_CHAIN,
+  IG_APP_ID,
+  LOGIN_EXPERIMENTS,
+  POST_URL,
+  POST_WITH_IMAGE_URL,
+  SIGNATURE_KEY,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Thread, ThreadsUser } from './threads-types';
