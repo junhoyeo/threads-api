@@ -125,6 +125,15 @@ main();
 
 > **💡 TIP**: Use the [`url` field in `ThreadsAPIPublishOptions` to render Link Attachments(link previews).](https://github.com/junhoyeo/threads-api#-threads-with-link-attachment)
 
+###### ✨ Reply Control (from v1.4.6)
+
+```ts
+await threadsAPI.publish({
+  text: '🤖 Threads with Reply Control',
+  replyControl: 'accounts_you_follow', // 'everyone' | 'accounts_you_follow' | 'mentioned_only'
+});
+```
+
 ##### ✨ Threads with Image
 
 ```ts
