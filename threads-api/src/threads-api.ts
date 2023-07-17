@@ -1028,7 +1028,7 @@ export class ThreadsAPI {
     }
 
     if (res.data['status'] === 'ok') {
-      return res.data['media']['id'];
+      return res.data['media']['id'].replace(/_\d+$/, '');
     }
 
     return undefined;
