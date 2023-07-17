@@ -110,3 +110,8 @@ img {
   user-select: none;
   -webkit-user-drag: none;
 }
+
+::selection {
+  background-color: #e5e7eb;
+  color: #111827;
+}
