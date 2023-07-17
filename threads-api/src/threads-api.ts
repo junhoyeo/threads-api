@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as crypto from 'crypto';
 import 'dotenv/config';
-import mimeTypes from 'mrmime';
+import * as mimeTypes from 'mrmime';
 import { v4 as uuidv4 } from 'uuid';
 import {
   POST_URL,
