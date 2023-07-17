@@ -1034,7 +1034,7 @@ export class ThreadsAPI {
     };
 
     let endpoint = POST_URL;
-    let attachment = options.attachment as CombineUnion<ThreadsAPIPostAttachment> | undefined;
+    let attachment = options.attachment;
     if (!attachment) {
       if ('image' in options && options.image) {
         attachment = { image: options.image };
