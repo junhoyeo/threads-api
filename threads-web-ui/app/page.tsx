@@ -57,11 +57,11 @@ export default function Home() {
         </div>
 
         <ul className="z-10 flex w-full max-w-4xl gap-2">
-          <li className="flex-1 p-4 rounded-xl bg-zinc-900">
-            <BookOpen /> Read Data
+          <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
+            <BookOpen /> <h3 className="mt-3 text-lg font-medium">Read Data</h3>
           </li>
-          <li className="flex-1 p-4 rounded-xl bg-zinc-900">
-            <Zap /> Publish Threads
+          <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
+            <Zap /> <h3 className="mt-3 text-lg font-medium">Publish Threads</h3>
           </li>
         </ul>
       </div>
