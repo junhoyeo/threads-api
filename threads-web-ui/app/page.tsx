@@ -5,8 +5,9 @@ import { Globe } from '@/components/Globe';
 import './globals.css';
 
 const getStargazersCount = async (): Promise<number> => {
-  // https://api.github.com/repos/junhoyeo/threads-api
-  const res = await fetch('https://api.github.com/repos/junhoyeo/threads-api');
+  const res = await fetch('https://api.github.com/repos/junhoyeo/threads-api', {
+    next: { revalidate: 60 },
+  });
   const data = await res.json();
   return data.stargazers_count;
 };
@@ -61,9 +62,11 @@ export default async function Home() {
               <Star className="text-zinc-900 fill-zinc-900" size={14} /> {stargazersCount.toLocaleString()}
             </span>
           </div>
-          <button className="mt-3 px-8 py-4 rounded-[16px] bg-black shadow-xl shadow-slate-900/20 text-slate-300">
-            View on GitHub
-          </button>
+          <a href="https://github.com/junhoyeo/threads-api">
+            <button className="mt-3 px-8 py-4 rounded-[16px] bg-black shadow-xl shadow-slate-900/20 text-slate-300">
+              View on GitHub
+            </button>
+          </a>
         </div>
 
         <div className="mt-[-200px] mb-[-156px] z-10 opacity-40 relative">
@@ -73,7 +76,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <ul className="z-10 flex w-full max-w-4xl gap-2">
+        <ul className="z-10 flex w-full max-w-4xl gap-2 px-5">
           <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
             <BookOpen /> <h3 className="mt-3 text-lg font-medium">Read Data</h3>
           </li>
