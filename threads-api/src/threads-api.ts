@@ -16,7 +16,7 @@ import {
   FOLLOW_NAV_CHAIN,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
-import { Extensions, Post, Thread, ThreadsUser } from './threads-types';
+import { Extensions, Post, Story, Thread, ThreadsUser } from './threads-types';
 
 const generateDeviceID = () => `android-${(Math.random() * 1e24).toString(36)}`;
 
@@ -53,6 +53,11 @@ export type GetUserProfileThreadsPaginatedResponse = {
   next_max_id?: string;
   medias: [];
   threads: Thread[];
+};
+
+export type GetUserProfileLoggedInResponse = {
+  users: ThreadsUser[];
+  status: 'ok';
 };
 
 export type GetUserProfileFollowPaginatedResponse = {
@@ -94,7 +99,18 @@ export type GetNotificationsOptions = {
   pagination_first_record_timestamp?: number;
 }
 
+export interface GetNotificationsPagination {
+  maxID?: string;
+  firstRecordTimestamp?: number;
+}
+
 export type GetNotificationsPaginatedResponse = {
+  counts: {
+    [key: string]: any;
+  },
+  last_checked: number;
+  new_stories: Story[];
+  old_stories: Story[];
   continuation_token: number;
   subscription: any;
   is_last_page: boolean;
@@ -102,6 +118,13 @@ export type GetNotificationsPaginatedResponse = {
   auto_load_more_enabled: boolean;
   pagination_first_record_timestamp: number;
   filters: any[];
+  status: 'ok';
+}
+
+export type GetRecommendedPaginatedResponse = {
+  users: ThreadsUser[];
+  paging_token: string;
+  has_more: boolean;
   status: 'ok';
 }
 
@@ -210,6 +233,10 @@ interface UserIDQuerier<T extends any> {
   (username: string, userID: string, options?: AxiosRequestConfig): Promise<T>;
 }
 
+interface UserProfileQuerier<T extends any> {
+  (userID: string, options?: AxiosRequestConfig): Promise<T>;
+}
+
 interface PaginationUserIDQuerier<T extends any> {
   (userID: string, maxID?: string, options?: AxiosRequestConfig): Promise<T>;
 }
@@ -218,15 +245,25 @@ interface PaginationRepliesQuerier<T extends any> {
   (postID: string, maxID?: string, options?: AxiosRequestConfig): Promise<T>;
 }
 
-interface GetNotificationsPagination {
-  maxID?: string;
-  firstRecordTimestamp?: number;
-}
-
 interface PaginationNotificationsQuerier<T extends any> { 
   (filter?: GetNotificationsFilter, pagination?: GetNotificationsPagination, config?: AxiosRequestConfig): Promise<T>;
 }
 
+interface PaginationRecommendedQuerier<T extends any> { 
+  (maxID?: string, config?: AxiosRequestConfig): Promise<T>;
+}
+
+interface SearchQuerier<T extends any> {
+  (query: string, count?: number, options?: AxiosRequestConfig): Promise<T>;
+}
+
+export type SearchResponse = {
+  num_results: number;
+  users: ThreadsUser[];
+  has_more: boolean;
+  rank_token: string;
+  status: 'ok';
+}
 
 export type PaginationAndSearchOptions = {
   maxID?: string;
@@ -649,6 +686,29 @@ export class ThreadsAPI {
     return user;
   };
 
+  getUserProfileLoggedIn: UserProfileQuerier<GetUserProfileLoggedInResponse> = async (
+    userID,
+    options = {},
+  ): Promise<GetUserProfileLoggedInResponse> => {
+    let data: GetUserProfileLoggedInResponse | ErrorResponse | undefined = undefined;
+    try {
+      const res = await this._toggleAuthGetRequest<GetUserProfileLoggedInResponse>(
+        `${BASE_API_URL}/api/v1/users/${userID}/info?is_prefetch=false&entry_point=profile&from_module=ProfileViewModel`,
+        options,
+      );
+      data = res.data;
+    } catch (error: any) {
+      data = error.response?.data;
+    }
+    if (data?.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[USER FEED] Failed to fetch', data);
+      }
+      throw new Error('Failed to fetch user feed: ' + JSON.stringify(data));
+    }
+    return data;
+  };
+
   getUserProfileThreads: UserIDQuerier<Thread[]> = async (...params) => {
     const { userID, options } = this._destructureFromUserIDQuerier(params);
     if (this.verbose) {
@@ -673,18 +733,11 @@ export class ThreadsAPI {
     maxID = '',
     options = {},
   ): Promise<GetUserProfileThreadsPaginatedResponse> => {
-    if (!this.token) {
-      await this.getToken();
-    }
-    if (!this.token) {
-      throw new Error('Token not found');
-    }
-
     let data: GetUserProfileThreadsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await axios.get<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
-        `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/${maxID && `?max_id=${maxID}`}`,
-        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+      const res = await this._toggleAuthGetRequest<GetUserProfileThreadsPaginatedResponse>(
+        `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/${maxID ? `?max_id=${maxID}` : ''}`,
+        options,
       );
       data = res.data;
     } catch (error: any) {
@@ -732,9 +785,9 @@ export class ThreadsAPI {
 
     let data: GetUserProfileThreadsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await axios.get<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
-        `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${maxID && `?max_id=${maxID}`}`,
-        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+      const res = await this._toggleAuthGetRequest<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
+        `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${maxID ? `?max_id=${maxID}` : ''}`,
+        options,
       );
       data = res.data;
     } catch (error: any) {
@@ -754,13 +807,6 @@ export class ThreadsAPI {
     { maxID, query } = {},
     options?: AxiosRequestConfig,
   ) => {
-    if (!this.token) {
-      await this.getToken();
-    }
-    if (!this.token) {
-      throw new Error('Token not found');
-    }
-
     let data: GetUserProfileFollowPaginatedResponse | ErrorResponse | undefined = undefined;
 
     const params = new URLSearchParams(BASE_FOLLOW_PARAMS);
@@ -769,11 +815,11 @@ export class ThreadsAPI {
     if (query) params.append('query', query);
 
     try {
-      const res = await axios.get<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
+      const res = await this._toggleAuthGetRequest<GetUserProfileFollowPaginatedResponse>(
         `https://i.instagram.com/api/v1/friendships/${userID}/followers/?${params.toString()}`,
         {
           ...options,
-          headers: { ...this._getInstaHeaders(), 'X-Ig-Nav-Chain': FOLLOW_NAV_CHAIN, ...options?.headers },
+          headers: { 'X-Ig-Nav-Chain': FOLLOW_NAV_CHAIN, ...options?.headers },
         },
       );
       data = res.data;
@@ -794,13 +840,6 @@ export class ThreadsAPI {
     { maxID, query } = {},
     options?: AxiosRequestConfig,
   ) => {
-    if (!this.token) {
-      await this.getToken();
-    }
-    if (!this.token) {
-      throw new Error('Token not found');
-    }
-
     let data: GetUserProfileFollowPaginatedResponse | ErrorResponse | undefined = undefined;
 
     const params = new URLSearchParams(BASE_FOLLOW_PARAMS);
@@ -809,11 +848,11 @@ export class ThreadsAPI {
     if (query) params.append('query', query);
 
     try {
-      const res = await axios.get<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
+      const res = await this._toggleAuthGetRequest<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
         `https://i.instagram.com/api/v1/friendships/${userID}/following/?${params.toString()}`,
         {
           ...options,
-          headers: { ...this._getInstaHeaders(), 'X-Ig-Nav-Chain': FOLLOW_NAV_CHAIN, ...options?.headers },
+          headers: { 'X-Ig-Nav-Chain': FOLLOW_NAV_CHAIN, ...options?.headers },
         },
       );
       data = res.data;
@@ -873,18 +912,11 @@ export class ThreadsAPI {
     maxID = '',
     options = {},
   ): Promise<GetThreadRepliesPaginatedResponse> => {
-    if (!this.token) {
-      await this.getToken();
-    }
-    if (!this.token) {
-      throw new Error('Token not found');
-    }
-
     let data: GetThreadRepliesPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await axios.get<GetThreadRepliesPaginatedResponse | ErrorResponse>(
-        `${BASE_API_URL}/api/v1/text_feed/${postID}/replies/${maxID && `?paging_token=${encodeURIComponent(maxID)}`}`,
-        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+      const res = await this._toggleAuthGetRequest<GetThreadRepliesPaginatedResponse | ErrorResponse>(
+        `${BASE_API_URL}/api/v1/text_feed/${postID}/replies/${maxID ? `?paging_token=${maxID}` : ''}`,
+        options,
       );
       data = res.data;
     } catch (error: any) {
@@ -942,7 +974,25 @@ export class ThreadsAPI {
     }
   };
 
-  _toggleAuthPostRequest = async <T extends any>(
+  _toggleAuthGetRequest = async <T extends any | ErrorResponse | undefined>(
+    url: string,
+    options?: AxiosRequestConfig,
+  ) => {
+    const token = await this.getToken();
+    if (!token) {
+      throw new Error('Token not found');
+    }
+    const res = await axios.get<T>(url, {
+      ...options,
+      headers: {
+        ...this._getInstaHeaders(),
+        ...options?.headers
+      }
+    });
+    return res;
+  };
+
+  _toggleAuthPostRequest = async <T extends any | ErrorResponse | undefined>(
     url: string,
     data?: Record<string, string>,
     options?: AxiosRequestConfig,
@@ -1046,15 +1096,11 @@ export class ThreadsAPI {
       data.target_posts_author_id = muteOptions.userID;
     }
 
-    const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
+    const payload = {
+      signed_body: `SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`,
+    }
 
-    const res = await axios.post(url, payload, {
-      httpAgent: this.httpAgent,
-      httpsAgent: this.httpsAgent,
-      headers: this._getAppHeaders(),
-      timeout: 60 * 1000,
-      ...options,
-    });
+    const res = await this._toggleAuthPostRequest<any>(url, payload, options);
     if (this.verbose) {
       console.debug('[MUTE]', res.data);
     }
@@ -1085,17 +1131,52 @@ export class ThreadsAPI {
       data.target_posts_author_id = muteOptions.userID;
     }
 
-    const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
+    const payload = {
+      signed_body: `SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`,
+    }
 
-    const res = await axios.post(url, payload, {
-      httpAgent: this.httpAgent,
-      httpsAgent: this.httpsAgent,
-      headers: this._getAppHeaders(),
-      timeout: 60 * 1000,
-      ...options,
-    });
+    const res = await this._toggleAuthPostRequest<any>(url, payload, options);
     if (this.verbose) {
       console.debug('[UNMUTE]', res.data);
+    }
+    return res.data;
+  };
+  block = async (userID: string, options?: AxiosRequestConfig): Promise<boolean> => {
+    const url = `${BASE_API_URL}/api/v1/friendships/block/${userID}/`;
+    let data = {
+      surface: 'ig_text_feed_timeline',
+      is_auto_block_enabled: true,
+      user_id: userID,
+      _uid: this.userID,
+      _uuid: this.deviceID
+    }
+
+    const payload = {
+      signed_body: `SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`,
+    }
+
+    const res = await this._toggleAuthPostRequest<any>(url, payload, options);
+    if (this.verbose) {
+      console.debug('[MUTE]', res.data);
+    }
+    return res.data;
+  };
+  unblock = async (userID: string, options?: AxiosRequestConfig): Promise<boolean> => {
+    const url = `${BASE_API_URL}/api/v1/friendships/unblock/${userID}/`;
+    let data = {
+      user_id: userID,
+      _uid: this.userID,
+      _uuid: this.deviceID,
+      container_module: 'ig_text_feed_timeline'
+    }
+
+    const payload = {
+      signed_body: `SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`,
+    }
+
+    const res = await this._toggleAuthPostRequest<any>(url, payload, options);
+    if (this.verbose) {
+      console.debug('[MUTE]', res.data);
     }
     return res.data;
   };
@@ -1122,11 +1203,93 @@ export class ThreadsAPI {
 			params.pagination_first_record_timestamp = pagination.firstRecordTimestamp;
 		}
 
-    const res = await axios.get<GetNotificationsPaginatedResponse>(
-      `${BASE_API_URL}/api/v1/text_feed/text_app_notifications/`,
-      options,
-    );
+    const queryString = Object.entries(params).map( ([key, value]) => key + '=' + value ).join('&');
+
+    let data: GetNotificationsPaginatedResponse | ErrorResponse | undefined = undefined;
+    try {
+      const res = await this._toggleAuthGetRequest<GetNotificationsPaginatedResponse>(
+        `${BASE_API_URL}/api/v1/text_feed/text_app_notifications/?${queryString}`,
+        options,
+      );
+      data = res.data;
+    } catch (error: any) {
+      data = error.response?.data;
+    }
+    if (data?.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[NOTIFICATIONS] Failed to fetch', data);
+      }
+      throw new Error('Failed to fetch notifications: ' + JSON.stringify(data));
+    }
+    return data;
+  };
+
+  setNotificationsSeen = async (options?: AxiosRequestConfig): Promise<boolean> => {
+    const url = `${BASE_API_URL}/api/v1/text_feed/text_app_inbox_seen/`;
+    const payload = {
+      _uuid: `${this.userID}`,
+    }
+    const res = await this._toggleAuthPostRequest<any>(url, payload, options);
+    if (this.verbose) {
+      console.debug('[SET_NOTIFICATIONS_SEEN]', res.data);
+    }
     return res.data;
+  };
+
+  search: SearchQuerier<SearchResponse> = async (
+    query,
+    count = 30,
+    options = {},
+  ): Promise<SearchResponse> => {
+
+    let params = {
+			q: query,
+      count
+		}
+    
+    const queryString = Object.entries(params).map( ([key, value]) => key + '=' + value ).join('&');
+
+    let data: SearchResponse | ErrorResponse | undefined = undefined;
+    try {
+      const res = await this._toggleAuthGetRequest<SearchResponse>(
+        `${BASE_API_URL}/api/v1/users/search/?${queryString}`,
+        options,
+      );
+      data = res.data;
+    } catch (error: any) {
+      data = error.response?.data;
+    }
+    if (data?.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[NOTIFICATIONS] Failed to fetch', data);
+      }
+      throw new Error('Failed to fetch notifications: ' + JSON.stringify(data));
+    }
+    return data;
+  };
+
+  getRecommended: PaginationRecommendedQuerier<GetRecommendedPaginatedResponse> = async (
+    maxID = '',
+    options = {},
+  ): Promise<GetRecommendedPaginatedResponse> => {
+
+    let data: GetRecommendedPaginatedResponse | ErrorResponse | undefined = undefined;
+    try {
+      const res = await this._toggleAuthGetRequest<GetRecommendedPaginatedResponse>(
+        `${BASE_API_URL}/api/v1/text_feed/recommended_users/?${maxID ? `?max_id=${maxID}` : ''}`,
+        options,
+      );
+      data = res.data;
+    } catch (error: any) {
+      data = error.response?.data;
+    }
+    if (data?.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[RECOMMENDED] Failed to fetch', data);
+      }
+      throw new Error('Failed to fetch recommended users: ' + JSON.stringify(data));
+    }
+    return data;
   };
 
   getToken = async (): Promise<string | undefined> => {
