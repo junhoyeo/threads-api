@@ -8,7 +8,7 @@ export const AppDirectoryItem: React.FC = () => {
       <div
         className="w-[100px] h-[100px] flex items-center justify-center rounded-xl relative"
         style={{
-          backgroundImage: `url('/gradient.jpg')`,
+          backgroundImage: `url('/assets/gradient.jpg')`,
           backgroundSize: 'cover',
         }}
       >
