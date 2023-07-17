@@ -8,11 +8,10 @@ export const AppDirectoryItem: React.FC = () => {
       <div
         className="w-[100px] h-[100px] flex items-center justify-center rounded-xl relative"
         style={{
-          backgroundImage: `url('/gradient.jpg')`,
+          backgroundImage: `url('/assets/mesh-gradient.png')`,
           backgroundSize: 'cover',
         }}
       >
-        <div className="absolute top-0 bottom-0 left-0 right-0 backdrop-sepia" />
         <Image
           src={PirateFlagIcon}
           alt="Pirate Flag"
