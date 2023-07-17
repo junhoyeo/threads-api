@@ -5,7 +5,11 @@ import { Globe } from '@/components/Globe';
 import { UnaffiliatedBrands } from '@/components/UnaffiliatedBrands';
 import { AmplitudeClient } from 'amplitude-js';
 import { Analytics } from '@/lib/analytics';
-import { AnalyticsTrackerLogView } from '@/components/AnalyticsTracker';
+import {
+  AnalyticsTrackedAnchor,
+  AnalyticsTrackedLink,
+  AnalyticsTrackerLogView,
+} from '@/components/AnalyticsTracker';
 import Link from 'next/link';
 
 const getStargazersCount = async (): Promise<number> => {
@@ -67,23 +71,48 @@ export default async function Home() {
             <span className="font-mono font-medium text-slate-400">
               yarn add <span className="text-slate-50">threads-api</span>
             </span>
-            <a href="https://github.com/junhoyeo/threads-api/stargazers" target="_blank">
+            <AnalyticsTrackedAnchor
+              href="https://github.com/junhoyeo/threads-api/stargazers"
+              target="_blank"
+              event={[
+                'click_landing_link',
+                {
+                  title: stargazersCount.toLocaleString(),
+                  url: 'https://github.com/junhoyeo/threads-api/stargazers',
+                  medium: 'home_header',
+                },
+              ]}
+            >
               <span className="absolute flex items-center text-sm gap-1 px-1.5 py-0.5 font-medium bg-yellow-200 rounded-sm text-black/80 -right-4 -bottom-3 hover:scale-110 hover:bg-yellow-300 transition-all">
                 <Star className="text-zinc-900 fill-zinc-900" size={14} /> {stargazersCount.toLocaleString()}
               </span>
-            </a>
+            </AnalyticsTrackedAnchor>
           </div>
           <div className="flex gap-2 mt-5">
-            <a href="https://github.com/junhoyeo/threads-api" target="_blank">
+            <AnalyticsTrackedAnchor
+              href="https://github.com/junhoyeo/threads-api"
+              target="_blank"
+              event={[
+                'click_landing_link',
+                {
+                  title: 'View on GitHub',
+                  url: 'https://github.com/junhoyeo/threads-api',
+                  medium: 'home_header',
+                },
+              ]}
+            >
               <button className="px-8 py-4 rounded-[16px] bg-black shadow-2xl shadow-slate-600/60 text-slate-300 font-bold">
                 View on GitHub
               </button>
-            </a>
-            <Link href="/apps">
+            </AnalyticsTrackedAnchor>
+            <AnalyticsTrackedLink
+              href="/apps"
+              event={['click_landing_link', { title: 'Explore Apps', url: '/apps', medium: 'home_header' }]}
+            >
               <button className="px-8 py-4 rounded-[16px] bg-white shadow-2xl shadow-slate-600/60 text-black font-bold">
                 Explore Apps
               </button>
-            </Link>
+            </AnalyticsTrackedLink>
           </div>
         </div>
 

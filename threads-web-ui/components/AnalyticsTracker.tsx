@@ -1,6 +1,7 @@
 'use client';
 
 import { Analytics, AnalyticsEvent } from '@/lib/analytics';
+import Link, { LinkProps } from 'next/link';
 import { useEffect, useRef } from 'react';
 
 export const AnalyticsTrackerInit: React.FC = () => {
@@ -22,3 +23,22 @@ export const AnalyticsTrackerLogView = <TName extends keyof AnalyticsEvent>(prop
   }, []);
   return <></>;
 };
+
+export const AnalyticsTrackedAnchor = <TName extends keyof AnalyticsEvent>({
+  event,
+  ...props
+}: {
+  event: [name: TName, properties: AnalyticsEvent[TName]];
+} & React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+  <a onClick={() => Analytics.logEvent(...event)} {...props} />
+);
+
+export const AnalyticsTrackedLink = <TName extends keyof AnalyticsEvent>({
+  event,
+  ...props
+}: {
+  event: [name: TName, properties: AnalyticsEvent[TName]];
+} & LinkProps &
+  React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+  <Link onClick={() => Analytics.logEvent(...event)} {...props} />
+);

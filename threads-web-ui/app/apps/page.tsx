@@ -5,7 +5,7 @@ import { APPS } from '@/data/apps';
 export default async function AppDirectory() {
   return (
     <>
-      <AnalyticsTrackerLogView event={['view_app_directory', undefined]} />
+      <AnalyticsTrackerLogView event={['view_app_registry', undefined]} />
       <div className="">
         <header className="flex flex-col gap-5 pt-[120px] pb-12 px-4 items-center rounded-3xl">
           <h1 className="text-6xl font-black tracking-tight text-center text-slate-500">Explore Apps</h1>

@@ -2,11 +2,14 @@ const isBrowser = typeof window !== 'undefined';
 
 export type AnalyticsEvent = {
   view_landing: undefined;
-  view_app_directory: undefined;
-  click_social_link: {
+  view_app_registry: undefined;
+  click_landing_link: {
     title: string;
     url: string;
     medium?: 'home_header' | string;
+  };
+  click_app_registry_link: {
+    url: string;
   };
 };
 

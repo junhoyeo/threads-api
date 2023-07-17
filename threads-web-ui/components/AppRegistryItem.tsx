@@ -2,6 +2,7 @@ import Image from 'next/image';
 import PirateFlagIcon from '@/assets/pirate-flag.png';
 import { ExternalLink, Github } from 'lucide-react';
 import { AppRegistry } from '@/data/apps';
+import { AnalyticsTrackedAnchor } from './AnalyticsTracker';
 
 export const AppRegistryItem: React.FC<AppRegistry> = ({ ...app }) => {
   return (
@@ -35,39 +36,61 @@ export const AppRegistryItem: React.FC<AppRegistry> = ({ ...app }) => {
           <div className="flex items-center gap-2">
             <h3 className="text-xl font-medium text-slate-200">{app.name} </h3>
             {!!app.threads_username && (
-              <a href={`https://www.threads.net/@${app.threads_username}`} target="_blank">
+              <AnalyticsTrackedAnchor
+                href={`https://www.threads.net/@${app.threads_username}`}
+                target="_blank"
+                event={[
+                  'click_app_registry_link',
+                  { url: `https://www.threads.net/@${app.threads_username}` },
+                ]}
+              >
                 <code className="h-fit w-fit px-2 py-0.5 text-sm font-normal rounded-md bg-zinc-700 text-slate-300">
                   {`@${app.threads_username}`}
                 </code>
-              </a>
+              </AnalyticsTrackedAnchor>
             )}
           </div>
           <div className="flex gap-1.5">
             {!!app.threads_username && (
-              <a href={`https://www.threads.net/@${app.threads_username}`} target="_blank">
+              <AnalyticsTrackedAnchor
+                href={`https://www.threads.net/@${app.threads_username}`}
+                target="_blank"
+                event={[
+                  'click_app_registry_link',
+                  { url: `https://www.threads.net/@${app.threads_username}` },
+                ]}
+              >
                 <button className="flex items-center gap-2 px-2 py-1 font-medium rounded-lg bg-slate-700 text-slate-300">
                   <span>Threads</span>
                   <ExternalLink size={18} />
                 </button>
-              </a>
+              </AnalyticsTrackedAnchor>
             )}
 
             {!!app.url && (
-              <a href={app.url} target="_blank">
+              <AnalyticsTrackedAnchor
+                href={app.url}
+                target="_blank"
+                event={['click_app_registry_link', { url: app.url! }]}
+              >
                 <button className="flex items-center gap-2 px-2 py-1 font-medium rounded-lg bg-slate-700 text-slate-300">
                   <span>App</span>
                   <ExternalLink size={18} />
                 </button>
-              </a>
+              </AnalyticsTrackedAnchor>
             )}
 
             {!!app.repository && (
-              <a href={app.repository} target="_blank">
+              <AnalyticsTrackedAnchor
+                href={app.repository}
+                target="_blank"
+                event={['click_app_registry_link', { url: app.repository! }]}
+              >
                 <button className="flex items-center gap-2 px-2 py-1 font-medium rounded-lg bg-slate-700 text-slate-300">
                   <span>GitHub</span>
                   <Github size={18} />
                 </button>
-              </a>
+              </AnalyticsTrackedAnchor>
             )}
           </div>
         </div>
