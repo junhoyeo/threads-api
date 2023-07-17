@@ -1,5 +1,6 @@
 import { AnalyticsTrackerLogView } from '@/components/AnalyticsTracker';
 import { AppDirectoryItem } from '@/components/AppDirectoryItem';
+import { APPS } from '@/data/apps';
 
 export default async function AppDirectory() {
   return (
@@ -14,9 +15,9 @@ export default async function AppDirectory() {
         </header>
 
         <ul className="flex flex-col w-full max-w-5xl gap-2 px-5 mx-auto">
-          <AppDirectoryItem />
-          <AppDirectoryItem />
-          <AppDirectoryItem />
+          {APPS.map((app) => (
+            <AppDirectoryItem key={app.name} {...app} />
+          ))}
         </ul>
       </div>
     </>
