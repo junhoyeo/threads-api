@@ -3,8 +3,9 @@ import { Globe } from '@/components/Globe';
 import './globals.css';
 
 const getStargazersCount = async (): Promise<number> => {
-  // https://api.github.com/repos/junhoyeo/threads-api
-  const res = await fetch('https://api.github.com/repos/junhoyeo/threads-api');
+  const res = await fetch('https://api.github.com/repos/junhoyeo/threads-api', {
+    next: { revalidate: 60 },
+  });
   const data = await res.json();
   return data.stargazers_count;
 };
@@ -71,7 +72,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <ul className="z-10 flex w-full max-w-4xl gap-2">
+        <ul className="z-10 flex w-full max-w-4xl gap-2 px-5">
           <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
             <BookOpen /> <h3 className="mt-3 text-lg font-medium">Read Data</h3>
           </li>
