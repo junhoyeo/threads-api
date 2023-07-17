@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 
 import './globals.css';
 import { NavigationBar } from '@/components/NavigationBar';
+import { Footer } from '@/components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -18,6 +19,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <NavigationBar />
 
         {children}
+
+        <Footer />
       </body>
     </html>
   );

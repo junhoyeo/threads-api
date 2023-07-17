@@ -1,7 +1,7 @@
 'use client';
 import clsx from 'clsx';
 import { usePathname, useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 const ITEMS = [
   { title: 'About', url: '/' },
