@@ -1,10 +1,9 @@
+import { threadsAPI } from '@/lib/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { Thread, ThreadsIcons } from 'react-threads';
-import { Thread as ThreadType, ThreadsAPI, ThreadsUser } from 'threads-api';
-
-const threadsAPI = new ThreadsAPI({ verbose: true });
+import { Thread as ThreadType, ThreadsUser } from 'threads-api';
 
 const UserProfilePage = async ({ params }: { params: { username: string } }) => {
   const username = params.username;
