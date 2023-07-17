@@ -1,6 +1,6 @@
 'use client';
 import clsx from 'clsx';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
 const ITEMS = [
@@ -10,7 +10,8 @@ const ITEMS = [
 
 export const NavigationBar: React.FC = () => {
   const router = useRouter();
-  const [selected, setSelected] = useState<string>(ITEMS[0].url);
+  const pathname = usePathname();
+  const selected = pathname;
 
   const left = useMemo(() => {
     const item = ITEMS.find((item) => item.url === selected) || ITEMS[0];
@@ -37,7 +38,6 @@ export const NavigationBar: React.FC = () => {
               selected !== item.url ? 'text-slate-400' : 'text-slate-900',
             )}
             onClick={() => {
-              setSelected(item.url);
               router.push(item.url);
             }}
           >

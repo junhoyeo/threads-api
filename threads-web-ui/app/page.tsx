@@ -2,9 +2,7 @@ import { BookOpen, Star, Zap } from 'lucide-react';
 
 import { Globe } from '@/components/Globe';
 
-import './globals.css';
 import { UnaffiliatedBrands } from '@/components/UnaffiliatedBrands';
-import { NavigationBar } from '@/components/NavigationBar';
 
 const getStargazersCount = async (): Promise<number> => {
   try {
@@ -23,8 +21,6 @@ export default async function Home() {
 
   return (
     <>
-      <NavigationBar />
-
       <div className="z-0 flex flex-col items-center">
         <div className="z-20 flex flex-col items-center">
           <header className="flex flex-col gap-5 pt-[120px] pb-12 px-4 items-center rounded-3xl">
