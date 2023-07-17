@@ -148,32 +148,50 @@ export type ThreadsAPIOptions = {
   maxRetries?: number;
 };
 
-export type ThreadsAPIPostReplyControl = 'everyone' | 'accounts_you_follow' | 'mentioned_only';
-
-const REPLY_CONTROL_IDS: Record<ThreadsAPIPostReplyControl, number> = {
+const REPLY_CONTROL_OPTIONS = {
   everyone: 0,
   accounts_you_follow: 1,
   mentioned_only: 2,
-};
+} as const;
 
-export type ThreadsAPIPostAttachment =
-  | { url: string }
-  | { image: string | ThreadsAPIImage }
-  | { sidecar: (string | ThreadsAPIImage)[] };
+export type PostReplyControl = keyof typeof REPLY_CONTROL_OPTIONS;
 
-export type ThreadsAPIPublishOptions = {
+/** @deprecated Use `PostReplyControl` instead. */
+export type ThreadsAPIPostReplyControl = PostReplyControl;
+
+export type ImageDefinition = { path: string } | { type: string; data: Buffer };
+
+/** @deprecated Use `ImageDefinition` instead. */
+export type ThreadsAPIImage = ImageDefinition;
+
+export interface ImageAttachment {
+  image: string | ImageDefinition;
+}
+
+export interface SidecarAttachment {
+  sidecar: (string | ImageDefinition)[];
+}
+
+export interface LinkAttachment {
+  url: string;
+}
+
+export type PostAttachment = StrictUnion<ImageAttachment | SidecarAttachment | LinkAttachment>;
+
+export type PublishOptions = {
   text?: string;
-  replyControl?: ThreadsAPIPostReplyControl;
+  replyControl?: PostReplyControl;
   parentPostID?: string;
   quotedPostID?: string;
-  attachment?: ThreadsAPIPostAttachment;
+  attachment?: PostAttachment;
   /** @deprecated Use `attachment.url` instead. */
   url?: string;
   /** @deprecated Use `attachment.image` instead. */
-  image?: string | ThreadsAPIImage;
+  image?: string | ImageDefinition;
 };
 
-export type ThreadsAPIImage = { path: string } | { type: string; data: Buffer };
+/** @deprecated Use `PublishOptions` instead. */
+export type ThreadsAPIPublishOptions = PublishOptions;
 
 export const DEFAULT_DEVICE: AndroidDevice = {
   manufacturer: 'OnePlus',
@@ -988,9 +1006,8 @@ export class ThreadsAPI {
     };
   };
 
-  publish = async (rawOptions: ThreadsAPIPublishOptions | string): Promise<string | undefined> => {
-    const options: ThreadsAPIPublishOptions =
-      typeof rawOptions === 'string' ? { text: rawOptions } : rawOptions;
+  publish = async (rawOptions: PublishOptions | string): Promise<string | undefined> => {
+    const options: PublishOptions = typeof rawOptions === 'string' ? { text: rawOptions } : rawOptions;
     if (!this.token && (!this.username || !this.password)) {
       throw new Error('Username or password not set');
     }
@@ -1008,7 +1025,7 @@ export class ThreadsAPI {
     let data: any = {
       ...this._createUploadMetadata(),
       text_post_app_info: {
-        reply_control: REPLY_CONTROL_IDS[options.replyControl ?? 'everyone'],
+        reply_control: REPLY_CONTROL_OPTIONS[options.replyControl ?? 'everyone'],
       },
       _uid: userID,
       device_id: this.deviceID,
@@ -1110,7 +1127,7 @@ export class ThreadsAPI {
   };
 
   uploadImage = async (
-    image: string | ThreadsAPIImage,
+    image: string | ImageDefinition,
     uploadID = this._nextUploadID(),
   ): Promise<InstagramImageUploadResponse> => {
     const name = `${uploadID}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
@@ -1188,6 +1205,14 @@ export class ThreadsAPI {
     }
   };
 }
+
+type Simplify<T> = {} & { [P in keyof T]: T[P] };
+
+type StrictUnion<T> = CombineUnion<T> extends infer U
+  ? T extends any
+    ? Simplify<T & { [K in Exclude<keyof U, keyof T>]?: undefined }>
+    : never
+  : never;
 
 type CombineUnion<T> = Pick<T, keyof T> &
   Partial<(T extends any ? (x: T) => any : never) extends (x: infer U) => any ? U : never>;
