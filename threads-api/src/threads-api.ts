@@ -17,6 +17,7 @@ import {
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { Extensions, Post, Story, Thread, ThreadsUser } from './threads-types';
+import { ThreadsAPIError } from 'error';
 
 const generateDeviceID = () => `android-${(Math.random() * 1e24).toString(36)}`;
 
@@ -363,7 +364,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[SYNC LOGIN EXPERIMENT FAILED]', error.response.data);
       }
-      throw Error('Sync login experiment failed');
+      throw new Error('Sync login experiment failed');
     }
   };
 
@@ -476,7 +477,7 @@ export class ThreadsAPI {
         if (this.verbose) {
           console.error('[LOGIN] Failed to login', error);
         }
-        throw Error('Login Failed');
+        throw new Error('Login Failed');
       }
     };
 
@@ -704,7 +705,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[USER FEED] Failed to fetch', data);
       }
-      throw new Error('Failed to fetch user feed: ' + JSON.stringify(data));
+      throw new ThreadsAPIError('Failed to fetch user feed: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -747,7 +748,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[USER FEED] Failed to fetch', data);
       }
-      throw new Error('Failed to fetch user feed: ' + JSON.stringify(data));
+      throw new ThreadsAPIError('Failed to fetch user feed: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -797,7 +798,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[USER FEED] Failed to fetch', data);
       }
-      throw new Error('Failed to fetch user feed: ' + JSON.stringify(data));
+      throw new ThreadsAPIError('Failed to fetch user feed: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -830,7 +831,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[USER FOLLOWERS] Failed to fetch', data);
       }
-      throw new Error('Failed to fetch user followers: ' + JSON.stringify(data));
+      throw new ThreadsAPIError('Failed to fetch user followers: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -863,7 +864,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[USER FOLLOWING] Failed to fetch', data);
       }
-      throw new Error('Failed to fetch user following: ' + JSON.stringify(data));
+      throw new ThreadsAPIError('Failed to fetch user following: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -926,7 +927,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[USER FEED] Failed to fetch', data);
       }
-      throw new Error('Failed to fetch user feed: ' + JSON.stringify(data));
+      throw new ThreadsAPIError('Failed to fetch user feed: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -970,7 +971,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[TIMELINE FETCH FAILED]', error.response.data);
       }
-      throw Error('Failed to fetch timeline');
+      throw new Error('Failed to fetch timeline');
     }
   };
 
@@ -1219,7 +1220,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[NOTIFICATIONS] Failed to fetch', data);
       }
-      throw new Error('Failed to fetch notifications: ' + JSON.stringify(data));
+      throw new ThreadsAPIError('Failed to fetch notifications: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -1263,7 +1264,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[NOTIFICATIONS] Failed to fetch', data);
       }
-      throw new Error('Failed to fetch notifications: ' + JSON.stringify(data));
+      throw new ThreadsAPIError('Failed to fetch notifications: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -1287,7 +1288,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log('[RECOMMENDED] Failed to fetch', data);
       }
-      throw new Error('Failed to fetch recommended users: ' + JSON.stringify(data));
+      throw new ThreadsAPIError('Failed to fetch recommended users: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -1478,7 +1479,7 @@ export class ThreadsAPI {
       if (this.verbose) {
         console.log(`[UPLOAD_IMAGE] FAILED`, error.response.data);
       }
-      throw Error('Upload image failed');
+      throw new Error('Upload image failed');
     }
   };
 }
