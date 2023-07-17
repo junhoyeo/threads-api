@@ -37,6 +37,9 @@ declare global {
 }
 
 async function initialize() {
+  if (!isBrowser) {
+    return;
+  }
   if (window.initialized) {
     return;
   }
@@ -51,6 +54,9 @@ async function initialize() {
 }
 
 async function logEvent<TName extends keyof AnalyticsEvent>(name: TName, properties: AnalyticsEvent[TName]) {
+  if (!isBrowser) {
+    return;
+  }
   if (!window.initialized) {
     await initialize();
   }

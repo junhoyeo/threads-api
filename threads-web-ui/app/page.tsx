@@ -6,6 +6,7 @@ import { UnaffiliatedBrands } from '@/components/UnaffiliatedBrands';
 import { AmplitudeClient } from 'amplitude-js';
 import { Analytics } from '@/lib/analytics';
 import { AnalyticsTrackerLogView } from '@/components/AnalyticsTracker';
+import Link from 'next/link';
 
 const getStargazersCount = async (): Promise<number> => {
   try {
@@ -78,9 +79,11 @@ export default async function Home() {
                 View on GitHub
               </button>
             </a>
-            <button className="px-8 py-4 rounded-[16px] bg-white shadow-2xl shadow-slate-600/60 text-black font-bold">
-              Explore Apps
-            </button>
+            <Link href="/apps">
+              <button className="px-8 py-4 rounded-[16px] bg-white shadow-2xl shadow-slate-600/60 text-black font-bold">
+                Explore Apps
+              </button>
+            </Link>
           </div>
         </div>
 
