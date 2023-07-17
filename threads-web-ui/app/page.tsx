@@ -3,6 +3,7 @@ import { BookOpen, Star, Zap } from 'lucide-react';
 import { Globe } from '@/components/Globe';
 
 import './globals.css';
+import { UnaffiliatedBrands } from '@/components/UnaffiliatedBrands';
 
 const getStargazersCount = async (): Promise<number> => {
   const res = await fetch('https://api.github.com/repos/junhoyeo/threads-api', {
@@ -20,11 +21,11 @@ export default async function Home() {
       <div className="z-0 flex flex-col items-center">
         <div className="z-20 flex flex-col items-center">
           <header className="flex flex-col gap-5 pt-[64px] pb-12 px-4 items-center rounded-3xl">
-            <h1 className="text-6xl font-black tracking-tight text-center text-slate-500">
+            <h1 className="font-black tracking-tight text-center text-7xl text-slate-500">
               Making Threads <br />
               Work in <span className="text-slate-50">Code</span>
             </h1>
-            <p className="text-center text-slate-400">
+            <p className="text-2xl text-center text-slate-400">
               Threads API — Unofficial, Reverse-Engineered Clients for Threads.
             </p>
           </header>
@@ -83,14 +84,18 @@ export default async function Home() {
           </div>
         </div>
 
-        <ul className="z-10 flex w-full max-w-4xl gap-2 px-5">
-          <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
-            <BookOpen /> <h3 className="mt-3 text-lg font-medium">Read Data</h3>
-          </li>
-          <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
-            <Zap /> <h3 className="mt-3 text-lg font-medium">Publish Threads</h3>
-          </li>
-        </ul>
+        <div className="z-10 flex flex-col items-center w-full">
+          <UnaffiliatedBrands />
+
+          <ul className="flex w-full max-w-4xl gap-2 px-5">
+            <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
+              <BookOpen /> <h3 className="mt-3 text-lg font-medium">Read Data</h3>
+            </li>
+            <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
+              <Zap /> <h3 className="mt-3 text-lg font-medium">Publish Threads</h3>
+            </li>
+          </ul>
+        </div>
       </div>
     </>
   );
