@@ -60,9 +60,11 @@ export default async function Home() {
               <Star className="text-zinc-900 fill-zinc-900" size={14} /> {stargazersCount.toLocaleString()}
             </span>
           </div>
-          <button className="mt-3 px-8 py-4 rounded-[16px] bg-black shadow-xl shadow-slate-900/20 text-slate-300">
-            View on GitHub
-          </button>
+          <a href="https://github.com/junhoyeo/threads-api">
+            <button className="mt-3 px-8 py-4 rounded-[16px] bg-black shadow-xl shadow-slate-900/20 text-slate-300">
+              View on GitHub
+            </button>
+          </a>
         </div>
 
         <div className="mt-[-200px] mb-[-156px] z-10 opacity-40 relative">
