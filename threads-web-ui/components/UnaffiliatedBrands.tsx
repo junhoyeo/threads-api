@@ -14,16 +14,16 @@ export const UnaffiliatedBrands: React.FC = () => {
       <div className="mt-4 mb-20">
         <ul className="flex items-center justify-center w-full gap-10">
           <li>
-            <Image src={MetaLogo} alt="" className="h-[38px] w-fit" />
+            <Image src={MetaLogo} alt="Meta" className="h-[38px] w-fit" />
           </li>
           <li>
-            <Image src={InstagramLogo} alt="" className="h-[42px] w-fit" />
+            <Image src={InstagramLogo} alt="Instagram" className="h-[42px] w-fit" />
           </li>
           <li>
-            <Image src={TwitterLogo} alt="" className="h-[42px] w-fit" />
+            <Image src={TwitterLogo} alt="Twitter" className="h-[42px] w-fit" />
           </li>
           <li>
-            <Image src={OpenAILogo} alt="" className="h-[46px] w-fit" />
+            <Image src={OpenAILogo} alt="OpenAI" className="h-[46px] w-fit" />
           </li>
         </ul>
       </div>
