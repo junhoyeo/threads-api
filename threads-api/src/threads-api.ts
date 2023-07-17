@@ -16,7 +16,7 @@ import {
   FOLLOW_NAV_CHAIN,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
-import { Extensions, Thread, ThreadsUser } from './threads-types';
+import { Extensions, Post, Thread, ThreadsUser } from './threads-types';
 
 const generateDeviceID = () => `android-${(Math.random() * 1e24).toString(36)}`;
 
@@ -64,6 +64,18 @@ export type GetUserProfileFollowPaginatedResponse = {
   // has_more: boolean; this prop is confusing & always is false. use next_max_id === undefined for end of list
   should_limit_list_of_followers: boolean;
 };
+
+export type GetThreadRepliesPaginatedResponse = {
+  containing_thread: Thread;
+  reply_threads: Thread[];
+  subling_threads: Thread[];
+  paging_tokens: {
+    downward: string;
+  };
+  downwards_thread_will_continue: boolean;
+  target_post_reply_placeholder: string;
+  status: 'ok';
+}
 
 export type GetUserProfileThreadResponse = {
   data: {
@@ -173,6 +185,15 @@ interface UserIDQuerier<T extends any> {
 interface PaginationUserIDQuerier<T extends any> {
   (userID: string, maxID?: string, options?: AxiosRequestConfig): Promise<T>;
 }
+
+interface PaginationThreadsQuerier<T extends any> {
+  (maxID?: string, options?: AxiosRequestConfig): Promise<T>;
+}
+
+interface PaginationRepliesQuerier<T extends any> {
+  (postID: string, maxID?: string, options?: AxiosRequestConfig): Promise<T>;
+}
+
 
 export type PaginationAndSearchOptions = {
   maxID?: string;
@@ -814,6 +835,37 @@ export class ThreadsAPI {
     return thread;
   };
 
+  getThreadRepliesLoggedIn: PaginationRepliesQuerier<GetThreadRepliesPaginatedResponse> = async (
+    postID,
+    maxID = '',
+    options = {},
+  ): Promise<GetThreadRepliesPaginatedResponse> => {
+    if (!this.token) {
+      await this.getToken();
+    }
+    if (!this.token) {
+      throw new Error('Token not found');
+    }
+
+    let data: GetThreadRepliesPaginatedResponse | ErrorResponse | undefined = undefined;
+    try {
+      const res = await axios.get<GetThreadRepliesPaginatedResponse | ErrorResponse>(
+        `${BASE_API_URL}/api/v1/text_feed/${postID}/replies/${maxID && `?paging_token=${encodeURIComponent(maxID)}`}`,
+        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+      );
+      data = res.data;
+    } catch (error: any) {
+      data = error.response?.data;
+    }
+    if (data?.status !== 'ok') {
+      if (this.verbose) {
+        console.log('[USER FEED] Failed to fetch', data);
+      }
+      throw new Error('Failed to fetch user feed: ' + JSON.stringify(data));
+    }
+    return data;
+  };
+
   getThreadLikers = async (postID: string, options?: AxiosRequestConfig) => {
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
@@ -936,6 +988,8 @@ export class ThreadsAPI {
     }
     return res.data;
   };
+  //mute = async (userID: string, options?: AxiosRequestConfig) => {
+
 
   getToken = async (): Promise<string | undefined> => {
     if (this.token) {
