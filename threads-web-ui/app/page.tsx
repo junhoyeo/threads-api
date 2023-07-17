@@ -1,5 +1,7 @@
 import { BookOpen, Star, Zap } from 'lucide-react';
+
 import { Globe } from '@/components/Globe';
+
 import './globals.css';
 
 const getStargazersCount = async (): Promise<number> => {

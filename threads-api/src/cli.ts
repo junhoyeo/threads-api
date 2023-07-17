@@ -1,4 +1,5 @@
 import { program } from 'commander';
+
 import { ThreadsAPI } from './threads-api';
 
 const Threads = new ThreadsAPI();
