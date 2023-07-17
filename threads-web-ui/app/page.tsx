@@ -26,7 +26,13 @@ export default async function Home() {
             </p>
           </header>
 
-          <div className="bg-[rgba(243,245,247,0.15) w-[200px] h-[200px] rounded-[32px] overflow-hidden">
+          <div
+            className="bg-[rgba(243,245,247,0.15) w-[200px] h-[200px] rounded-[32px] overflow-hidden"
+            style={{
+              transform: 'translateZ(0)',
+              willChange: 'transform',
+            }}
+          >
             <div
               className="w-[200px] h-[200px] flex items-center justify-center backdrop-blur-sm"
               style={{
