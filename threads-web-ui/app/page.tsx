@@ -4,13 +4,18 @@ import { Globe } from '@/components/Globe';
 
 import './globals.css';
 import { UnaffiliatedBrands } from '@/components/UnaffiliatedBrands';
+import { NavigationBar } from '@/components/NavigationBar';
 
 const getStargazersCount = async (): Promise<number> => {
-  const res = await fetch('https://api.github.com/repos/junhoyeo/threads-api', {
-    next: { revalidate: 60 },
-  });
-  const data = await res.json();
-  return data.stargazers_count;
+  try {
+    const res = await fetch('https://api.github.com/repos/junhoyeo/threads-api', {
+      next: { revalidate: 60 },
+    });
+    const data = await res.json();
+    return data.stargazers_count;
+  } catch (e) {
+    return 1_341;
+  }
 };
 
 export default async function Home() {
@@ -18,9 +23,11 @@ export default async function Home() {
 
   return (
     <>
+      <NavigationBar />
+
       <div className="z-0 flex flex-col items-center">
         <div className="z-20 flex flex-col items-center">
-          <header className="flex flex-col gap-5 pt-[64px] pb-12 px-4 items-center rounded-3xl">
+          <header className="flex flex-col gap-5 pt-[120px] pb-12 px-4 items-center rounded-3xl">
             <h1 className="font-black tracking-tight text-center text-7xl text-slate-500">
               Making Threads <br />
               Work in <span className="text-slate-50">Code</span>
