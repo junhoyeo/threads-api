@@ -77,6 +77,34 @@ export type GetThreadRepliesPaginatedResponse = {
   status: 'ok';
 }
 
+
+export enum GetNotificationsFilter {
+  MENTIONS='text_post_app_mentions',
+  REPLIES='text_post_app_replies',
+  VERIFIED='verified'
+}
+
+export type GetNotificationsOptions = {
+  feed_type: string;
+  mark_as_seen: boolean;
+  timezone_offset: number;
+  timezone_name: string;
+  selected_filters?: GetNotificationsFilter;
+  max_id?: string;
+  pagination_first_record_timestamp?: number;
+}
+
+export type GetNotificationsPaginatedResponse = {
+  continuation_token: number;
+  subscription: any;
+  is_last_page: boolean;
+  next_max_id: string;
+  auto_load_more_enabled: boolean;
+  pagination_first_record_timestamp: number;
+  filters: any[];
+  status: 'ok';
+}
+
 export type GetUserProfileThreadResponse = {
   data: {
     data: {
@@ -186,12 +214,17 @@ interface PaginationUserIDQuerier<T extends any> {
   (userID: string, maxID?: string, options?: AxiosRequestConfig): Promise<T>;
 }
 
-interface PaginationThreadsQuerier<T extends any> {
-  (maxID?: string, options?: AxiosRequestConfig): Promise<T>;
-}
-
 interface PaginationRepliesQuerier<T extends any> {
   (postID: string, maxID?: string, options?: AxiosRequestConfig): Promise<T>;
+}
+
+interface GetNotificationsPagination {
+  maxID?: string;
+  firstRecordTimestamp?: number;
+}
+
+interface PaginationNotificationsQuerier<T extends any> { 
+  (filter?: GetNotificationsFilter, pagination?: GetNotificationsPagination, config?: AxiosRequestConfig): Promise<T>;
 }
 
 
@@ -835,7 +868,7 @@ export class ThreadsAPI {
     return thread;
   };
 
-  getThreadRepliesLoggedIn: PaginationRepliesQuerier<GetThreadRepliesPaginatedResponse> = async (
+  getThreadsLoggedIn: PaginationRepliesQuerier<GetThreadRepliesPaginatedResponse> = async (
     postID,
     maxID = '',
     options = {},
@@ -988,8 +1021,113 @@ export class ThreadsAPI {
     }
     return res.data;
   };
-  //mute = async (userID: string, options?: AxiosRequestConfig) => {
+  mute = async (muteOptions: {postID?: string, userID?: string}, options?: AxiosRequestConfig): Promise<boolean> => {
+    const url = `${BASE_API_URL}/api/v1/friendships/mute_posts_or_story_from_follow/`;
+    let data = {
+      _uid: this.userID,
+      _uuid: this.deviceID,
+      container_module: 'ig_text_feed_timeline'
+    } as {
+      media_id?: string;
+      _uid: string;
+      _uuid: string;
+      container_module: string;
+      target_posts_author_id?: string;
+    };
 
+    if (!muteOptions.postID && !muteOptions.userID) {
+      throw new Error('Post ID or User ID is required');
+    }
+
+    if (muteOptions.postID) {
+      data.media_id = muteOptions.postID;
+    }
+    if (muteOptions.userID) {
+      data.target_posts_author_id = muteOptions.userID;
+    }
+
+    const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
+
+    const res = await axios.post(url, payload, {
+      httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
+      headers: this._getAppHeaders(),
+      timeout: 60 * 1000,
+      ...options,
+    });
+    if (this.verbose) {
+      console.debug('[MUTE]', res.data);
+    }
+    return res.data;
+  };
+  unmute = async (muteOptions: {postID?: string, userID?: string}, options?: AxiosRequestConfig): Promise<boolean> => {
+    const url = `${BASE_API_URL}/api/v1/friendships/unmute_posts_or_story_from_follow/`;
+    let data = {
+      _uid: this.userID,
+      _uuid: this.deviceID,
+      container_module: 'ig_text_feed_timeline'
+    } as {
+      media_id?: string;
+      _uid: string;
+      _uuid: string;
+      container_module: string;
+      target_posts_author_id?: string;
+    };
+
+    if (!muteOptions.postID && !muteOptions.userID) {
+      throw new Error('Post ID or User ID is required');
+    }
+
+    if (muteOptions.postID) {
+      data.media_id = muteOptions.postID;
+    }
+    if (muteOptions.userID) {
+      data.target_posts_author_id = muteOptions.userID;
+    }
+
+    const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
+
+    const res = await axios.post(url, payload, {
+      httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
+      headers: this._getAppHeaders(),
+      timeout: 60 * 1000,
+      ...options,
+    });
+    if (this.verbose) {
+      console.debug('[UNMUTE]', res.data);
+    }
+    return res.data;
+  };
+
+  getNotifications: PaginationNotificationsQuerier<GetNotificationsPaginatedResponse> = async (
+    filter,
+    pagination,
+    options = {},
+  ): Promise<GetNotificationsPaginatedResponse> => {
+
+    let params: GetNotificationsOptions = {
+			feed_type: 'all',
+			mark_as_seen: false,
+			timezone_offset: -25200,
+			timezone_name: "America%2FLos_Angeles"
+		}
+	
+		if (filter) {
+			params.selected_filters = filter;
+		}
+	
+		if (pagination) {
+			params.max_id = pagination.maxID;
+			params.pagination_first_record_timestamp = pagination.firstRecordTimestamp;
+		}
+
+    const res = await axios.get<GetNotificationsPaginatedResponse>(
+      `${BASE_API_URL}/api/v1/text_feed/text_app_notifications/`,
+      options,
+    );
+    return res.data;
+  };
 
   getToken = async (): Promise<string | undefined> => {
     if (this.token) {
