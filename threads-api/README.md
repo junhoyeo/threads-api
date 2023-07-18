@@ -8,11 +8,12 @@
 
 <p align="center">
   <a href="https://threads.junho.io/">
-  <img src="https://raw.githubusercontent.com/junhoyeo/threads-api/main/threads-web-ui/app/opengraph-image.jpg" alt="cover" width="500px" />
+  <img src="https://raw.githubusercontent.com/junhoyeo/threads-api/main/threads-web-ui/app/opengraph-image.jpg?v=2" alt="cover" width="700px" />
   </a>
 </p>
 
-> ✨ The App Registry is officially live! We invite you to explore it on our website at [threads.junho.io](https://threads.junho.io).
+> ✨ The [App Registry](https://threads.junho.io/apps) is officially live! We invite you to explore it on our website at [threads.junho.io](https://threads.junho.io). <br/>
+> Modify [threads-web-ui/data/apps.ts](https://github.com/junhoyeo/threads-api/blob/main/threads-web-ui/data/apps.ts) to add your projects!
 
 <p align="center">
   <a href="https://github.com/junhoyeo">
