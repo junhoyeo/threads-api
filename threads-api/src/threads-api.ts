@@ -377,6 +377,8 @@ export class ThreadsAPI {
         }),
       );
       const requestConfig: AxiosRequestConfig = {
+        httpAgent: this.httpAgent,
+        httpsAgent: this.httpsAgent,
         method: 'POST',
         headers: this._getAppHeaders(),
         responseType: 'text',
