@@ -1,23 +1,54 @@
 import { BookOpen, Star, Zap } from 'lucide-react';
-import { Globe } from '@/components/Globe';
-import './globals.css';
 
-export default function Home() {
+import { Globe } from '@/components/Globe';
+
+import { UnaffiliatedBrands } from '@/components/UnaffiliatedBrands';
+import { AmplitudeClient } from 'amplitude-js';
+import { Analytics } from '@/lib/analytics';
+import {
+  AnalyticsTrackedAnchor,
+  AnalyticsTrackedLink,
+  AnalyticsTrackerLogView,
+} from '@/components/AnalyticsTracker';
+import Link from 'next/link';
+
+const getStargazersCount = async (): Promise<number> => {
+  try {
+    const res = await fetch('https://api.github.com/repos/junhoyeo/threads-api', {
+      next: { revalidate: 60 },
+    });
+    const data = await res.json();
+    return data.stargazers_count;
+  } catch (e) {
+    return 1_341;
+  }
+};
+
+export default async function Home() {
+  const stargazersCount = await getStargazersCount();
+
   return (
     <>
+      <AnalyticsTrackerLogView event={['view_landing', undefined]} />
       <div className="z-0 flex flex-col items-center">
         <div className="z-20 flex flex-col items-center">
-          <header className="flex flex-col gap-5 pt-[64px] pb-12 px-4 items-center rounded-3xl">
-            <h1 className="text-6xl font-black tracking-tight text-center text-slate-500">
+          <header className="flex flex-col gap-5 pt-[120px] pb-12 px-4 items-center rounded-3xl">
+            <h1 className="font-black tracking-tight text-center text-7xl text-slate-500">
               Making Threads <br />
               Work in <span className="text-slate-50">Code</span>
             </h1>
-            <p className="text-center text-slate-400">
+            <p className="text-2xl text-center text-slate-400">
               Threads API — Unofficial, Reverse-Engineered Clients for Threads.
             </p>
           </header>
 
-          <div className="bg-[rgba(243,245,247,0.15) w-[200px] h-[200px] rounded-[32px] overflow-hidden">
+          <div
+            className="bg-[rgba(243,245,247,0.15) w-[200px] h-[200px] rounded-[32px] overflow-hidden"
+            style={{
+              transform: 'translateZ(0)',
+              willChange: 'transform',
+            }}
+          >
             <div
               className="w-[200px] h-[200px] flex items-center justify-center backdrop-blur-sm"
               style={{
@@ -26,7 +57,7 @@ export default function Home() {
               }}
             >
               <img
-                className="w-[120px] h-[120px] rounded-[32px]"
+                className="w-[120px] h-[120px] rounded-[32px] bg-black"
                 src="https://github.com/junhoyeo/threads-api/raw/main/.github/logo.jpg"
                 style={{
                   boxShadow:
@@ -40,13 +71,49 @@ export default function Home() {
             <span className="font-mono font-medium text-slate-400">
               yarn add <span className="text-slate-50">threads-api</span>
             </span>
-            <span className="absolute flex items-center text-sm gap-1 px-1.5 py-0.5 font-medium bg-yellow-200 rounded-sm text-black/80 -right-4 -bottom-3">
-              <Star className="text-zinc-900 fill-zinc-900" size={14} /> 1,306
-            </span>
+            <AnalyticsTrackedAnchor
+              href="https://github.com/junhoyeo/threads-api/stargazers"
+              target="_blank"
+              event={[
+                'click_landing_link',
+                {
+                  title: stargazersCount.toLocaleString(),
+                  url: 'https://github.com/junhoyeo/threads-api/stargazers',
+                  medium: 'home_header',
+                },
+              ]}
+            >
+              <span className="absolute flex items-center text-sm gap-1 px-1.5 py-0.5 font-medium bg-yellow-200 rounded-sm text-black/80 -right-4 -bottom-3 hover:scale-110 hover:bg-yellow-300 transition-all">
+                <Star className="text-zinc-900 fill-zinc-900" size={14} /> {stargazersCount.toLocaleString()}
+              </span>
+            </AnalyticsTrackedAnchor>
           </div>
-          <button className="mt-3 px-8 py-4 rounded-[16px] bg-black shadow-xl shadow-slate-900/20 text-slate-300">
-            View on GitHub
-          </button>
+          <div className="flex gap-2 mt-5">
+            <AnalyticsTrackedAnchor
+              href="https://github.com/junhoyeo/threads-api"
+              target="_blank"
+              event={[
+                'click_landing_link',
+                {
+                  title: 'View on GitHub',
+                  url: 'https://github.com/junhoyeo/threads-api',
+                  medium: 'home_header',
+                },
+              ]}
+            >
+              <button className="px-8 py-4 rounded-[16px] bg-black shadow-2xl shadow-slate-600/60 text-slate-300 font-bold">
+                View on GitHub
+              </button>
+            </AnalyticsTrackedAnchor>
+            <AnalyticsTrackedLink
+              href="/apps"
+              event={['click_landing_link', { title: 'Explore Apps', url: '/apps', medium: 'home_header' }]}
+            >
+              <button className="px-8 py-4 rounded-[16px] bg-white shadow-2xl shadow-slate-600/60 text-black font-bold">
+                Explore Apps
+              </button>
+            </AnalyticsTrackedLink>
+          </div>
         </div>
 
         <div className="mt-[-200px] mb-[-156px] z-10 opacity-40 relative">
@@ -56,14 +123,18 @@ export default function Home() {
           </div>
         </div>
 
-        <ul className="z-10 flex w-full max-w-4xl gap-2">
-          <li className="flex-1 p-4 rounded-xl bg-zinc-900">
-            <BookOpen /> Read Data
-          </li>
-          <li className="flex-1 p-4 rounded-xl bg-zinc-900">
-            <Zap /> Publish Threads
-          </li>
-        </ul>
+        <div className="z-10 flex flex-col items-center w-full">
+          <UnaffiliatedBrands />
+
+          <ul className="flex w-full max-w-4xl gap-2 px-5">
+            <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
+              <BookOpen /> <h3 className="mt-3 text-lg font-medium">Read Data</h3>
+            </li>
+            <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
+              <Zap /> <h3 className="mt-3 text-lg font-medium">Publish Threads</h3>
+            </li>
+          </ul>
+        </div>
       </div>
     </>
   );

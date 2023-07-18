@@ -11,6 +11,7 @@
     "format": "prettier --write \"**/*.js\" \"**/*.ts\" \"**/*.tsx\" \"**/*.css\" \"./app/**/*.js\" \"./app/**/*.ts\" \"./app/**/*.tsx\" \"./app/**/*.css\""
   },
   "dependencies": {
+    "amplitude-js": "^8.21.9",
     "class-variance-authority": "^0.6.1",
     "clsx": "^1.2.1",
     "cobe": "^0.6.3",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^13.4.8",
+    "@types/amplitude-js": "^8.16.2",
     "@types/node": "^20.4.0",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",

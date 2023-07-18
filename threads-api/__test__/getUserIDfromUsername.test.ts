@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 import { ThreadsAPI } from '../src/threads-api';
 
 describe('getUserIDfromUsername', () => {

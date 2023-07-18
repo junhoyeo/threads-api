@@ -364,3 +364,10 @@ export interface StoryExtra {
 export interface StoryInlineControls {
   action_type: string;
 }
+
+export interface AndroidDevice {
+  manufacturer: string;
+  model: string;
+  os_version: number;
+  os_release: string;
+}

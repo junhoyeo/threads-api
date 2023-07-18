@@ -1,32 +1,30 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as crypto from 'crypto';
 import 'dotenv/config';
-import mimeTypes from 'mrmime';
+import * as mimeTypes from 'mrmime';
 import { v4 as uuidv4 } from 'uuid';
+
 import {
-  POST_URL,
-  POST_WITH_IMAGE_URL,
-  DEFAULT_LSD_TOKEN,
   BASE_API_URL,
-  LOGIN_EXPERIMENTS,
-  SIGNATURE_KEY,
   BASE_FOLLOW_PARAMS,
   BLOKS_VERSION,
-  IG_APP_ID,
+  DEFAULT_LSD_TOKEN,
   FOLLOW_NAV_CHAIN,
+  IG_APP_ID,
+  LOGIN_EXPERIMENTS,
+  POST_URL,
+  POST_WITH_IMAGE_URL,
+  POST_WITH_SIDECAR_URL,
+  REPLY_CONTROL_OPTIONS,
+  SIGNATURE_KEY,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
-import { Extensions, Post, Story, Thread, ThreadsUser } from './threads-types';
+import { AndroidDevice, Extensions, Post, Story, Thread, ThreadsUser } from './threads-types';
 import { ThreadsAPIError } from './error';
+import { AndroidDevice, Extensions, Thread, ThreadsUser } from './threads-types';
+import { StrictUnion } from './types/utils';
 
 const generateDeviceID = () => `android-${(Math.random() * 1e24).toString(36)}`;
-
-export type AndroidDevice = {
-  manufacturer: string;
-  model: string;
-  os_version: number;
-  os_release: string;
-};
 
 export type ErrorResponse = {
   status: 'error'; // ?
@@ -191,41 +189,73 @@ export type FriendshipStatusResponse = {
   status: 'ok';
 };
 
-export type ThreadsAPIOptions = {
-  verbose?: boolean;
-  token?: string;
-  fbLSDToken?: string;
-
-  noUpdateToken?: boolean;
-  noUpdateLSD?: boolean;
-
-  httpAgent?: AxiosRequestConfig['httpAgent'];
-  httpsAgent?: AxiosRequestConfig['httpsAgent'];
-
-  username?: string;
-  password?: string;
-  deviceID?: string;
-  device?: AndroidDevice;
-  userID?: string;
-  locale?: string;
-  maxRetries?: number;
-};
-
-export type ThreadsAPIPublishOptions =
-  | {
-      text?: string;
-      parentPostID?: string;
-      quotedPostID?: string;
-    } & ({ url?: string } | { image?: string | ThreadsAPIImage });
-
-export type ThreadsAPIImage = { path: string } | { type: string; data: Buffer };
-
 export const DEFAULT_DEVICE: AndroidDevice = {
   manufacturer: 'OnePlus',
   model: 'ONEPLUS+A3010',
   os_version: 25,
   os_release: '7.1.1',
 };
+
+export declare namespace ThreadsAPI {
+  type Options = {
+    verbose?: boolean;
+    token?: string;
+    fbLSDToken?: string;
+
+    noUpdateToken?: boolean;
+    noUpdateLSD?: boolean;
+
+    httpAgent?: AxiosRequestConfig['httpAgent'];
+    httpsAgent?: AxiosRequestConfig['httpsAgent'];
+
+    username?: string;
+    password?: string;
+    deviceID?: string;
+    device?: AndroidDevice;
+    userID?: string;
+    locale?: string;
+    maxRetries?: number;
+  };
+
+  type ExternalImage = {
+    path: string;
+  };
+
+  type RawImage = {
+    type: string;
+    data: Buffer;
+  };
+
+  type Image = string | ExternalImage | RawImage;
+
+  type ImageAttachment = {
+    image: Image;
+  };
+
+  type SidecarAttachment = {
+    sidecar: Image[];
+  };
+
+  type LinkAttachment = {
+    url: string;
+  };
+
+  type PostAttachment = StrictUnion<ImageAttachment | SidecarAttachment | LinkAttachment>;
+
+  type PostReplyControl = keyof typeof REPLY_CONTROL_OPTIONS;
+
+  type PublishOptions = {
+    text?: string;
+    replyControl?: PostReplyControl;
+    parentPostID?: string;
+    quotedPostID?: string;
+    attachment?: PostAttachment;
+    /** @deprecated Use `attachment.url` instead. */
+    url?: string;
+    /** @deprecated Use `attachment.image` instead. */
+    image?: Image;
+  };
+}
 
 interface UserIDQuerier<T extends any> {
   (userID: string, options?: AxiosRequestConfig): Promise<T>;
@@ -297,7 +327,7 @@ export class ThreadsAPI {
 
   maxRetries?: number = 1;
 
-  constructor(options?: ThreadsAPIOptions) {
+  constructor(options?: ThreadsAPI.Options) {
     if (options?.token) this.token = options.token;
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
 
@@ -352,6 +382,8 @@ export class ThreadsAPI {
     };
     try {
       const res = await axios.post(`${BASE_API_URL}/api/v1/qe/sync/`, this.sign(data), {
+        httpAgent: this.httpAgent,
+        httpsAgent: this.httpsAgent,
         headers: {
           ...this._getAppHeaders(),
           Authorization: undefined,
@@ -440,6 +472,8 @@ export class ThreadsAPI {
         }),
       );
       const requestConfig: AxiosRequestConfig = {
+        httpAgent: this.httpAgent,
+        httpsAgent: this.httpsAgent,
         method: 'POST',
         headers: this._getAppHeaders(),
         responseType: 'text',
@@ -1308,9 +1342,27 @@ export class ThreadsAPI {
     return this.token;
   };
 
-  publish = async (rawOptions: ThreadsAPIPublishOptions | string): Promise<string | undefined> => {
-    const options: ThreadsAPIPublishOptions =
+  _timezoneOffset: number | undefined;
+  _lastUploadID = 0;
+  _nextUploadID = () => {
+    const now = Date.now();
+    const lastUploadID = this._lastUploadID;
+    // Avoid upload_id collisions.
+    return (this._lastUploadID = now < lastUploadID ? lastUploadID + 1 : now).toString();
+  };
+  _createUploadMetadata = (uploadID = this._nextUploadID()) => {
+    return {
+      upload_id: uploadID,
+      source_type: '4',
+      timezone_offset: (this._timezoneOffset ??= -(new Date().getTimezoneOffset() * 60)).toString(),
+      device: this.device,
+    };
+  };
+
+  publish = async (rawOptions: ThreadsAPI.PublishOptions | string): Promise<string | undefined> => {
+    const options: ThreadsAPI.PublishOptions =
       typeof rawOptions === 'string' ? { text: rawOptions } : rawOptions;
+
     if (!this.token && (!this.username || !this.password)) {
       throw new Error('Username or password not set');
     }
@@ -1325,41 +1377,64 @@ export class ThreadsAPI {
       throw new Error('Token not found');
     }
 
-    const now = new Date();
-    const timezoneOffset = -now.getTimezoneOffset() * 60;
-
     let data: any = {
-      text_post_app_info: { reply_control: 0 },
-      timezone_offset: timezoneOffset.toString(),
-      source_type: '4',
+      ...this._createUploadMetadata(),
+      text_post_app_info: {
+        reply_control: REPLY_CONTROL_OPTIONS[options.replyControl ?? 'everyone'],
+      },
       _uid: userID,
       device_id: this.deviceID,
       caption: options.text || '',
-      upload_id: now.getTime(),
-      device: this.device,
     };
-    let url = POST_URL;
 
-    if ('image' in options && !!options.image) {
-      url = POST_WITH_IMAGE_URL;
-      data.upload_id = (await this.uploadImage(options.image)).upload_id;
-      data.scene_capture_type = '';
-    } else if ('url' in options && !!options.url) {
-      data.text_post_app_info.link_attachment_url = options.url;
+    let endpoint = POST_URL;
+    let attachment = options.attachment;
+    if (!attachment) {
+      if ('image' in options && options.image) {
+        attachment = { image: options.image };
+      } else if ('url' in options && options.url) {
+        attachment = { url: options.url };
+      }
+    }
+
+    if (attachment) {
+      if (attachment.url) {
+        data.text_post_app_info.link_attachment_url = attachment.url;
+      } else if (attachment.image) {
+        endpoint = POST_WITH_IMAGE_URL;
+        await this.uploadImage(attachment.image, data.upload_id);
+        data.scene_type = null;
+        data.scene_capture_type = '';
+      } else if (attachment.sidecar) {
+        endpoint = POST_WITH_SIDECAR_URL;
+        data.client_sidecar_id = data.upload_id;
+        data.children_metadata = [];
+        for (const image of attachment.sidecar) {
+          // Images are uploaded one at a time, just like the app does.
+          const imageUploadID = (await this.uploadImage(image)).upload_id;
+          data.children_metadata.push({
+            ...this._createUploadMetadata(imageUploadID),
+            scene_type: null,
+            scene_capture_type: '',
+          });
+        }
+      }
     }
 
     if (!!options.parentPostID) {
-      data.text_post_app_info.reply_id = options.parentPostID;
+      // Ensure no user ID is included in the parent post ID.
+      data.text_post_app_info.reply_id = options.parentPostID.replace(/_\d+$/, '');
     }
     if (!!options.quotedPostID) {
-      data.text_post_app_info.quoted_post_id = options.quotedPostID;
+      // Ensure no user ID is included in the quoted post ID.
+      data.text_post_app_info.quoted_post_id = options.quotedPostID.replace(/_\d+$/, '');
     }
-    if (!(options as any).image) {
+    if (endpoint === POST_URL) {
       data.publish_mode = 'text_post';
     }
 
     const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
-    const res = await axios.post(url, payload, {
+    const res = await axios.post(endpoint, payload, {
       httpAgent: this.httpAgent,
       httpsAgent: this.httpsAgent,
       headers: this._getAppHeaders(),
@@ -1406,8 +1481,10 @@ export class ThreadsAPI {
     return this.publish({ text: caption, image: imagePath });
   };
 
-  uploadImage = async (image: string | ThreadsAPIImage): Promise<InstagramImageUploadResponse> => {
-    const uploadID = Date.now().toString();
+  uploadImage = async (
+    image: ThreadsAPI.Image,
+    uploadID = this._nextUploadID(),
+  ): Promise<InstagramImageUploadResponse> => {
     const name = `${uploadID}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
     const url: string = `https://www.instagram.com/rupload_igphoto/${name}`;
 
@@ -1483,3 +1560,15 @@ export class ThreadsAPI {
     }
   };
 }
+
+/** @deprecated Use `ThreadsAPI.Options` instead. */
+export type ThreadsAPIOptions = ThreadsAPI.Options;
+
+/** @deprecated Use `ThreadsAPI.PostReplyControl` instead. */
+export type ThreadsAPIPostReplyControl = ThreadsAPI.PostReplyControl;
+
+/** @deprecated Use `ThreadsAPI.RawImage` or `ThreadsAPI.ExternalImage` instead. */
+export type ThreadsAPIImage = ThreadsAPI.RawImage | ThreadsAPI.ExternalImage;
+
+/** @deprecated Use `ThreadsAPI.PublishOptions` instead. */
+export type ThreadsAPIPublishOptions = ThreadsAPI.PublishOptions;
