@@ -16,19 +16,13 @@ import {
   POST_URL,
   POST_WITH_IMAGE_URL,
   POST_WITH_SIDECAR_URL,
+  REPLY_CONTROL_OPTIONS,
   SIGNATURE_KEY,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
-import { Extensions, Thread, ThreadsUser } from './threads-types';
+import { AndroidDevice, Extensions, Thread, ThreadsUser } from './threads-types';
 
 const generateDeviceID = () => `android-${(Math.random() * 1e24).toString(36)}`;
-
-export type AndroidDevice = {
-  manufacturer: string;
-  model: string;
-  os_version: number;
-  os_release: string;
-};
 
 export type ErrorResponse = {
   status: 'error'; // ?
@@ -130,77 +124,73 @@ export type FriendshipStatusResponse = {
   status: 'ok';
 };
 
-export type ThreadsAPIOptions = {
-  verbose?: boolean;
-  token?: string;
-  fbLSDToken?: string;
-
-  noUpdateToken?: boolean;
-  noUpdateLSD?: boolean;
-
-  httpAgent?: AxiosRequestConfig['httpAgent'];
-  httpsAgent?: AxiosRequestConfig['httpsAgent'];
-
-  username?: string;
-  password?: string;
-  deviceID?: string;
-  device?: AndroidDevice;
-  userID?: string;
-  locale?: string;
-  maxRetries?: number;
-};
-
-const REPLY_CONTROL_OPTIONS = {
-  everyone: 0,
-  accounts_you_follow: 1,
-  mentioned_only: 2,
-} as const;
-
-export type PostReplyControl = keyof typeof REPLY_CONTROL_OPTIONS;
-
-/** @deprecated Use `PostReplyControl` instead. */
-export type ThreadsAPIPostReplyControl = PostReplyControl;
-
-export type ImageDefinition = { path: string } | { type: string; data: Buffer };
-
-/** @deprecated Use `ImageDefinition` instead. */
-export type ThreadsAPIImage = ImageDefinition;
-
-export interface ImageAttachment {
-  image: string | ImageDefinition;
-}
-
-export interface SidecarAttachment {
-  sidecar: (string | ImageDefinition)[];
-}
-
-export interface LinkAttachment {
-  url: string;
-}
-
-export type PostAttachment = StrictUnion<ImageAttachment | SidecarAttachment | LinkAttachment>;
-
-export type PublishOptions = {
-  text?: string;
-  replyControl?: PostReplyControl;
-  parentPostID?: string;
-  quotedPostID?: string;
-  attachment?: PostAttachment;
-  /** @deprecated Use `attachment.url` instead. */
-  url?: string;
-  /** @deprecated Use `attachment.image` instead. */
-  image?: string | ImageDefinition;
-};
-
-/** @deprecated Use `PublishOptions` instead. */
-export type ThreadsAPIPublishOptions = PublishOptions;
-
 export const DEFAULT_DEVICE: AndroidDevice = {
   manufacturer: 'OnePlus',
   model: 'ONEPLUS+A3010',
   os_version: 25,
   os_release: '7.1.1',
 };
+
+export declare namespace ThreadsAPI {
+  type Options = {
+    verbose?: boolean;
+    token?: string;
+    fbLSDToken?: string;
+
+    noUpdateToken?: boolean;
+    noUpdateLSD?: boolean;
+
+    httpAgent?: AxiosRequestConfig['httpAgent'];
+    httpsAgent?: AxiosRequestConfig['httpsAgent'];
+
+    username?: string;
+    password?: string;
+    deviceID?: string;
+    device?: AndroidDevice;
+    userID?: string;
+    locale?: string;
+    maxRetries?: number;
+  };
+
+  type ExternalImage = {
+    path: string;
+  };
+
+  type RawImage = {
+    type: string;
+    data: Buffer;
+  };
+
+  type Image = string | ExternalImage | RawImage;
+
+  type ImageAttachment = {
+    image: Image;
+  };
+
+  type SidecarAttachment = {
+    sidecar: Image[];
+  };
+
+  type LinkAttachment = {
+    url: string;
+  };
+
+  type PostAttachment = StrictUnion<ImageAttachment | SidecarAttachment | LinkAttachment>;
+
+  type PostReplyControl = keyof typeof REPLY_CONTROL_OPTIONS;
+
+  type PublishOptions = {
+    text?: string;
+    replyControl?: PostReplyControl;
+    parentPostID?: string;
+    quotedPostID?: string;
+    attachment?: PostAttachment;
+    /** @deprecated Use `attachment.url` instead. */
+    url?: string;
+    /** @deprecated Use `attachment.image` instead. */
+    image?: Image;
+  };
+}
 
 interface UserIDQuerier<T extends any> {
   (userID: string, options?: AxiosRequestConfig): Promise<T>;
@@ -244,7 +234,7 @@ export class ThreadsAPI {
 
   maxRetries?: number = 1;
 
-  constructor(options?: ThreadsAPIOptions) {
+  constructor(options?: ThreadsAPI.Options) {
     if (options?.token) this.token = options.token;
     if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
 
@@ -1008,8 +998,10 @@ export class ThreadsAPI {
     };
   };
 
-  publish = async (rawOptions: PublishOptions | string): Promise<string | undefined> => {
-    const options: PublishOptions = typeof rawOptions === 'string' ? { text: rawOptions } : rawOptions;
+  publish = async (rawOptions: ThreadsAPI.PublishOptions | string): Promise<string | undefined> => {
+    const options: ThreadsAPI.PublishOptions =
+      typeof rawOptions === 'string' ? { text: rawOptions } : rawOptions;
+
     if (!this.token && (!this.username || !this.password)) {
       throw new Error('Username or password not set');
     }
@@ -1129,7 +1121,7 @@ export class ThreadsAPI {
   };
 
   uploadImage = async (
-    image: string | ImageDefinition,
+    image: ThreadsAPI.Image,
     uploadID = this._nextUploadID(),
   ): Promise<InstagramImageUploadResponse> => {
     const name = `${uploadID}_0_${Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000)}`;
@@ -1207,3 +1199,15 @@ export class ThreadsAPI {
     }
   };
 }
+
+/** @deprecated Use `ThreadsAPI.Options` instead. */
+export type ThreadsAPIOptions = ThreadsAPI.Options;
+
+/** @deprecated Use `ThreadsAPI.PostReplyControl` instead. */
+export type ThreadsAPIPostReplyControl = ThreadsAPI.PostReplyControl;
+
+/** @deprecated Use `ThreadsAPI.RawImage` or `ThreadsAPI.ExternalImage` instead. */
+export type ThreadsAPIImage = ThreadsAPI.RawImage | ThreadsAPI.ExternalImage;
+
+/** @deprecated Use `ThreadsAPI.PublishOptions` instead. */
+export type ThreadsAPIPublishOptions = ThreadsAPI.PublishOptions;
