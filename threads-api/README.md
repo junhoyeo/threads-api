@@ -6,14 +6,14 @@
 
 ## [<img src="https://github.com/junhoyeo/threads-api/raw/main/.github/emojis/rocket.png" width="30" height="30" />](https://github.com/junhoyeo) `threads-api` in Action
 
-<p align="center">
-  <img src="https://github.com/junhoyeo/threads-api/raw/main/.github/cover.jpg" alt="cover" width="500px" />
-</p>
-
 ### 🚀 Usage (Read)
 
 <details>
 <summary><h4>Read: Public</h4></summary>
+
+<p align="center">
+  <img src="https://github.com/junhoyeo/threads-api/raw/main/.github/cover.jpg" alt="cover" width="500px" />
+</p>
 
 ```ts
 import { ThreadsAPI } from 'threads-api';
