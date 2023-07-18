@@ -144,3 +144,10 @@ export interface ReplyFacepileUser {
 export interface Extensions {
   is_final: boolean;
 }
+
+export interface AndroidDevice {
+  manufacturer: string;
+  model: string;
+  os_version: number;
+  os_release: string;
+}
