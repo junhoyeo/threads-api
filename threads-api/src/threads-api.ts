@@ -289,6 +289,8 @@ export class ThreadsAPI {
     };
     try {
       const res = await axios.post(`${BASE_API_URL}/api/v1/qe/sync/`, this.sign(data), {
+        httpAgent: this.httpAgent,
+        httpsAgent: this.httpsAgent,
         headers: {
           ...this._getAppHeaders(),
           Authorization: undefined,
