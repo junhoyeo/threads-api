@@ -145,21 +145,46 @@ await threadsAPI.publish({
 });
 ```
 
-##### ✨ Threads with Image
-
-```ts
-await threadsAPI.publish({
-  text: '🤖 Threads with Image',
-  image: 'https://github.com/junhoyeo/threads-api/raw/main/.github/cover.jpg',
-});
-```
-
 ##### ✨ Threads with Link Attachment
 
 ```ts
 await threadsAPI.publish({
   text: '🤖 Threads with Link Attachment',
-  url: 'https://github.com/junhoyeo/threads-api',
+  attachment: {
+    url: 'https://github.com/junhoyeo/threads-api',
+  },
+});
+```
+
+##### ✨ Threads with Image
+
+```ts
+await threadsAPI.publish({
+  text: '🤖 Threads with Image',
+  attachment: {
+    image: 'https://github.com/junhoyeo/threads-api/raw/main/.github/cover.jpg',
+  },
+});
+```
+
+`ThreadsAPI.Image` in `attachment.image` can also be type of `ThreadsAPI.ExternalImage` or `ThreadsAPI.RawImage`.
+
+##### ✨ Threads with Sidecar (Multiple Images)
+
+> **Info** <br />
+> The term _"sidecar"_ is what Threads uses to represent a group of images and/or videos that share the same post.
+
+```ts
+await threadsAPI.publish({
+  text: '🤖 Threads with Sidecar',
+  attachment: {
+    sidecar: [
+      'https://github.com/junhoyeo/threads-api/raw/main/.github/cover.jpg',
+      'https://github.com/junhoyeo/threads-api/raw/main/.github/cover.jpg',
+      { path: './zuck.jpg' }, // ThreadsAPI.ExternalImage
+      { type: '.jpg', data: Buffer.from(…) }, // ThreadsAPI.RawImage
+    ],
+  },
 });
 ```
 
@@ -239,7 +264,34 @@ await threadsAPI.delete(postID);
 
 <details>
   <summary>
-    <h3>Old API (Deprecated, Still works for backwards compatibility)</h3>
+  <h3>🏚️ Old API (Deprecated from v1.5.0, Still works for backwards compatibility)</h3>
+  <blockquote><code>image</code> and <code>url</code> options in <code>publish</code></blockquote>
+  </summary>
+
+##### ✨ Threads with Image
+
+```ts
+await threadsAPI.publish({
+  text: '🤖 Threads with Image',
+  image: 'https://github.com/junhoyeo/threads-api/raw/main/.github/cover.jpg',
+});
+```
+
+##### ✨ Threads with Link Attachment
+
+```ts
+await threadsAPI.publish({
+  text: '🤖 Threads with Link Attachment',
+  url: 'https://github.com/junhoyeo/threads-api',
+});
+```
+
+</details>
+
+<details>
+  <summary>
+    <h3>🏚️ Old API (Deprecated from v1.2.0, Still works for backwards compatibility)</h3>
+    <blockquote>Single <code>string</code> argument in <code>publish</code></blockquote>
   </summary>
 
 ```ts
@@ -307,7 +359,7 @@ const threadsAPI = new ThreadsAPI.ThreadsAPI({});
   - [x] ✅ Create new Thread with text
     - [x] ✅ Make link previews to get shown
   - [x] ✅ Create new Thread with a single image
-  - [ ] 🚧 Create new Thread with multiple images
+  - [x] ✅ Create new Thread with multiple images
   - [x] ✅ Reply to existing Thread
   - [x] ✅ Quote Thread
   - [x] ✅ Delete Thread
