@@ -96,7 +96,7 @@ export const APPS: AppRegistry[] = [
   {
     name: 'Splatoon3.ink',
     tags: ['bot'],
-    threads_username: 'splatoon3',
+    threads_username: 'splatoon3ink',
     repository: 'https://github.com/misenhower/splatoon3.ink',
     description:
       '🦑🐙 Splatoon 3 map rotations, Salmon Run schedules, and more. Not affiliated with Nintendo.',
