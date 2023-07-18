@@ -1,10 +1,15 @@
 import { ThreadsAPI } from '../src/threads-api';
 import { TIMEOUT, rawCredentials as credentials } from './utils/constants';
 import { describeIf } from './utils/describeIf';
+import * as HttpsProxyAgent from "https-proxy-agent";
+
+// Proxy server details
+var proxy = 'http://PROXYUSERNAME:PROXYPWD@PROXYHOST:PROXYPORT';
 
 describeIf(!!credentials)('getToken', () => {
   const threadsAPI = new ThreadsAPI({
     verbose: true,
+    httpsAgent: new HttpsProxyAgent.HttpsProxyAgent(proxy)
     ...credentials,
   });
 
