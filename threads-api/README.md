@@ -196,7 +196,7 @@ const parentPostID = threadsAPI.getPostIDfromURL(parentURL); // or use `getPostI
 
 await threadsAPI.publish({
   text: '🤖 Beep',
-  link: 'https://github.com/junhoyeo/threads-api',s
+  link: 'https://github.com/junhoyeo/threads-api',
   parentPostID: parentPostID,
 });
 ```
