@@ -4,7 +4,6 @@ import 'dotenv/config';
 import * as mimeTypes from 'mrmime';
 import { v4 as uuidv4 } from 'uuid';
 
-import { StrictUnion } from 'types/utils';
 import {
   BASE_API_URL,
   BASE_FOLLOW_PARAMS,
@@ -21,6 +20,7 @@ import {
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
 import { AndroidDevice, Extensions, Thread, ThreadsUser } from './threads-types';
+import { StrictUnion } from './types/utils';
 
 const generateDeviceID = () => `android-${(Math.random() * 1e24).toString(36)}`;
 
