@@ -9,7 +9,7 @@ var proxy = 'http://PROXYUSERNAME:PROXYPWD@PROXYHOST:PROXYPORT';
 describeIf(!!credentials)('getToken', () => {
   const threadsAPI = new ThreadsAPI({
     verbose: true,
-    httpsAgent: new HttpsProxyAgent.HttpsProxyAgent(proxy)
+    httpsAgent: new HttpsProxyAgent.HttpsProxyAgent(proxy),
     ...credentials,
   });
 
