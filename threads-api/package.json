@@ -3,7 +3,7 @@
   "version": "1.5.1",
   "description": "Unofficial, Reverse-Engineered Node.js/TypeScript client for Meta's [Threads](https://threads.net).",
   "author": "Junho Yeo <i@junho.io>",
-  "repository": "junhoyeo/threads-api",
+  "repository": "https://github.com/junhoyeo/threads-api",
   "license": "MIT",
   "type": "commonjs",
   "source": "./src/index.ts",
