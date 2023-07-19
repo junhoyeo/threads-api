@@ -1,4 +1,5 @@
 'use client';
+import { useWindowSize } from '@/hooks/useWindowSize';
 import clsx from 'clsx';
 import { usePathname, useRouter } from 'next/navigation';
 import { useMemo } from 'react';
@@ -13,16 +14,21 @@ export const NavigationBar: React.FC = () => {
   const pathname = usePathname();
   const selected = pathname;
 
+  const { width: screenWidth } = useWindowSize();
+
   const left = useMemo(() => {
     const item = ITEMS.find((item) => item.url === selected) || ITEMS[0];
-    return ITEMS.indexOf(item) * 160;
-  }, [selected]);
+    return ITEMS.indexOf(item) * (screenWidth > 640 ? 160 : 140);
+  }, [selected, screenWidth]);
 
   return (
-    <div className="bg-[rgba(16,16,16,0.3)] border-b border-b-zinc-800 backdrop-blur-md h-[72px] fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-2">
+    <div className="bg-[rgba(16,16,16,0.3)] border-b border-b-zinc-800 backdrop-blur-md h-[72px] fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-2 px-4">
       <div className="relative flex h-full mx-auto border rounded-lg bg-zinc-900 w-fit border-slate-100/5 ">
         {/* indicator */}
-        <div className="w-[160px] top-0 absolute h-full p-1.5 -z-0 transition-all" style={{ left }}>
+        <div
+          className="w-[140px] sm:w-[160px] top-0 absolute h-full p-1.5 -z-0 transition-all"
+          style={{ left }}
+        >
           <div
             className="w-full h-full bg-white rounded-lg"
             style={{
@@ -34,7 +40,7 @@ export const NavigationBar: React.FC = () => {
           <span
             key={item.url}
             className={clsx(
-              'w-[160px] flex items-center justify-center z-10 font-medium cursor-pointer',
+              'w-[140px] sm:w-[160px] flex items-center justify-center z-10 font-medium cursor-pointer',
               selected !== item.url ? 'text-slate-400' : 'text-slate-900',
             )}
             onClick={() => {

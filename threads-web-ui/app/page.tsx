@@ -3,14 +3,11 @@ import { BookOpen, Star, Zap } from 'lucide-react';
 import { Globe } from '@/components/Globe';
 
 import { UnaffiliatedBrands } from '@/components/UnaffiliatedBrands';
-import { AmplitudeClient } from 'amplitude-js';
-import { Analytics } from '@/lib/analytics';
 import {
   AnalyticsTrackedAnchor,
   AnalyticsTrackedLink,
   AnalyticsTrackerLogView,
 } from '@/components/AnalyticsTracker';
-import Link from 'next/link';
 
 const getStargazersCount = async (): Promise<number> => {
   try {
@@ -33,11 +30,11 @@ export default async function Home() {
       <div className="z-0 flex flex-col items-center">
         <div className="z-20 flex flex-col items-center">
           <header className="flex flex-col gap-5 pt-[120px] pb-12 px-4 items-center rounded-3xl">
-            <h1 className="font-black tracking-tight text-center text-7xl text-slate-500">
+            <h1 className="text-5xl font-black tracking-tight text-center sm:text-7xl text-slate-500">
               Making Threads <br />
               Work in <span className="text-slate-50">Code</span>
             </h1>
-            <p className="text-2xl text-center text-slate-400">
+            <p className="text-xl text-center sm:text-2xl text-slate-400">
               Threads API — Unofficial, Reverse-Engineered Clients for Threads.
             </p>
           </header>
@@ -88,7 +85,7 @@ export default async function Home() {
               </span>
             </AnalyticsTrackedAnchor>
           </div>
-          <div className="flex gap-2 mt-5">
+          <div className="flex flex-col gap-2 px-5 mt-5 sm:flex-row">
             <AnalyticsTrackedAnchor
               href="https://github.com/junhoyeo/threads-api"
               target="_blank"
@@ -101,7 +98,7 @@ export default async function Home() {
                 },
               ]}
             >
-              <button className="px-8 py-4 rounded-[16px] bg-black shadow-2xl shadow-slate-600/60 text-slate-300 font-bold">
+              <button className="w-full px-8 py-4 rounded-[16px] bg-black shadow-2xl shadow-slate-600/60 text-slate-300 font-bold">
                 View on GitHub
               </button>
             </AnalyticsTrackedAnchor>
@@ -109,24 +106,24 @@ export default async function Home() {
               href="/apps"
               event={['click_landing_link', { title: 'Explore Apps', url: '/apps', medium: 'home_header' }]}
             >
-              <button className="px-8 py-4 rounded-[16px] bg-white shadow-2xl shadow-slate-600/60 text-black font-bold">
+              <button className="w-full px-8 py-4 rounded-[16px] bg-white shadow-2xl shadow-slate-600/60 text-black font-bold">
                 Explore Apps
               </button>
             </AnalyticsTrackedLink>
           </div>
         </div>
 
-        <div className="mt-[-200px] mb-[-156px] z-10 opacity-40 relative">
+        <div className="mt-[-200px] mb-[-156px] z-10 opacity-40 relative max-w-screen overflow-hidden w-full flex justify-center">
           <Globe />
           <div className="absolute top-0 bottom-0 left-0 right-0 bg-gradient-to-b from-black/0 to-[#101010]">
             {/* overlay */}
           </div>
         </div>
 
-        <div className="z-10 flex flex-col items-center w-full">
+        <div className="z-10 flex flex-col items-center w-full px-5">
           <UnaffiliatedBrands />
 
-          <ul className="flex w-full max-w-4xl gap-2 px-5">
+          <ul className="flex flex-col w-full max-w-4xl gap-2 sm:flex-row">
             <li className="flex-1 p-4 border rounded-xl bg-zinc-900 border-zinc-800 text-slate-200">
               <BookOpen /> <h3 className="mt-3 text-lg font-medium">Read Data</h3>
             </li>
