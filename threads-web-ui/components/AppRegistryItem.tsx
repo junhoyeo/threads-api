@@ -1,35 +1,57 @@
 import Image from 'next/image';
 import PirateFlagIcon from '@/assets/pirate-flag.png';
+import RobotIcon from '@/assets/robot.png';
 import { ExternalLink, Github } from 'lucide-react';
 import { AppRegistry } from '@/data/apps';
 import { AnalyticsTrackedAnchor } from './AnalyticsTracker';
 
 export const AppRegistryItem: React.FC<AppRegistry> = ({ ...app }) => {
+  const isBot = app.tags?.includes('bot') || false;
+
   return (
-    <li className="flex p-4 rounded-lg bg-zinc-900">
-      {!!app.avatar ? (
-        <img
-          src={app.avatar}
-          alt={app.name}
-          className="w-[100px] h-[100px] flex items-center justify-center rounded-xl relative bg-black"
-        />
-      ) : (
-        <div
-          className="w-[100px] h-[100px] flex items-center justify-center rounded-xl relative bg-black"
-          style={{
-            backgroundImage: `url('/assets/mesh-gradient.png')`,
-            backgroundSize: 'cover',
-          }}
-        >
-          <Image
-            src={PirateFlagIcon}
-            alt="Pirate Flag"
-            width={256}
-            height={256}
-            className="w-[64px] h-[64px] z-10"
+    <li className="flex p-4 border rounded-lg bg-zinc-900 border-zinc-700/40">
+      <div className="w-[100px] min-w-[100px] h-[100px] relative rounded-[13px] border border-zinc-600/60">
+        {!!app.avatar ? (
+          <img
+            src={app.avatar}
+            alt={app.name}
+            className="relative flex items-center justify-center w-full h-full bg-black rounded-xl"
           />
-        </div>
-      )}
+        ) : (
+          <div
+            className="relative flex items-center justify-center w-full h-full bg-black rounded-xl"
+            style={{
+              backgroundImage: `url('/assets/mesh-gradient.png')`,
+              backgroundSize: 'cover',
+            }}
+          >
+            <Image
+              src={PirateFlagIcon}
+              alt="Pirate Flag"
+              width={256}
+              height={256}
+              className="w-[64px] h-[64px] z-10"
+            />
+          </div>
+        )}
+
+        {isBot && (
+          <div
+            className="w-[42px] h-[42px] absolute -bottom-5 -left-5 rounded-full flex items-center justify-center border border-teal-500/60"
+            style={{
+              background: `radial-gradient(88.68% 88.68% at 33.22% 15.42%, #B6FFF3 0%, #4DFCFF)`,
+              boxShadow: `-4px 4px 32px rgba(121, 233, 235, 0.4)`,
+            }}
+          >
+            <Image
+              className="w-[24px] h-[24px]"
+              src={RobotIcon}
+              alt="Robot"
+              style={{ filter: `drop-shadow(0px 2px 8px rgba(0, 10, 255, 0.33))` }}
+            />
+          </div>
+        )}
+      </div>
 
       <div className="flex flex-col justify-start flex-1 ml-4">
         <div className="flex justify-between w-full">
