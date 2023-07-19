@@ -439,6 +439,28 @@ export class ThreadsAPI {
     throw new Error(`[LOGIN] Failed to login after ${this.maxRetries} retries`);
   };
 
+  _getUnAuthenticatedHeaders = () => ({
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+  });
+
+  _getDefaultUserDataHeaders = (username?: string) => ({
+    ...this._getUnAuthenticatedHeaders(),
+    Host: 'www.threads.net',
+    Accept: '*/*',
+    'Accept-Language': this.locale,
+    'cache-control': 'no-cache',
+    Origin: 'https://www.threads.net',
+    Pragma: 'no-cache',
+    'Sec-Fetch-Site': 'same-origin',
+    'X-Asbd-id': '129477',
+    'X-FB-Friendly-Name': 'BarcelonaProfileRootQuery',
+    'X-FB-Lsd': this.fbLSDToken,
+    'X-Ig-App-Id': '238260118697367',
+    ...(!!username ? { Referer: `https://www.threads.net/@${username}` } : undefined),
+  });
+
   _getAppHeaders = () => ({
     'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -476,6 +498,7 @@ export class ThreadsAPI {
     ...(!!username ? { referer: `https://www.threads.net/@${username}` } : undefined),
   });
 
+  //BUG RETURNS 404 NOT FOUND
   getProfilePage = async (url: string, username: string, options?: AxiosRequestConfig) => {
     const res = await axios.get(`${url}${username}`, {
       ...options,
@@ -527,7 +550,7 @@ export class ThreadsAPI {
 
     return userID;
   };
-
+  //BUG: RETURNS "DATA: '' WITH ERROR 429 TOO MANY REQUESTS"
   getUserIDfromUsername = async (
     username: string,
     options?: AxiosRequestConfig,
@@ -589,6 +612,20 @@ export class ThreadsAPI {
     });
   };
 
+  _requestUserDataQuery = <T extends any>(
+    url: string,
+    data: Record<string, string | undefined>,
+    options?: AxiosRequestConfig,
+  ) => {
+    Object.keys(data).forEach((key) => data[key] === undefined && delete data[key]);
+    return axios.post<T>(url, new URLSearchParams(data as Record<string, string>), {
+      httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
+      headers: this._getDefaultUserDataHeaders(),
+      ...options,
+    });
+  };
+
   _destructureFromUserIDQuerier = (params: any) => {
     const typedParams = params as
       | [string]
@@ -615,7 +652,7 @@ export class ThreadsAPI {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
 
-    const res = await this._requestQuery<GetUserProfileResponse>(
+    const res = await this._requestUserDataQuery<GetUserProfileResponse>(
       'https://www.threads.net/api/graphql',
       {
         lsd: this.fbLSDToken,
@@ -624,6 +661,7 @@ export class ThreadsAPI {
       },
       options,
     );
+    console.log(res.data);
     const user = res.data.data.userData.user;
     return user;
   };
@@ -634,7 +672,7 @@ export class ThreadsAPI {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
 
-    const res = await this._requestQuery<GetUserProfileThreadsResponse>(
+    const res = await this._requestUserDataQuery<GetUserProfileThreadsResponse>(
       'https://www.threads.net/api/graphql',
       {
         lsd: this.fbLSDToken,
@@ -678,13 +716,44 @@ export class ThreadsAPI {
     return data;
   };
 
+  //NOTE: REFERER URL FOR REPLIES IS DIFFERENT WHEN NOT LOGGED IN
+  _getDefaultRepliesHeaders = (username?: string) => ({
+    ...this._getUnAuthenticatedHeaders(),
+    Host: 'www.threads.net',
+    Accept: '*/*',
+    'Accept-Language': this.locale,
+    'cache-control': 'no-cache',
+    Origin: 'https://www.threads.net',
+    Pragma: 'no-cache',
+    'Sec-Fetch-Site': 'same-origin',
+    'X-Asbd-id': '129477',
+    'X-FB-Friendly-Name': 'BarcelonaProfileProfileRepliesTabQuery',
+    'X-FB-Lsd': this.fbLSDToken,
+    'X-Ig-App-Id': '238260118697367',
+    ...(!!username ? { Referer: `https://www.threads.net/@${username}/replies` } : undefined),
+  });
+
+  _requestRepliesQuery = <T extends any>(
+    url: string,
+    data: Record<string, string | undefined>,
+    options?: AxiosRequestConfig,
+  ) => {
+    Object.keys(data).forEach((key) => data[key] === undefined && delete data[key]);
+    return axios.post<T>(url, new URLSearchParams(data as Record<string, string>), {
+      httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
+      headers: this._getDefaultRepliesHeaders(),
+      ...options,
+    });
+  };
+
   getUserProfileReplies: UserIDQuerier<Thread[]> = async (...params) => {
     const { userID, options } = this._destructureFromUserIDQuerier(params);
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
 
-    const res = await this._requestQuery<GetUserProfileThreadsResponse>(
+    const res = await this._requestRepliesQuery<GetUserProfileThreadsResponse>(
       'https://www.threads.net/api/graphql',
       {
         lsd: this.fbLSDToken,
@@ -693,7 +762,11 @@ export class ThreadsAPI {
       },
       options,
     );
-    const threads = res.data.data?.mediaData?.threads || [];
+    const mediaData = res.data.data.mediaData;
+    // console.log('mediaData:', mediaData); // Log mediaData
+
+    // Manually assert the type of threads to ensure TypeScript recognizes it correctly
+    const threads = (mediaData?.threads || []) as Thread[];
     return threads;
   };
 
@@ -713,7 +786,7 @@ export class ThreadsAPI {
     try {
       const res = await axios.get<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
         `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${maxID && `?max_id=${maxID}`}`,
-        { ...options, headers: { ...this._getInstaHeaders(), ...options?.headers } },
+        { ...options, headers: { ...this._getAppHeaders(), ...options?.headers } },
       );
       data = res.data;
     } catch (error: any) {
@@ -834,13 +907,14 @@ export class ThreadsAPI {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
 
-    const res = await this._requestQuery<GetUserProfileThreadResponse>(
+    const res = await this._requestUserDataQuery<GetUserProfileThreadResponse>(
       'https://www.threads.net/api/graphql',
       {
         lsd: this.fbLSDToken,
         variables: JSON.stringify({ postID }),
         doc_id: '5587632691339264',
       },
+
       options,
     );
     const thread = res.data.data.data;
@@ -852,13 +926,14 @@ export class ThreadsAPI {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
 
-    const res = await this._requestQuery<GetThreadLikersResponse>(
+    const res = await this._requestUserDataQuery<GetThreadLikersResponse>(
       'https://www.threads.net/api/graphql',
       {
         lsd: this.fbLSDToken,
         variables: JSON.stringify({ mediaID: postID }),
         doc_id: '9360915773983802',
       },
+
       options,
     );
     const likers = res.data.data.likers;
