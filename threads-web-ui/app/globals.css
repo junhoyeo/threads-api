@@ -115,3 +115,9 @@ img {
   background-color: #e5e7eb;
   color: #111827;
 }
+
+img.twemoji {
+  height: 1em;
+  width: auto;
+  display: inline-block;
+}

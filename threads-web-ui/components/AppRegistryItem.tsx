@@ -4,6 +4,7 @@ import RobotIcon from '@/assets/robot.png';
 import { ExternalLink, Github } from 'lucide-react';
 import { AppRegistry } from '@/data/apps';
 import { AnalyticsTrackedAnchor } from './AnalyticsTracker';
+import { Twemoji, TwemojiCleanup } from './Twemoji';
 
 export const AppRegistryItem: React.FC<AppRegistry> = ({ ...app }) => {
   const isBot = app.tags?.includes('bot') || false;
@@ -132,7 +133,12 @@ export const AppRegistryItem: React.FC<AppRegistry> = ({ ...app }) => {
         )}
 
         {/* description */}
-        <p className="mt-2 text-slate-400 whitespace-break-spaces">{app.description}</p>
+        <div className="mt-2 text-slate-400 whitespace-break-spaces">
+          <span className="hidden twemoji-server">{app.description}</span>
+          <Twemoji content={app.description} />
+        </div>
+
+        <TwemojiCleanup />
       </div>
     </li>
   );
