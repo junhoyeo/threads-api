@@ -391,6 +391,7 @@ export class ThreadsAPI {
         `${BASE_API_URL}/api/v1/bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/`,
         requestConfig,
       );
+
       data = JSON.stringify(data.replaceAll('\\', ''));
 
       if (this.verbose) {
@@ -399,7 +400,7 @@ export class ThreadsAPI {
 
       try {
         const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
-        const userID = data.match(/pk_id":"(\d+)/)?.[1];
+        const userID = data.match(/pk_id(.{18})/)?.[1].replaceAll(/[\\":]/g, '');
 
         if (!this.noUpdateToken) {
           if (this.verbose) {
@@ -498,14 +499,13 @@ export class ThreadsAPI {
     ...(!!username ? { referer: `https://www.threads.net/@${username}` } : undefined),
   });
 
-  //BUG RETURNS 404 NOT FOUND
   getProfilePage = async (url: string, username: string, options?: AxiosRequestConfig) => {
     const res = await axios.get(`${url}${username}`, {
       ...options,
       httpAgent: this.httpAgent,
       httpsAgent: this.httpsAgent,
       headers: {
-        ...this._getDefaultHeaders(username),
+        ...this._getDefaultUserDataHeaders(username),
         accept:
           'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-language': 'ko,en;q=0.9,ko-KR;q=0.8,ja;q=0.7',
@@ -550,7 +550,7 @@ export class ThreadsAPI {
 
     return userID;
   };
-  //BUG: RETURNS "DATA: '' WITH ERROR 429 TOO MANY REQUESTS"
+
   getUserIDfromUsername = async (
     username: string,
     options?: AxiosRequestConfig,
