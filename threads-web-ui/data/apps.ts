@@ -37,12 +37,12 @@ export const APPS: AppRegistry[] = [
   {
     name: 'String',
     tags: ['client'],
-    repository: 'https://github.com/yssf-io/threads-card',
+    repository: 'https://github.com/Nainish-Rai/strings-web',
     description:
       'String is a modern and innovative threads opensource frontend built with Next.js, Tailwind CSS, and the latest web development technologies.',
     author: {
-      name: 'yssf',
-      github_username: 'yssf-io',
+      name: 'Nainish Rai',
+      github_username: 'Nainish-Rai',
     },
   },
   {
@@ -154,6 +154,17 @@ export const APPS: AppRegistry[] = [
     author: {
       name: 'Max Mykhalchuk',
       threads_username: 's1mpsondev',
+    },
+  },
+  {
+    name: 'One Day One Ayah',
+    tags: ['bot'],
+    threads_username: 'oneayah.id',
+    repository: 'https://github.com/fitrahive/oneayah-threads',
+    description: 'Sharing an ayah from the Quran every day (in Bahasa).',
+    author: {
+      name: 'Abu Masyail',
+      threads_username: 'sooluh',
     },
   },
 ];
