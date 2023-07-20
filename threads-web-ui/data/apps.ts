@@ -156,4 +156,15 @@ export const APPS: AppRegistry[] = [
       threads_username: 's1mpsondev',
     },
   },
+  {
+    name: 'One Day One Ayah',
+    tags: ['bot'],
+    threads_username: 'oneayah.id',
+    repository: 'https://github.com/fitrahive/oneayah-threads',
+    description: 'Sharing an ayah from the Quran every day (in Bahasa).',
+    author: {
+      name: 'Abu Masyail',
+      threads_username: 'sooluh',
+    },
+  },
 ];
