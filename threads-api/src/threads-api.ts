@@ -505,7 +505,7 @@ export class ThreadsAPI {
       httpAgent: this.httpAgent,
       httpsAgent: this.httpsAgent,
       headers: {
-        ...this._getDefaultUserDataHeaders(username),
+        ...this._getDefaultHeaders(username),
         accept:
           'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
         'accept-language': 'ko,en;q=0.9,ko-KR;q=0.8,ja;q=0.7',
