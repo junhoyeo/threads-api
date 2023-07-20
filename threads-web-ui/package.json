@@ -24,7 +24,8 @@
     "react-threads": "^1.0.6",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6",
-    "threads-api": "^1.3.1"
+    "threads-api": "^1.3.1",
+    "twemoji": "^14.0.2"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^13.4.8",
