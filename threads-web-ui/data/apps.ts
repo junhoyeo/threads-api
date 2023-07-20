@@ -37,12 +37,12 @@ export const APPS: AppRegistry[] = [
   {
     name: 'String',
     tags: ['client'],
-    repository: 'https://github.com/yssf-io/threads-card',
+    repository: 'https://github.com/Nainish-Rai/strings-web',
     description:
       'String is a modern and innovative threads opensource frontend built with Next.js, Tailwind CSS, and the latest web development technologies.',
     author: {
-      name: 'yssf',
-      github_username: 'yssf-io',
+      name: 'Nainish Rai',
+      github_username: 'Nainish-Rai',
     },
   },
   {
