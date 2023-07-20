@@ -1,4 +1,5 @@
 export const TIMEOUT = 100_000;
+export const DEVICE_ID = `android-3otj6ebq86q00000`;
 
 export const rawCredentials =
   !process.env.USERNAME || !process.env.PASSWORD
