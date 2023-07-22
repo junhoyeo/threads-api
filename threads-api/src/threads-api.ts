@@ -1,6 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import * as crypto from 'crypto';
-import 'dotenv/config';
 import * as mimeTypes from 'mrmime';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -19,9 +18,8 @@ import {
   SIGNATURE_KEY,
 } from './constants';
 import { LATEST_ANDROID_APP_VERSION } from './dynamic-data';
-import { AndroidDevice, Extensions, Post, Story, Thread, ThreadsUser } from './threads-types';
 import { ThreadsAPIError } from './error';
-import { AndroidDevice, Extensions, Thread, ThreadsUser } from './threads-types';
+import { AndroidDevice, Extensions, Story, Thread, ThreadsUser } from './threads-types';
 import { StrictUnion } from './types/utils';
 
 const generateDeviceID = () => `android-${(Math.random() * 1e24).toString(36)}`;
@@ -79,13 +77,12 @@ export type GetThreadRepliesPaginatedResponse = {
   downwards_thread_will_continue: boolean;
   target_post_reply_placeholder: string;
   status: 'ok';
-}
-
+};
 
 export enum GetNotificationsFilter {
-  MENTIONS='text_post_app_mentions',
-  REPLIES='text_post_app_replies',
-  VERIFIED='verified'
+  MENTIONS = 'text_post_app_mentions',
+  REPLIES = 'text_post_app_replies',
+  VERIFIED = 'verified',
 }
 
 export type GetNotificationsOptions = {
@@ -96,7 +93,7 @@ export type GetNotificationsOptions = {
   selected_filters?: GetNotificationsFilter;
   max_id?: string;
   pagination_first_record_timestamp?: number;
-}
+};
 
 export interface GetNotificationsPagination {
   maxID?: string;
@@ -106,7 +103,7 @@ export interface GetNotificationsPagination {
 export type GetNotificationsPaginatedResponse = {
   counts: {
     [key: string]: any;
-  },
+  };
   last_checked: number;
   new_stories: Story[];
   old_stories: Story[];
@@ -118,14 +115,14 @@ export type GetNotificationsPaginatedResponse = {
   pagination_first_record_timestamp: number;
   filters: any[];
   status: 'ok';
-}
+};
 
 export type GetRecommendedPaginatedResponse = {
   users: ThreadsUser[];
   paging_token: string;
   has_more: boolean;
   status: 'ok';
-}
+};
 
 export type GetUserProfileThreadResponse = {
   data: {
@@ -276,11 +273,15 @@ interface PaginationRepliesQuerier<T extends any> {
   (postID: string, maxID?: string, options?: AxiosRequestConfig): Promise<T>;
 }
 
-interface PaginationNotificationsQuerier<T extends any> { 
-  (filter?: GetNotificationsFilter, pagination?: GetNotificationsPagination, config?: AxiosRequestConfig): Promise<T>;
+interface PaginationNotificationsQuerier<T extends any> {
+  (
+    filter?: GetNotificationsFilter,
+    pagination?: GetNotificationsPagination,
+    config?: AxiosRequestConfig,
+  ): Promise<T>;
 }
 
-interface PaginationRecommendedQuerier<T extends any> { 
+interface PaginationRecommendedQuerier<T extends any> {
   (maxID?: string, config?: AxiosRequestConfig): Promise<T>;
 }
 
@@ -294,7 +295,7 @@ export type SearchResponse = {
   has_more: boolean;
   rank_token: string;
   status: 'ok';
-}
+};
 
 export type PaginationAndSearchOptions = {
   maxID?: string;
@@ -484,6 +485,7 @@ export class ThreadsAPI {
         `${BASE_API_URL}/api/v1/bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/`,
         requestConfig,
       );
+
       data = JSON.stringify(data.replaceAll('\\', ''));
 
       if (this.verbose) {
@@ -492,7 +494,7 @@ export class ThreadsAPI {
 
       try {
         const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
-        const userID = data.match(/pk_id":"(\d+)/)?.[1];
+        const userID = data.match(/pk_id(.{18})/)?.[1].replaceAll(/[\\":]/g, '');
 
         if (!this.noUpdateToken) {
           if (this.verbose) {
@@ -532,6 +534,28 @@ export class ThreadsAPI {
     throw new Error(`[LOGIN] Failed to login after ${this.maxRetries} retries`);
   };
 
+  _getUnAuthenticatedHeaders = () => ({
+    'User-Agent':
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.5735.199 Safari/537.36',
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+  });
+
+  _getDefaultUserDataHeaders = (username?: string) => ({
+    ...this._getUnAuthenticatedHeaders(),
+    Host: 'www.threads.net',
+    Accept: '*/*',
+    'Accept-Language': this.locale,
+    'cache-control': 'no-cache',
+    Origin: 'https://www.threads.net',
+    Pragma: 'no-cache',
+    'Sec-Fetch-Site': 'same-origin',
+    'X-Asbd-id': '129477',
+    'X-FB-Friendly-Name': 'BarcelonaProfileRootQuery',
+    'X-FB-Lsd': this.fbLSDToken,
+    'X-Ig-App-Id': '238260118697367',
+    ...(!!username ? { Referer: `https://www.threads.net/@${username}` } : undefined),
+  });
+
   _getAppHeaders = () => ({
     'User-Agent': `Barcelona ${LATEST_ANDROID_APP_VERSION} Android`,
     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
@@ -569,7 +593,7 @@ export class ThreadsAPI {
     ...(!!username ? { referer: `https://www.threads.net/@${username}` } : undefined),
   });
 
-  getProfilePage = async (url: string, username: string, options?: AxiosRequestConfig) => {
+  _getCleanedProfileHTML = async (url: string, username: string, options?: AxiosRequestConfig) => {
     const res = await axios.get(`${url}${username}`, {
       ...options,
       httpAgent: this.httpAgent,
@@ -606,7 +630,7 @@ export class ThreadsAPI {
     username: string,
     options?: AxiosRequestConfig,
   ): Promise<string | undefined> => {
-    const text = await this.getProfilePage('https://www.instagram.com/', username, options);
+    const text = await this._getCleanedProfileHTML('https://www.instagram.com/', username, options);
 
     const userID: string | undefined = text.match(/"user_id":"(\d+)",/)?.[1];
     const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
@@ -625,7 +649,7 @@ export class ThreadsAPI {
     username: string,
     options?: AxiosRequestConfig,
   ): Promise<string | undefined> => {
-    const text = await this.getProfilePage('https://www.threads.net/@', username, options);
+    const text = await this._getCleanedProfileHTML('https://www.threads.net/@', username, options);
 
     const userID: string | undefined = text.match(/"user_id":"(\d+)"/)?.[1];
     const lsdToken: string | undefined = text.match(/"LSD",\[\],{"token":"(\w+)"},\d+\]/)?.[1];
@@ -682,6 +706,20 @@ export class ThreadsAPI {
     });
   };
 
+  _requestUserDataQuery = <T extends any>(
+    url: string,
+    data: Record<string, string | undefined>,
+    options?: AxiosRequestConfig,
+  ) => {
+    Object.keys(data).forEach((key) => data[key] === undefined && delete data[key]);
+    return axios.post<T>(url, new URLSearchParams(data as Record<string, string>), {
+      httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
+      headers: this._getDefaultUserDataHeaders(),
+      ...options,
+    });
+  };
+
   _destructureFromUserIDQuerier = (params: any) => {
     const typedParams = params as
       | [string]
@@ -708,7 +746,7 @@ export class ThreadsAPI {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
 
-    const res = await this._requestQuery<GetUserProfileResponse>(
+    const res = await this._requestUserDataQuery<GetUserProfileResponse>(
       'https://www.threads.net/api/graphql',
       {
         lsd: this.fbLSDToken,
@@ -750,7 +788,7 @@ export class ThreadsAPI {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
 
-    const res = await this._requestQuery<GetUserProfileThreadsResponse>(
+    const res = await this._requestUserDataQuery<GetUserProfileThreadsResponse>(
       'https://www.threads.net/api/graphql',
       {
         lsd: this.fbLSDToken,
@@ -787,13 +825,44 @@ export class ThreadsAPI {
     return data;
   };
 
+  //NOTE: REFERER URL FOR REPLIES IS DIFFERENT WHEN NOT LOGGED IN
+  _getDefaultRepliesHeaders = (username?: string) => ({
+    ...this._getUnAuthenticatedHeaders(),
+    Host: 'www.threads.net',
+    Accept: '*/*',
+    'Accept-Language': this.locale,
+    'cache-control': 'no-cache',
+    Origin: 'https://www.threads.net',
+    Pragma: 'no-cache',
+    'Sec-Fetch-Site': 'same-origin',
+    'X-Asbd-id': '129477',
+    'X-FB-Friendly-Name': 'BarcelonaProfileProfileRepliesTabQuery',
+    'X-FB-Lsd': this.fbLSDToken,
+    'X-Ig-App-Id': '238260118697367',
+    ...(!!username ? { Referer: `https://www.threads.net/@${username}/replies` } : undefined),
+  });
+
+  _requestRepliesQuery = <T extends any>(
+    url: string,
+    data: Record<string, string | undefined>,
+    options?: AxiosRequestConfig,
+  ) => {
+    Object.keys(data).forEach((key) => data[key] === undefined && delete data[key]);
+    return axios.post<T>(url, new URLSearchParams(data as Record<string, string>), {
+      httpAgent: this.httpAgent,
+      httpsAgent: this.httpsAgent,
+      headers: this._getDefaultRepliesHeaders(),
+      ...options,
+    });
+  };
+
   getUserProfileReplies: UserIDQuerier<Thread[]> = async (...params) => {
     const { userID, options } = this._destructureFromUserIDQuerier(params);
     if (this.verbose) {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
 
-    const res = await this._requestQuery<GetUserProfileThreadsResponse>(
+    const res = await this._requestRepliesQuery<GetUserProfileThreadsResponse>(
       'https://www.threads.net/api/graphql',
       {
         lsd: this.fbLSDToken,
@@ -802,7 +871,10 @@ export class ThreadsAPI {
       },
       options,
     );
-    const threads = res.data.data?.mediaData?.threads || [];
+    const mediaData = res.data.data.mediaData;
+
+    // Manually assert the type of threads to ensure TypeScript recognizes it correctly
+    const threads = (mediaData?.threads || []) as Thread[];
     return threads;
   };
 
@@ -821,7 +893,9 @@ export class ThreadsAPI {
     let data: GetUserProfileThreadsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
       const res = await this._toggleAuthGetRequest<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
-        `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${maxID ? `?max_id=${maxID}` : ''}`,
+        `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${
+          maxID ? `?max_id=${maxID}` : ''
+        }`,
         options,
       );
       data = res.data;
@@ -929,13 +1003,14 @@ export class ThreadsAPI {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
 
-    const res = await this._requestQuery<GetUserProfileThreadResponse>(
+    const res = await this._requestUserDataQuery<GetUserProfileThreadResponse>(
       'https://www.threads.net/api/graphql',
       {
         lsd: this.fbLSDToken,
         variables: JSON.stringify({ postID }),
         doc_id: '5587632691339264',
       },
+
       options,
     );
     const thread = res.data.data.data;
@@ -971,13 +1046,14 @@ export class ThreadsAPI {
       console.debug('[fbLSDToken] USING', this.fbLSDToken);
     }
 
-    const res = await this._requestQuery<GetThreadLikersResponse>(
+    const res = await this._requestUserDataQuery<GetThreadLikersResponse>(
       'https://www.threads.net/api/graphql',
       {
         lsd: this.fbLSDToken,
         variables: JSON.stringify({ mediaID: postID }),
         doc_id: '9360915773983802',
       },
+
       options,
     );
     const likers = res.data.data.likers;
@@ -1021,8 +1097,8 @@ export class ThreadsAPI {
       ...options,
       headers: {
         ...this._getInstaHeaders(),
-        ...options?.headers
-      }
+        ...options?.headers,
+      },
     });
     return res;
   };
@@ -1106,12 +1182,15 @@ export class ThreadsAPI {
     }
     return res.data.status === 'ok';
   };
-  mute = async (muteOptions: {postID?: string, userID?: string}, options?: AxiosRequestConfig): Promise<boolean> => {
+  mute = async (
+    muteOptions: { postID?: string; userID?: string },
+    options?: AxiosRequestConfig,
+  ): Promise<boolean> => {
     const url = `${BASE_API_URL}/api/v1/friendships/mute_posts_or_story_from_follow/`;
     let data = {
       _uid: this.userID,
       _uuid: this.deviceID,
-      container_module: 'ig_text_feed_timeline'
+      container_module: 'ig_text_feed_timeline',
     } as {
       media_id?: string;
       _uid: string;
@@ -1133,7 +1212,7 @@ export class ThreadsAPI {
 
     const payload = {
       signed_body: `SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`,
-    }
+    };
 
     const res = await this._toggleAuthPostRequest<any>(url, payload, options);
     if (this.verbose) {
@@ -1141,12 +1220,15 @@ export class ThreadsAPI {
     }
     return res.data.status === 'ok';
   };
-  unmute = async (muteOptions: {postID?: string, userID?: string}, options?: AxiosRequestConfig): Promise<boolean> => {
+  unmute = async (
+    muteOptions: { postID?: string; userID?: string },
+    options?: AxiosRequestConfig,
+  ): Promise<boolean> => {
     const url = `${BASE_API_URL}/api/v1/friendships/unmute_posts_or_story_from_follow/`;
     let data = {
       _uid: this.userID,
       _uuid: this.deviceID,
-      container_module: "ig_text_feed_timeline"
+      container_module: 'ig_text_feed_timeline',
     } as {
       media_id?: string;
       _uid: string;
@@ -1168,7 +1250,7 @@ export class ThreadsAPI {
 
     const payload = {
       signed_body: `SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`,
-    }
+    };
 
     const res = await this._toggleAuthPostRequest<any>(url, payload, options);
     if (this.verbose) {
@@ -1183,12 +1265,12 @@ export class ThreadsAPI {
       is_auto_block_enabled: true,
       user_id: userID,
       _uid: this.userID,
-      _uuid: this.deviceID
-    }
+      _uuid: this.deviceID,
+    };
 
     const payload = {
       signed_body: `SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`,
-    }
+    };
 
     const res = await this._toggleAuthPostRequest<any>(url, payload, options);
     if (this.verbose) {
@@ -1202,12 +1284,12 @@ export class ThreadsAPI {
       user_id: userID,
       _uid: this.userID,
       _uuid: this.deviceID,
-      container_module: 'ig_text_feed_timeline'
-    }
+      container_module: 'ig_text_feed_timeline',
+    };
 
     const payload = {
       signed_body: `SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`,
-    }
+    };
 
     const res = await this._toggleAuthPostRequest<any>(url, payload, options);
     if (this.verbose) {
@@ -1221,24 +1303,25 @@ export class ThreadsAPI {
     pagination,
     options = {},
   ): Promise<GetNotificationsPaginatedResponse> => {
-
     let params: GetNotificationsOptions = {
-			feed_type: 'all',
-			mark_as_seen: false,
-			timezone_offset: -25200,
-			timezone_name: "America%2FLos_Angeles"
-		}
-	
-		if (filter) {
-			params.selected_filters = filter;
-		}
-	
-		if (pagination) {
-			params.max_id = pagination.maxID;
-			params.pagination_first_record_timestamp = pagination.firstRecordTimestamp;
-		}
+      feed_type: 'all',
+      mark_as_seen: false,
+      timezone_offset: -25200,
+      timezone_name: 'America%2FLos_Angeles',
+    };
 
-    const queryString = Object.entries(params).map( ([key, value]) => key + '=' + value ).join('&');
+    if (filter) {
+      params.selected_filters = filter;
+    }
+
+    if (pagination) {
+      params.max_id = pagination.maxID;
+      params.pagination_first_record_timestamp = pagination.firstRecordTimestamp;
+    }
+
+    const queryString = Object.entries(params)
+      .map(([key, value]) => key + '=' + value)
+      .join('&');
 
     let data: GetNotificationsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
@@ -1263,7 +1346,7 @@ export class ThreadsAPI {
     const url = `${BASE_API_URL}/api/v1/text_feed/text_app_inbox_seen/`;
     const payload = {
       _uuid: `${this.userID}`,
-    }
+    };
     const res = await this._toggleAuthPostRequest<any>(url, payload, options);
     if (this.verbose) {
       console.debug('[SET_NOTIFICATIONS_SEEN]', res.data);
@@ -1276,13 +1359,14 @@ export class ThreadsAPI {
     count = 30,
     options = {},
   ): Promise<SearchResponse> => {
-
     let params = {
-			q: query,
-      count
-		}
-    
-    const queryString = Object.entries(params).map( ([key, value]) => key + '=' + value ).join('&');
+      q: query,
+      count,
+    };
+
+    const queryString = Object.entries(params)
+      .map(([key, value]) => key + '=' + value)
+      .join('&');
 
     let data: SearchResponse | ErrorResponse | undefined = undefined;
     try {
@@ -1307,7 +1391,6 @@ export class ThreadsAPI {
     maxID = '',
     options = {},
   ): Promise<GetRecommendedPaginatedResponse> => {
-
     let data: GetRecommendedPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
       const res = await this._toggleAuthGetRequest<GetRecommendedPaginatedResponse>(
