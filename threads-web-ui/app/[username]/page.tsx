@@ -62,7 +62,9 @@ const UserProfilePage = async ({ params }: { params: { username: string } }) => 
         <p className="mt-4 whitespace-break-spaces text-[15px] leading-[21px]">{userProfile.biography}</p>
 
         <div className="mt-[18px] text-[15px] leading-[21px] text-[rgb(97,97,97)]">
-          <span>{userProfile.follower_count.toLocaleString()} followers</span>
+          <span>
+            {!userProfile.follower_count ? '-' : userProfile.follower_count.toLocaleString()} followers
+          </span>
         </div>
       </header>
 
