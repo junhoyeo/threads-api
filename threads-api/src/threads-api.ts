@@ -661,7 +661,6 @@ export class ThreadsAPI {
       },
       options,
     );
-    console.log(res.data);
     const user = res.data.data.userData.user;
     return user;
   };
@@ -763,7 +762,6 @@ export class ThreadsAPI {
       options,
     );
     const mediaData = res.data.data.mediaData;
-    // console.log('mediaData:', mediaData); // Log mediaData
 
     // Manually assert the type of threads to ensure TypeScript recognizes it correctly
     const threads = (mediaData?.threads || []) as Thread[];
