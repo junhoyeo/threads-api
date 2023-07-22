@@ -72,7 +72,7 @@ export const APPS: AppRegistry[] = [
   },
   {
     name: 'Threads Discord Bot',
-    tags: ['bot', 'discord'],
+    tags: ['app', 'client'],
 	url: 'https://threadsbot.us/',
     description: 'Bringing the latest Threads.net posts directly to your Discord server. Stay connected with the Threads by Instagram Discord Bot!',
     avatar: '/assets/apps/threadsdiscord.png',
