@@ -25,6 +25,20 @@ export type AppRegistry = {
 
 export const APPS: AppRegistry[] = [
   {
+    name: 'Threads Web',
+    tags: ['app'],
+    threads_username: 'swarajbachu',
+    url: 'https://threads.aperturs.com',
+    repository: 'https://github.com/swarajbachu/threads-web',
+    description:
+      'Post on threads from web now, will be adding more features soon. Your password is safe if your browser and we only login to your accounts once! so it wont get banned',
+    avatar: '/assets/apps/aperturs.jpg',
+    author: {
+      name: 'Swaraj Bachu',
+      github_username: 'swarajbachu',
+    },
+  },
+  {
     name: 'Threads Card',
     tags: ['app'],
     repository: 'https://github.com/yssf-io/threads-card',
