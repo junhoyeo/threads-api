@@ -1183,7 +1183,7 @@ export class ThreadsAPI {
     return res.data.status === 'ok';
   };
   mute = async (
-    muteOptions: { postID?: string; userID?: string },
+    muteOptions: { postID?: string; userID: string },
     options?: AxiosRequestConfig,
   ): Promise<boolean> => {
     const url = `${BASE_API_URL}/api/v1/friendships/mute_posts_or_story_from_follow/`;
@@ -1196,19 +1196,13 @@ export class ThreadsAPI {
       _uid: string;
       _uuid: string;
       container_module: string;
-      target_posts_author_id?: string;
+      target_posts_author_id: string;
     };
-
-    if (!muteOptions.postID && !muteOptions.userID) {
-      throw new Error('Post ID or User ID is required');
-    }
 
     if (muteOptions.postID) {
       data.media_id = String(muteOptions.postID);
     }
-    if (muteOptions.userID) {
-      data.target_posts_author_id = String(muteOptions.userID);
-    }
+    data.target_posts_author_id = String(muteOptions.userID);
 
     const payload = {
       signed_body: `SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`,
@@ -1221,7 +1215,7 @@ export class ThreadsAPI {
     return res.data.status === 'ok';
   };
   unmute = async (
-    muteOptions: { postID?: string; userID?: string },
+    muteOptions: { postID?: string; userID: string },
     options?: AxiosRequestConfig,
   ): Promise<boolean> => {
     const url = `${BASE_API_URL}/api/v1/friendships/unmute_posts_or_story_from_follow/`;
@@ -1234,19 +1228,13 @@ export class ThreadsAPI {
       _uid: string;
       _uuid: string;
       container_module: string;
-      target_posts_author_id?: string;
+      target_posts_author_id: string;
     };
-
-    if (!muteOptions.postID && !muteOptions.userID) {
-      throw new Error('Post ID or User ID is required');
-    }
 
     if (muteOptions.postID) {
       data.media_id = String(muteOptions.postID);
     }
-    if (muteOptions.userID) {
-      data.target_posts_author_id = String(muteOptions.userID);
-    }
+    data.target_posts_author_id = String(muteOptions.userID);
 
     const payload = {
       signed_body: `SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`,
