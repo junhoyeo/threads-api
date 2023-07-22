@@ -71,6 +71,17 @@ export const APPS: AppRegistry[] = [
     },
   },
   {
+    name: 'Threads Discord Bot',
+    tags: ['bot', 'discord'],
+	url: 'https://threadsbot.us/',
+    description: 'Bringing the latest Threads.net posts directly to your Discord server. Stay connected with the Threads by Instagram Discord Bot!',
+    avatar: '/assets/apps/threadsdiscord.png',
+    author: {
+      name: 'Digital',
+      github_username: 'Digital39999',
+    },
+  },
+  {
     name: 'Thread Count',
     tags: ['api'],
     repository: 'https://github.com/AayushGithub/thread-count',
