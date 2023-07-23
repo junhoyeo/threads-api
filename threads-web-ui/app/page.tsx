@@ -1,13 +1,12 @@
 import { BookOpen, Star, Zap } from 'lucide-react';
 
-import { Globe } from '@/components/Globe';
-
-import { UnaffiliatedBrands } from '@/components/UnaffiliatedBrands';
 import {
   AnalyticsTrackedAnchor,
   AnalyticsTrackedLink,
   AnalyticsTrackerLogView,
 } from '@/components/AnalyticsTracker';
+import { Globe } from '@/components/Globe';
+import { UnaffiliatedBrands } from '@/components/UnaffiliatedBrands';
 
 const getStargazersCount = async (): Promise<number> => {
   try {

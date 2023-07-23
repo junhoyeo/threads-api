@@ -1,10 +1,11 @@
-import { threadsAPI } from '@/lib/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { Thread, ThreadsIcons } from 'react-threads';
 import { Thread as ThreadType, ThreadsUser } from 'threads-api';
+
+import { threadsAPI } from '@/lib/api';
 
 const UserProfilePage = async ({ params }: { params: { username: string } }) => {
   if (!params.username.startsWith('%40') && !params.username.startsWith('@')) {
@@ -62,7 +63,9 @@ const UserProfilePage = async ({ params }: { params: { username: string } }) => 
         <p className="mt-4 whitespace-break-spaces text-[15px] leading-[21px]">{userProfile.biography}</p>
 
         <div className="mt-[18px] text-[15px] leading-[21px] text-[rgb(97,97,97)]">
-          <span>{userProfile.follower_count.toLocaleString()} followers</span>
+          <span>
+            {!userProfile.follower_count ? '-' : userProfile.follower_count.toLocaleString()} followers
+          </span>
         </div>
       </header>
 
