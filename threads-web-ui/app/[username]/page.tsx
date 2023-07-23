@@ -1,10 +1,11 @@
-import { threadsAPI } from '@/lib/api';
 import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import { Thread, ThreadsIcons } from 'react-threads';
 import { Thread as ThreadType, ThreadsUser } from 'threads-api';
+
+import { threadsAPI } from '@/lib/api';
 
 const UserProfilePage = async ({ params }: { params: { username: string } }) => {
   if (!params.username.startsWith('%40') && !params.username.startsWith('@')) {

@@ -1,8 +1,11 @@
+import { ExternalLink, Github } from 'lucide-react';
 import Image from 'next/image';
+
 import PirateFlagIcon from '@/assets/pirate-flag.png';
 import RobotIcon from '@/assets/robot.png';
-import { ExternalLink, Github } from 'lucide-react';
+
 import { AppRegistry } from '@/data/apps';
+
 import { AnalyticsTrackedAnchor } from './AnalyticsTracker';
 import { Twemoji, TwemojiCleanup } from './Twemoji';
 

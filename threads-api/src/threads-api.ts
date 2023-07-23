@@ -1127,7 +1127,7 @@ export class ThreadsAPI {
       undefined,
       options,
     );
-    return res.data.status === 'ok';
+    return res.data;
   };
   unlike = async (postID: string, options?: AxiosRequestConfig) => {
     const userID = await this.getCurrentUserID();
@@ -1136,7 +1136,7 @@ export class ThreadsAPI {
       undefined,
       options,
     );
-    return res.data.status === 'ok';
+    return res.data;
   };
   follow = async (userID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
@@ -1147,7 +1147,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[FOLLOW]', res.data);
     }
-    return res.data.status === 'ok';
+    return res.data;
   };
   unfollow = async (userID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
@@ -1158,7 +1158,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[UNFOLLOW]', res.data);
     }
-    return res.data.status === 'ok';
+    return res.data;
   };
   repost = async (postID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
@@ -1169,7 +1169,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[REPOST]', res.data);
     }
-    return res.data.status === 'ok';
+    return res.data;
   };
   unrepost = async (originalPostID: string, options?: AxiosRequestConfig) => {
     const res = await this._toggleAuthPostRequest<FriendshipStatusResponse>(
@@ -1180,7 +1180,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[UNREPOST]', res.data);
     }
-    return res.data.status === 'ok';
+    return res.data;
   };
   mute = async (
     muteOptions: { postID?: string; userID: string },
@@ -1212,7 +1212,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[MUTE]', res.data);
     }
-    return res.data.status === 'ok';
+    return res.data;
   };
   unmute = async (
     muteOptions: { postID?: string; userID: string },
@@ -1264,7 +1264,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[MUTE]', res.data);
     }
-    return res.data.status === 'ok';
+    return res.data;
   };
   unblock = async (userID: string, options?: AxiosRequestConfig): Promise<boolean> => {
     const url = `${BASE_API_URL}/api/v1/friendships/unblock/${userID}/`;
@@ -1283,7 +1283,7 @@ export class ThreadsAPI {
     if (this.verbose) {
       console.debug('[MUTE]', res.data);
     }
-    return res.data.status === 'ok';
+    return res.data;
   };
 
   getNotifications: PaginationNotificationsQuerier<GetNotificationsPaginatedResponse> = async (

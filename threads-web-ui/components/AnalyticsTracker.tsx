@@ -1,8 +1,9 @@
 'use client';
 
-import { Analytics, AnalyticsEvent } from '@/lib/analytics';
 import Link, { LinkProps } from 'next/link';
 import { useEffect, useRef } from 'react';
+
+import { Analytics, AnalyticsEvent } from '@/lib/analytics';
 
 export const AnalyticsTrackerInit: React.FC = () => {
   Analytics.initialize();

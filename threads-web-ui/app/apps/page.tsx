@@ -1,5 +1,6 @@
 import { AnalyticsTrackerLogView } from '@/components/AnalyticsTracker';
 import { AppRegistryItem } from '@/components/AppRegistryItem';
+
 import { APPS } from '@/data/apps';
 
 export default async function AppDirectory() {

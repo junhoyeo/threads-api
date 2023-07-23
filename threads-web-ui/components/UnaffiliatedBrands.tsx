@@ -1,8 +1,9 @@
+import Image from 'next/image';
+
 import InstagramLogo from '@/assets/instagram.svg';
 import MetaLogo from '@/assets/meta.svg';
-import TwitterLogo from '@/assets/twitter.svg';
 import OpenAILogo from '@/assets/openai.svg';
-import Image from 'next/image';
+import TwitterLogo from '@/assets/twitter.svg';
 
 export const UnaffiliatedBrands: React.FC = () => {
   return (

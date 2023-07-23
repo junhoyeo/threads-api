@@ -1,8 +1,10 @@
 'use client';
-import { useWindowSize } from '@/hooks/useWindowSize';
+
 import clsx from 'clsx';
 import { usePathname, useRouter } from 'next/navigation';
 import { useMemo } from 'react';
+
+import { useWindowSize } from '@/hooks/useWindowSize';
 
 const ITEMS = [
   { title: 'About', url: '/' },
