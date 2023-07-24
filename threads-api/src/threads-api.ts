@@ -893,9 +893,7 @@ export class ThreadsAPI {
     let data: GetUserProfileThreadsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
       const res = await this._toggleAuthGetRequest<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
-        `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${
-          maxID ? `?max_id=${maxID}` : ''
-        }`,
+        `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/replies/${maxID ? `?max_id=${maxID}` : ''}`,
         options,
       );
       data = res.data;
@@ -925,7 +923,7 @@ export class ThreadsAPI {
 
     try {
       const res = await this._toggleAuthGetRequest<GetUserProfileFollowPaginatedResponse>(
-        `https://i.instagram.com/api/v1/friendships/${userID}/followers/?${params.toString()}`,
+        `${BASE_API_URL}/api/v1/friendships/${userID}/followers/?${params.toString()}`,
         {
           ...options,
           headers: { 'X-Ig-Nav-Chain': FOLLOW_NAV_CHAIN, ...options?.headers },
@@ -958,7 +956,7 @@ export class ThreadsAPI {
 
     try {
       const res = await this._toggleAuthGetRequest<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
-        `https://i.instagram.com/api/v1/friendships/${userID}/following/?${params.toString()}`,
+        `${BASE_API_URL}/api/v1/friendships/${userID}/following/?${params.toString()}`,
         {
           ...options,
           headers: { 'X-Ig-Nav-Chain': FOLLOW_NAV_CHAIN, ...options?.headers },
