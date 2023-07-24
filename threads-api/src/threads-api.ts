@@ -775,9 +775,9 @@ export class ThreadsAPI {
     }
     if (data?.status !== 'ok') {
       if (this.verbose) {
-        console.log('[USER FEED] Failed to fetch', data);
+        console.log('[USER PROFILE] Failed to fetch', data);
       }
-      throw new ThreadsAPIError('Failed to fetch user feed: ' + JSON.stringify(data), data);
+      throw new ThreadsAPIError('Failed to fetch user profile: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -818,9 +818,9 @@ export class ThreadsAPI {
     }
     if (data?.status !== 'ok') {
       if (this.verbose) {
-        console.log('[USER FEED] Failed to fetch', data);
+        console.log('[USER THREADS] Failed to fetch', data);
       }
-      throw new ThreadsAPIError('Failed to fetch user feed: ' + JSON.stringify(data), data);
+      throw new ThreadsAPIError('Failed to fetch user threads: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -902,9 +902,9 @@ export class ThreadsAPI {
     }
     if (data?.status !== 'ok') {
       if (this.verbose) {
-        console.log('[USER FEED] Failed to fetch', data);
+        console.log('[USER REPLIES] Failed to fetch', data);
       }
-      throw new ThreadsAPIError('Failed to fetch user feed: ' + JSON.stringify(data), data);
+      throw new ThreadsAPIError('Failed to fetch user replies: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -968,9 +968,9 @@ export class ThreadsAPI {
     }
     if (data?.status !== 'ok') {
       if (this.verbose) {
-        console.log('[USER FOLLOWING] Failed to fetch', data);
+        console.log('[USER FOLLOWINGS] Failed to fetch', data);
       }
-      throw new ThreadsAPIError('Failed to fetch user following: ' + JSON.stringify(data), data);
+      throw new ThreadsAPIError('Failed to fetch user followings: ' + JSON.stringify(data), data);
     }
     return data;
   };
@@ -1366,9 +1366,9 @@ export class ThreadsAPI {
     }
     if (data?.status !== 'ok') {
       if (this.verbose) {
-        console.log('[NOTIFICATIONS] Failed to fetch', data);
+        console.log('[USER SEARCH] Failed to fetch', data);
       }
-      throw new ThreadsAPIError('Failed to fetch notifications: ' + JSON.stringify(data), data);
+      throw new ThreadsAPIError('Failed to fetch user search results: ' + JSON.stringify(data), data);
     }
     return data;
   };
