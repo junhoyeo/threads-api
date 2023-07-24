@@ -111,7 +111,7 @@ export type GetNotificationsPaginatedResponse = {
   status: 'ok';
 };
 
-export type GetRecommendedPaginatedResponse = {
+export type GetRecommendedUsersPaginatedResponse = {
   users: ThreadsUser[];
   paging_token: string;
   has_more: boolean;
@@ -1373,13 +1373,13 @@ export class ThreadsAPI {
     return data;
   };
 
-  getRecommended: PaginationRecommendedQuerier<GetRecommendedPaginatedResponse> = async (
+  getRecommendedUsers: PaginationRecommendedQuerier<GetRecommendedUsersPaginatedResponse> = async (
     maxID = '',
     options = {},
-  ): Promise<GetRecommendedPaginatedResponse> => {
-    let data: GetRecommendedPaginatedResponse | ErrorResponse | undefined = undefined;
+  ): Promise<GetRecommendedUsersPaginatedResponse> => {
+    let data: GetRecommendedUsersPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._fetchAuthGetRequest<GetRecommendedPaginatedResponse>(
+      const res = await this._fetchAuthGetRequest<GetRecommendedUsersPaginatedResponse>(
         `${BASE_API_URL}/api/v1/text_feed/recommended_users/?${maxID ? `?max_id=${maxID}` : ''}`,
         options,
       );

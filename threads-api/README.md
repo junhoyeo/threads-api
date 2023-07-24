@@ -141,15 +141,15 @@ if (!data.is_last_page) {
 }
 ```
 
-##### 💎 Get Recommended (from v1.6.0)
+##### 💎 Get Recommended Users (from v1.6.0)
 
 ```ts
-let data = await threadsAPI.getRecommended();
+let data = await threadsAPI.getRecommendedUsers();
 console.log(JSON.stringify(data.users)); // ThreadsUser[]
 
 if (data.has_more) {
   const cursor = data.paging_token;
-  data = await threadsAPI.getRecommended(cursor);
+  data = await threadsAPI.getRecommendedUsers(cursor);
 }
 ```
 
