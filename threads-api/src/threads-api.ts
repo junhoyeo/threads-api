@@ -765,7 +765,7 @@ export class ThreadsAPI {
   ): Promise<GetUserProfileLoggedInResponse> => {
     let data: GetUserProfileLoggedInResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetUserProfileLoggedInResponse>(
+      const res = await this._fetchAuthGetRequest<GetUserProfileLoggedInResponse>(
         `${BASE_API_URL}/api/v1/users/${userID}/info?is_prefetch=false&entry_point=profile&from_module=ProfileViewModel`,
         options,
       );
@@ -808,7 +808,7 @@ export class ThreadsAPI {
   ): Promise<GetUserProfileThreadsPaginatedResponse> => {
     let data: GetUserProfileThreadsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetUserProfileThreadsPaginatedResponse>(
+      const res = await this._fetchAuthGetRequest<GetUserProfileThreadsPaginatedResponse>(
         `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/${maxID ? `?max_id=${maxID}` : ''}`,
         options,
       );
@@ -892,7 +892,7 @@ export class ThreadsAPI {
 
     let data: GetUserProfileThreadsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
+      const res = await this._fetchAuthGetRequest<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
         `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/replies/${maxID ? `?max_id=${maxID}` : ''}`,
         options,
       );
@@ -922,7 +922,7 @@ export class ThreadsAPI {
     if (query) params.append('query', query);
 
     try {
-      const res = await this._toggleAuthGetRequest<GetUserProfileFollowPaginatedResponse>(
+      const res = await this._fetchAuthGetRequest<GetUserProfileFollowPaginatedResponse>(
         `${BASE_API_URL}/api/v1/friendships/${userID}/followers/?${params.toString()}`,
         {
           ...options,
@@ -955,7 +955,7 @@ export class ThreadsAPI {
     if (query) params.append('query', query);
 
     try {
-      const res = await this._toggleAuthGetRequest<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
+      const res = await this._fetchAuthGetRequest<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
         `${BASE_API_URL}/api/v1/friendships/${userID}/following/?${params.toString()}`,
         {
           ...options,
@@ -1022,7 +1022,7 @@ export class ThreadsAPI {
   ): Promise<GetThreadRepliesPaginatedResponse> => {
     let data: GetThreadRepliesPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetThreadRepliesPaginatedResponse | ErrorResponse>(
+      const res = await this._fetchAuthGetRequest<GetThreadRepliesPaginatedResponse | ErrorResponse>(
         `${BASE_API_URL}/api/v1/text_feed/${postID}/replies/${maxID ? `?paging_token=${maxID}` : ''}`,
         options,
       );
@@ -1083,7 +1083,7 @@ export class ThreadsAPI {
     }
   };
 
-  _toggleAuthGetRequest = async <T extends any | ErrorResponse | undefined>(
+  _fetchAuthGetRequest = async <T extends any | ErrorResponse | undefined>(
     url: string,
     options?: AxiosRequestConfig,
   ) => {
@@ -1311,7 +1311,7 @@ export class ThreadsAPI {
 
     let data: GetNotificationsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetNotificationsPaginatedResponse>(
+      const res = await this._fetchAuthGetRequest<GetNotificationsPaginatedResponse>(
         `${BASE_API_URL}/api/v1/text_feed/text_app_notifications/?${queryString}`,
         options,
       );
@@ -1356,7 +1356,7 @@ export class ThreadsAPI {
 
     let data: SearchUsersResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<SearchUsersResponse>(
+      const res = await this._fetchAuthGetRequest<SearchUsersResponse>(
         `${BASE_API_URL}/api/v1/users/search/?${queryString}`,
         options,
       );
@@ -1379,7 +1379,7 @@ export class ThreadsAPI {
   ): Promise<GetRecommendedPaginatedResponse> => {
     let data: GetRecommendedPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetRecommendedPaginatedResponse>(
+      const res = await this._fetchAuthGetRequest<GetRecommendedPaginatedResponse>(
         `${BASE_API_URL}/api/v1/text_feed/recommended_users/?${maxID ? `?max_id=${maxID}` : ''}`,
         options,
       );
