@@ -155,12 +155,12 @@ if (data.has_more) {
 }
 ```
 
-##### 🔍 Search (from v1.6.0)
+##### 🔍 Search Users (from v1.6.0)
 
 ```ts
 const query = 'zuck';
 const count = 40; // default value is set to 30
-const data = await threadsAPI.search(query, count);
+const data = await threadsAPI.searchUsers(query, count);
 
 console.log(JSON.stringify(data.num_results));
 console.log(JSON.stringify(data.users)); // ThreadsUser[]

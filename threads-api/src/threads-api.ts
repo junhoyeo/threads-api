@@ -289,7 +289,7 @@ interface SearchQuerier<T extends any> {
   (query: string, count?: number, options?: AxiosRequestConfig): Promise<T>;
 }
 
-export type SearchResponse = {
+export type SearchUsersResponse = {
   num_results: number;
   users: ThreadsUser[];
   has_more: boolean;
@@ -1340,11 +1340,11 @@ export class ThreadsAPI {
     return res.data;
   };
 
-  search: SearchQuerier<SearchResponse> = async (
+  searchUsers: SearchQuerier<SearchUsersResponse> = async (
     query,
     count = 30,
     options = {},
-  ): Promise<SearchResponse> => {
+  ): Promise<SearchUsersResponse> => {
     let params = {
       q: query,
       count,
@@ -1354,9 +1354,9 @@ export class ThreadsAPI {
       .map(([key, value]) => key + '=' + value)
       .join('&');
 
-    let data: SearchResponse | ErrorResponse | undefined = undefined;
+    let data: SearchUsersResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<SearchResponse>(
+      const res = await this._toggleAuthGetRequest<SearchUsersResponse>(
         `${BASE_API_URL}/api/v1/users/search/?${queryString}`,
         options,
       );
@@ -1641,3 +1641,5 @@ export type ThreadsAPIImage = ThreadsAPI.RawImage | ThreadsAPI.ExternalImage;
 
 /** @deprecated Use `ThreadsAPI.PublishOptions` instead. */
 export type ThreadsAPIPublishOptions = ThreadsAPI.PublishOptions;
+
+export default ThreadsAPI;
