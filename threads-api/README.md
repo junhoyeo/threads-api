@@ -71,6 +71,16 @@ main();
 
 #### Read: Private(Auth Required)
 
+##### 💡 Get User Profile (from v1.6.0)
+
+- `getUserProfile` but with auth
+
+```ts
+const userID = '5438123050';
+const { user } = await threadsAPI.getUserProfileLoggedIn();
+console.log(JSON.stringify(user));
+```
+
 ##### 💡 Get Timeline
 
 ```ts
@@ -100,6 +110,60 @@ console.log(JSON.stringify(users));
 ```ts
 const { users, next_max_id: cursor } = await threadsAPI.getUserFollowings(userID);
 console.log(JSON.stringify(users));
+```
+
+##### 💡 Get Details(with Following Threads) for a specific Thread (from v1.6.0)
+
+- `getThreads` but with auth (this will return more data)
+
+```ts
+let data = await threadsAPI.getThreadsLoggedIn(postID);
+console.log(JSON.stringify(data.containing_thread));
+console.log(JSON.stringify(data.reply_threads));
+console.log(JSON.stringify(data.subling_threads));
+
+if (data.downwards_thread_will_continue) {
+  const cursor = data.paging_tokens.downward;
+  data = await threadsAPI.getThreadsLoggedIn(postID, cursor);
+}
+```
+
+##### 🔔 Get Notifications (from v1.6.0)
+
+```ts
+import { GetNotificationsFilter } from 'threads-api';
+
+let data = await threadsAPI.getNotifications(
+  GetNotificationsFilter.MENTIONS, // {MENTIONS, REPLIES, VERIFIED}
+);
+
+if (!data.is_last_page) {
+  const cursor = data.next_max_id;
+  data = await threadsAPI.getNotifications(GetNotificationsFilter.MENTIONS, cursor);
+}
+```
+
+##### 💎 Get Recommended (from v1.6.0)
+
+```ts
+let data = await threadsAPI.getRecommended();
+console.log(JSON.stringify(data.users)); // ThreadsUser[]
+
+if (data.has_more) {
+  const cursor = data.paging_token;
+  data = await threadsAPI.getRecommended(cursor);
+}
+```
+
+##### 🔍 Search (from v1.6.0)
+
+```ts
+const query = 'zuck';
+const count = 40; // default value is set to 30
+const data = await threadsAPI.search(query, count);
+
+console.log(JSON.stringify(data.num_results));
+console.log(JSON.stringify(data.users)); // ThreadsUser[]
 ```
 
 ### 🚀 Usage (Write)
@@ -260,6 +324,41 @@ const postID = await threadsAPI.publish({
 
 await new Promise((resolve) => setTimeout(resolve, 5_000));
 await threadsAPI.delete(postID);
+```
+
+##### 🔇 Mute/Unmute a User/Post (from v1.6.0)
+
+```ts
+const userID = await threadsAPI.getUserIDfromUsername('zuck');
+const threadURL = 'https://www.threads.net/t/CugK35fh6u2';
+const postID = threadsAPI.getPostIDfromURL(threadURL); // or use `getPostIDfromThreadID`
+
+// 💡 Uses current credentials
+
+// Mute User
+await threadsAPI.mute({ userID });
+await threadsAPI.unfollow({ userID });
+
+// Mute a Post of User
+await threadsAPI.mute({ userID, postID });
+await threadsAPI.unfollow({ userID, postID });
+```
+
+##### 🔇 Block/Unblock a User (from v1.6.0)
+
+```ts
+const userID = await threadsAPI.getUserIDfromUsername('zuck');
+
+// 💡 Uses current credentials
+await threadsAPI.block({ userID });
+await threadsAPI.unblock({ userID });
+```
+
+##### 🔔 Set Notifications Seen (from v1.6.0)
+
+```ts
+// 💡 Uses current credentials
+await threadsAPI.setNotificationsSeen();
 ```
 
 <details>
