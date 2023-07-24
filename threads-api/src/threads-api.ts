@@ -79,18 +79,12 @@ export type GetThreadRepliesPaginatedResponse = {
   status: 'ok';
 };
 
-export enum GetNotificationsFilter {
-  MENTIONS = 'text_post_app_mentions',
-  REPLIES = 'text_post_app_replies',
-  VERIFIED = 'verified',
-}
-
 export type GetNotificationsOptions = {
   feed_type: string;
   mark_as_seen: boolean;
   timezone_offset: number;
   timezone_name: string;
-  selected_filters?: GetNotificationsFilter;
+  selected_filters?: ThreadsAPI.NotificationFilter;
   max_id?: string;
   pagination_first_record_timestamp?: number;
 };
@@ -241,6 +235,12 @@ export declare namespace ThreadsAPI {
 
   type PostReplyControl = keyof typeof REPLY_CONTROL_OPTIONS;
 
+  enum NotificationFilter {
+    MENTIONS = 'text_post_app_mentions',
+    REPLIES = 'text_post_app_replies',
+    VERIFIED = 'verified',
+  }
+
   type PublishOptions = {
     text?: string;
     replyControl?: PostReplyControl;
@@ -275,7 +275,7 @@ interface PaginationRepliesQuerier<T extends any> {
 
 interface PaginationNotificationsQuerier<T extends any> {
   (
-    filter?: GetNotificationsFilter,
+    filter?: ThreadsAPI.NotificationFilter,
     pagination?: GetNotificationsPagination,
     config?: AxiosRequestConfig,
   ): Promise<T>;
@@ -289,7 +289,7 @@ interface SearchQuerier<T extends any> {
   (query: string, count?: number, options?: AxiosRequestConfig): Promise<T>;
 }
 
-export type SearchResponse = {
+export type SearchUsersResponse = {
   num_results: number;
   users: ThreadsUser[];
   has_more: boolean;
@@ -765,7 +765,7 @@ export class ThreadsAPI {
   ): Promise<GetUserProfileLoggedInResponse> => {
     let data: GetUserProfileLoggedInResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetUserProfileLoggedInResponse>(
+      const res = await this._fetchAuthGetRequest<GetUserProfileLoggedInResponse>(
         `${BASE_API_URL}/api/v1/users/${userID}/info?is_prefetch=false&entry_point=profile&from_module=ProfileViewModel`,
         options,
       );
@@ -808,7 +808,7 @@ export class ThreadsAPI {
   ): Promise<GetUserProfileThreadsPaginatedResponse> => {
     let data: GetUserProfileThreadsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetUserProfileThreadsPaginatedResponse>(
+      const res = await this._fetchAuthGetRequest<GetUserProfileThreadsPaginatedResponse>(
         `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/${maxID ? `?max_id=${maxID}` : ''}`,
         options,
       );
@@ -892,10 +892,8 @@ export class ThreadsAPI {
 
     let data: GetUserProfileThreadsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
-        `https://i.instagram.com/api/v1/text_feed/${userID}/profile/replies/${
-          maxID ? `?max_id=${maxID}` : ''
-        }`,
+      const res = await this._fetchAuthGetRequest<GetUserProfileThreadsPaginatedResponse | ErrorResponse>(
+        `${BASE_API_URL}/api/v1/text_feed/${userID}/profile/replies/${maxID ? `?max_id=${maxID}` : ''}`,
         options,
       );
       data = res.data;
@@ -924,8 +922,8 @@ export class ThreadsAPI {
     if (query) params.append('query', query);
 
     try {
-      const res = await this._toggleAuthGetRequest<GetUserProfileFollowPaginatedResponse>(
-        `https://i.instagram.com/api/v1/friendships/${userID}/followers/?${params.toString()}`,
+      const res = await this._fetchAuthGetRequest<GetUserProfileFollowPaginatedResponse>(
+        `${BASE_API_URL}/api/v1/friendships/${userID}/followers/?${params.toString()}`,
         {
           ...options,
           headers: { 'X-Ig-Nav-Chain': FOLLOW_NAV_CHAIN, ...options?.headers },
@@ -957,8 +955,8 @@ export class ThreadsAPI {
     if (query) params.append('query', query);
 
     try {
-      const res = await this._toggleAuthGetRequest<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
-        `https://i.instagram.com/api/v1/friendships/${userID}/following/?${params.toString()}`,
+      const res = await this._fetchAuthGetRequest<GetUserProfileFollowPaginatedResponse | ErrorResponse>(
+        `${BASE_API_URL}/api/v1/friendships/${userID}/following/?${params.toString()}`,
         {
           ...options,
           headers: { 'X-Ig-Nav-Chain': FOLLOW_NAV_CHAIN, ...options?.headers },
@@ -1024,7 +1022,7 @@ export class ThreadsAPI {
   ): Promise<GetThreadRepliesPaginatedResponse> => {
     let data: GetThreadRepliesPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetThreadRepliesPaginatedResponse | ErrorResponse>(
+      const res = await this._fetchAuthGetRequest<GetThreadRepliesPaginatedResponse | ErrorResponse>(
         `${BASE_API_URL}/api/v1/text_feed/${postID}/replies/${maxID ? `?paging_token=${maxID}` : ''}`,
         options,
       );
@@ -1085,7 +1083,7 @@ export class ThreadsAPI {
     }
   };
 
-  _toggleAuthGetRequest = async <T extends any | ErrorResponse | undefined>(
+  _fetchAuthGetRequest = async <T extends any | ErrorResponse | undefined>(
     url: string,
     options?: AxiosRequestConfig,
   ) => {
@@ -1313,7 +1311,7 @@ export class ThreadsAPI {
 
     let data: GetNotificationsPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetNotificationsPaginatedResponse>(
+      const res = await this._fetchAuthGetRequest<GetNotificationsPaginatedResponse>(
         `${BASE_API_URL}/api/v1/text_feed/text_app_notifications/?${queryString}`,
         options,
       );
@@ -1342,11 +1340,11 @@ export class ThreadsAPI {
     return res.data;
   };
 
-  search: SearchQuerier<SearchResponse> = async (
+  searchUsers: SearchQuerier<SearchUsersResponse> = async (
     query,
     count = 30,
     options = {},
-  ): Promise<SearchResponse> => {
+  ): Promise<SearchUsersResponse> => {
     let params = {
       q: query,
       count,
@@ -1356,9 +1354,9 @@ export class ThreadsAPI {
       .map(([key, value]) => key + '=' + value)
       .join('&');
 
-    let data: SearchResponse | ErrorResponse | undefined = undefined;
+    let data: SearchUsersResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<SearchResponse>(
+      const res = await this._fetchAuthGetRequest<SearchUsersResponse>(
         `${BASE_API_URL}/api/v1/users/search/?${queryString}`,
         options,
       );
@@ -1381,7 +1379,7 @@ export class ThreadsAPI {
   ): Promise<GetRecommendedPaginatedResponse> => {
     let data: GetRecommendedPaginatedResponse | ErrorResponse | undefined = undefined;
     try {
-      const res = await this._toggleAuthGetRequest<GetRecommendedPaginatedResponse>(
+      const res = await this._fetchAuthGetRequest<GetRecommendedPaginatedResponse>(
         `${BASE_API_URL}/api/v1/text_feed/recommended_users/?${maxID ? `?max_id=${maxID}` : ''}`,
         options,
       );
@@ -1643,3 +1641,5 @@ export type ThreadsAPIImage = ThreadsAPI.RawImage | ThreadsAPI.ExternalImage;
 
 /** @deprecated Use `ThreadsAPI.PublishOptions` instead. */
 export type ThreadsAPIPublishOptions = ThreadsAPI.PublishOptions;
+
+export default ThreadsAPI;
