@@ -131,15 +131,13 @@ if (data.downwards_thread_will_continue) {
 ##### 🔔 Get Notifications (from v1.6.0)
 
 ```ts
-import { GetNotificationsFilter } from 'threads-api';
-
 let data = await threadsAPI.getNotifications(
-  GetNotificationsFilter.MENTIONS, // {MENTIONS, REPLIES, VERIFIED}
+  ThreadsAPI.NotificationFilter.MENTIONS, // {MENTIONS, REPLIES, VERIFIED}
 );
 
 if (!data.is_last_page) {
   const cursor = data.next_max_id;
-  data = await threadsAPI.getNotifications(GetNotificationsFilter.MENTIONS, cursor);
+  data = await threadsAPI.getNotifications(ThreadsAPI.NotificationFilter.MENTIONS, cursor);
 }
 ```
 

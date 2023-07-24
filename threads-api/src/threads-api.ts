@@ -79,18 +79,12 @@ export type GetThreadRepliesPaginatedResponse = {
   status: 'ok';
 };
 
-export enum GetNotificationsFilter {
-  MENTIONS = 'text_post_app_mentions',
-  REPLIES = 'text_post_app_replies',
-  VERIFIED = 'verified',
-}
-
 export type GetNotificationsOptions = {
   feed_type: string;
   mark_as_seen: boolean;
   timezone_offset: number;
   timezone_name: string;
-  selected_filters?: GetNotificationsFilter;
+  selected_filters?: ThreadsAPI.NotificationFilter;
   max_id?: string;
   pagination_first_record_timestamp?: number;
 };
@@ -241,6 +235,12 @@ export declare namespace ThreadsAPI {
 
   type PostReplyControl = keyof typeof REPLY_CONTROL_OPTIONS;
 
+  enum NotificationFilter {
+    MENTIONS = 'text_post_app_mentions',
+    REPLIES = 'text_post_app_replies',
+    VERIFIED = 'verified',
+  }
+
   type PublishOptions = {
     text?: string;
     replyControl?: PostReplyControl;
@@ -275,7 +275,7 @@ interface PaginationRepliesQuerier<T extends any> {
 
 interface PaginationNotificationsQuerier<T extends any> {
   (
-    filter?: GetNotificationsFilter,
+    filter?: ThreadsAPI.NotificationFilter,
     pagination?: GetNotificationsPagination,
     config?: AxiosRequestConfig,
   ): Promise<T>;
