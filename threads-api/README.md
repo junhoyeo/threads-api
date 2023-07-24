@@ -71,7 +71,7 @@ main();
 
 #### Read: Private(Auth Required)
 
-##### 💡 Get User Profile (from v1.6.0)
+##### 💡 Get User Profile (from v1.6.2)
 
 - `getUserProfile` but with auth
 
@@ -112,7 +112,7 @@ const { users, next_max_id: cursor } = await threadsAPI.getUserFollowings(userID
 console.log(JSON.stringify(users));
 ```
 
-##### 💡 Get Details(with Following Threads) for a specific Thread (from v1.6.0)
+##### 💡 Get Details(with Following Threads) for a specific Thread (from v1.6.2)
 
 - `getThreads` but with auth (this will return more data)
 
@@ -128,7 +128,7 @@ if (data.downwards_thread_will_continue) {
 }
 ```
 
-##### 🔔 Get Notifications (from v1.6.0)
+##### 🔔 Get Notifications (from v1.6.2)
 
 ```ts
 let data = await threadsAPI.getNotifications(
@@ -141,19 +141,19 @@ if (!data.is_last_page) {
 }
 ```
 
-##### 💎 Get Recommended (from v1.6.0)
+##### 💎 Get Recommended Users (from v1.6.2)
 
 ```ts
-let data = await threadsAPI.getRecommended();
+let data = await threadsAPI.getRecommendedUsers();
 console.log(JSON.stringify(data.users)); // ThreadsUser[]
 
 if (data.has_more) {
   const cursor = data.paging_token;
-  data = await threadsAPI.getRecommended(cursor);
+  data = await threadsAPI.getRecommendedUsers(cursor);
 }
 ```
 
-##### 🔍 Search Users (from v1.6.0)
+##### 🔍 Search Users (from v1.6.2)
 
 ```ts
 const query = 'zuck';
@@ -324,7 +324,7 @@ await new Promise((resolve) => setTimeout(resolve, 5_000));
 await threadsAPI.delete(postID);
 ```
 
-##### 🔇 Mute/Unmute a User/Post (from v1.6.0)
+##### 🔇 Mute/Unmute a User/Post (from v1.6.2)
 
 ```ts
 const userID = await threadsAPI.getUserIDfromUsername('zuck');
@@ -342,7 +342,7 @@ await threadsAPI.mute({ userID, postID });
 await threadsAPI.unfollow({ userID, postID });
 ```
 
-##### 🔇 Block/Unblock a User (from v1.6.0)
+##### 🔇 Block/Unblock a User (from v1.6.2)
 
 ```ts
 const userID = await threadsAPI.getUserIDfromUsername('zuck');
@@ -352,7 +352,7 @@ await threadsAPI.block({ userID });
 await threadsAPI.unblock({ userID });
 ```
 
-##### 🔔 Set Notifications Seen (from v1.6.0)
+##### 🔔 Set Notifications Seen (from v1.6.2)
 
 ```ts
 // 💡 Uses current credentials
