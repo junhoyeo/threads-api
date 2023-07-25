@@ -22,7 +22,15 @@ import { ThreadsAPIError } from './error';
 import { AndroidDevice, Extensions, Story, Thread, ThreadsUser } from './threads-types';
 import { StrictUnion } from './types/utils';
 
-const generateDeviceID = () => `android-${(Math.random() * 1e24).toString(36)}`;
+const generateDeviceID = () => {
+  const deviceID = `android-${(Math.random() * 1e24).toString(36)}`;
+  console.warn(
+    `⚠️ WARNING: deviceID not provided, automatically generating device id '${deviceID}'`,
+    'Please save this device id and use it for future uses to prevent login issues.',
+    'You can provide this device id by passing it to the constructor or setting the THREADS_DEVICE_ID environment variable (.env file)',
+  );
+  return deviceID;
+};
 
 export type ErrorResponse = {
   status: 'error'; // ?
@@ -307,12 +315,12 @@ interface PaginationAndSearchUserIDQuerier<T extends any> {
 }
 
 export class ThreadsAPI {
-  verbose: boolean = false;
-  token?: string = undefined;
-  fbLSDToken: string = DEFAULT_LSD_TOKEN;
+  verbose: boolean;
+  token?: string;
+  fbLSDToken: string;
 
-  noUpdateToken: boolean = false;
-  noUpdateLSD: boolean = false;
+  noUpdateToken: boolean;
+  noUpdateLSD: boolean;
 
   httpAgent?: AxiosRequestConfig['httpAgent'];
   httpsAgent?: AxiosRequestConfig['httpsAgent'];
@@ -320,50 +328,29 @@ export class ThreadsAPI {
   username?: string;
   password?: string;
   deviceID: string;
-  device?: AndroidDevice = DEFAULT_DEVICE;
+  device: AndroidDevice;
+  userID?: string;
+  locale: string;
+  maxRetries: number;
 
-  userID: string | undefined = undefined;
+  constructor(options: ThreadsAPI.Options = {}) {
+    this.verbose = !!options.verbose;
+    this.token = options.token;
+    this.fbLSDToken = options.fbLSDToken ?? DEFAULT_LSD_TOKEN;
 
-  locale?: string | undefined = undefined;
+    this.noUpdateToken = !!options.noUpdateToken;
+    this.noUpdateLSD = !!options.noUpdateLSD;
 
-  maxRetries?: number = 1;
+    this.httpAgent = options.httpAgent;
+    this.httpsAgent = options.httpsAgent;
 
-  constructor(options?: ThreadsAPI.Options) {
-    if (options?.token) this.token = options.token;
-    if (options?.fbLSDToken) this.fbLSDToken = options.fbLSDToken;
-
-    this.noUpdateToken = !!options?.noUpdateToken;
-    this.noUpdateLSD = !!options?.noUpdateLSD;
-
-    this.verbose = options?.verbose || false;
-    this.httpAgent = options?.httpAgent;
-    this.httpsAgent = options?.httpsAgent;
-
-    this.username = options?.username ?? process.env.THREADS_USERNAME;
-    this.password = options?.password ?? process.env.THREADS_PASSWORD;
-
-    this.deviceID = options?.deviceID ?? process.env.THREADS_DEVICE_ID ?? '';
-
-    if (!this.deviceID) {
-      this.deviceID = generateDeviceID();
-      console.warn(
-        `⚠️ WARNING: deviceID not provided, automatically generating device id '${this.deviceID}'`,
-        'Please save this device id and use it for future uses to prevent login issues.',
-        'You can provide this device id by passing it to the constructor or setting the THREADS_DEVICE_ID environment variable (.env file)',
-      );
-    }
-
-    this.device = options?.device;
-    this.userID = options?.userID;
-
-    if (options?.locale) {
-      this.locale = options.locale;
-    } else {
-      const detectedLocale: string = Intl.DateTimeFormat().resolvedOptions().locale;
-      this.locale = detectedLocale;
-    }
-
-    this.maxRetries = options?.maxRetries || this.maxRetries;
+    this.username = options.username ?? process.env.THREADS_USERNAME;
+    this.password = options.password ?? process.env.THREADS_PASSWORD;
+    this.deviceID = (options.deviceID ?? process.env.THREADS_DEVICE_ID) || generateDeviceID();
+    this.device = options.device ?? DEFAULT_DEVICE;
+    this.userID = options.userID;
+    this.locale = options.locale ?? Intl.DateTimeFormat().resolvedOptions().locale;
+    this.maxRetries = options.maxRetries ?? 1;
   }
 
   sign(payload: object | string) {
