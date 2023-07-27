@@ -1490,7 +1490,15 @@ export class ThreadsAPI {
     }
 
     const payload = `signed_body=SIGNATURE.${encodeURIComponent(JSON.stringify(data))}`;
-    const res = await axios.post(endpoint, payload, {
+
+    type Response = {
+      media: {
+        id: string;
+      };
+      status: 'ok';
+    };
+
+    const res = await axios.post<Response>(endpoint, payload, {
       httpAgent: this.httpAgent,
       httpsAgent: this.httpsAgent,
       headers: this._getAppHeaders(),
@@ -1501,8 +1509,8 @@ export class ThreadsAPI {
       console.debug('[PUBLISH]', res.data);
     }
 
-    if (res.data['status'] === 'ok') {
-      return res.data;
+    if (res.data.status === 'ok') {
+      return res.data.media.id;
     }
 
     return undefined;
@@ -1524,7 +1532,7 @@ export class ThreadsAPI {
       timeout: 60 * 1000,
       ...options,
     });
-    if (res.data['status'] === 'ok') {
+    if (res.data.status === 'ok') {
       return true;
     }
     return false;
