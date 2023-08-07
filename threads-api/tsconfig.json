@@ -9,9 +9,9 @@
     "declaration": true,
     "module": "esnext",
     "moduleResolution": "node",
+    "stripInternal": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "baseUrl": "src",
     "outDir": "build"
   },
   "include": ["src/**/*.ts"],
