@@ -53,7 +53,7 @@ export class PrivateClient extends Client {
 }
 
 export interface PrivateClient {
-  send<Args extends any[], Data, Error extends object>(
+  send<Args extends any[], Data, Error extends Request.Error>(
     Query: new (...args: Args) => PrivateQuery<Data, Error> | Query<Data, Error>,
     ...args: Args
   ): Promise<Response<Data, Error>>;

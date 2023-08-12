@@ -56,7 +56,7 @@ export class Client {
     };
   }
 
-  send<Args extends any[], Data, Error extends object>(
+  send<Args extends any[], Data, Error extends Request.Error>(
     Query: new (...args: Args) => Query<Data, Error>,
     ...args: Args
   ) {
