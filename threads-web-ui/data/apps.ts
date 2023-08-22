@@ -193,6 +193,20 @@ export const APPS: AppRegistry[] = [
     },
   },
   {
+    name: 'Insta Threads Down',
+    tags: ['app', 'ui'],
+    threads_username: 'rajatdas.me',
+    url: 'http://instathreadsdown.com/',
+    repository: 'https://github.com/iRajatDas/Insta-Threads-Down',
+    description:
+      '🚀 A Threads Media Downloader is a tool to download Photos, Videos & DP from Threads.',
+    avatar: '/assets/apps/instathreadsdown.jpg',
+    author: {
+      name: 'Rajat Das',
+      github_username: 'irajatdas',
+    },
+  },
+  {
     name: 'Threads Media Downloader',
     tags: ['app'],
     threads_username: 'frz.ra',
