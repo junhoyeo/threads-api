@@ -192,4 +192,18 @@ export const APPS: AppRegistry[] = [
       threads_username: 'sooluh',
     },
   },
+  {
+    name: 'Threads Media Downloader',
+    tags: ['app'],
+    threads_username: 'frz.ra',
+    url: 'https://mediathreads.net',
+    repository: 'https://github.com/farizrifqi/Threads-Media-Downloader',
+    description:
+      'Threads multiple photo and video downloader.',
+    avatar: '/assets/apps/mediathreadsnet.jpg',
+    author: {
+      name: 'Fariz Rifqi',
+      github_username: 'farizrifqi',
+    },
+  },
 ];
