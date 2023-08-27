@@ -233,4 +233,15 @@ export const APPS: AppRegistry[] = [
       github_username: 'Newt0n',
     },
   },
+{
+    name: 'Threads Gpt',
+    tags: ['bot'],
+    threads_username: 'youplexlive',
+    repository: 'https://github.com/steveyout/threads-gpt',
+    description: 'A threads.net bot to automatically reply to mentions with sarcastic replies from chatgpt',
+    author: {
+      name: 'Steve Yout',
+      threads_username: 'steveyout',
+    },
+  },
 ];
