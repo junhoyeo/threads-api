@@ -234,9 +234,9 @@ export const APPS: AppRegistry[] = [
     },
   },
 {
-    name: 'Threads Gpt',
+    name: 'Yout Gpt',
     tags: ['bot'],
-    threads_username: 'youplexlive',
+    threads_username: 'youtgpt',
     repository: 'https://github.com/steveyout/threads-gpt',
     description: 'A threads.net bot to automatically reply to mentions with sarcastic replies from chatgpt',
     author: {
