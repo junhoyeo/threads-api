@@ -220,4 +220,17 @@ export const APPS: AppRegistry[] = [
       github_username: 'farizrifqi',
     },
   },
+  {
+    name: 'ReThreads',
+    tags: ['app'],
+    threads_username: 'newttt0n',
+    url: 'https://rethreads.pro',
+    description:
+      'Turn Meta Threads and replies into beautiful image post with AI.',
+    avatar: '/assets/apps/rethreads.png',
+    author: {
+      name: 'Newton',
+      github_username: 'Newt0n',
+    },
+  },
 ];
