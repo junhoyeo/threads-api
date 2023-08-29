@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
+    "bloks-tool": "^0.0.1",
     "mrmime": "^1.0.1",
     "uuid": "^9.0.0"
   },
