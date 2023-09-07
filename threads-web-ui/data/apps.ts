@@ -244,4 +244,15 @@ export const APPS: AppRegistry[] = [
       threads_username: 'steveyout',
     },
   },
+{
+    name: 'Threstagram',
+    tags: ['app', 'ui'],
+    threads_username: 'dunsincodes',
+    repository: 'https://github.com/Dun-sin/threstagram',
+    description: 'Convert your threads posts to images for instagram and other social medias',
+    author: {
+      name: 'Dunsin',
+      github_username: 'Dun-sin',
+    },
+  },
 ];
