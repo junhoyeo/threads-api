@@ -5,6 +5,8 @@
     "threads-api",
     "threads-web-ui"
   ],
+  "repository": "https://github.com/junhoyeo/threads-api",
+  "author": "Junho Yeo <i@junho.io>",
   "scripts": {
     "format": "prettier --write ."
   },
