@@ -9,4 +9,4 @@ Unofficial, Reverse-Engineered Node.js/TypeScript client for Meta's [Threads](ht
 >
 > The "threads-api" was developed for educational and research purposes only. Based on the notification from Meta, it's clear that using or distributing the code might violate the terms of service of Meta Platforms, Inc. and its associated services, including but not limited to Instagram and Threads. Any actions or activities related to the material contained within this repository are solely the user's responsibility. The author and contributors of this repository do not support or condone any unethical or illegal activities.
 >
-> <img alt="C_D_Scraping" src="./.github/c_d_scraping.jpg" width="500px" />
+> <img alt="C_D_Scraping" src="https://raw.githubusercontent.com/junhoyeo/threads-api/main/.github/c_d_scraping.jpg" width="500px" />
