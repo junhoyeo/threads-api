@@ -1,8 +1,18 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponseHeaders } from 'axios';
+import { parseBloks, visitBloks } from 'bloks-tool';
+import { BlokExpression } from 'bloks-tool/src/generated/bloks-tool.peggy';
 import * as crypto from 'crypto';
 import * as mimeTypes from 'mrmime';
 import { v4 as uuidv4 } from 'uuid';
 
+import {
+  LoginHeaders,
+  LoginResponseBlok,
+  LoginResponseData,
+  ThreadsLogin2FARequiredResponseBlok,
+  ThreadsLoginResponseData,
+  ThreadsTwoFactorAuthFlowData,
+} from './bloks-types';
 import {
   BASE_API_URL,
   BASE_FOLLOW_PARAMS,
@@ -31,6 +41,8 @@ const generateDeviceID = () => {
   );
   return deviceID;
 };
+
+const authorizationHeader = 'IG-Set-Authorization';
 
 export type ErrorResponse = {
   status: 'error'; // ?
@@ -314,6 +326,8 @@ interface PaginationAndSearchUserIDQuerier<T extends any> {
   (userID: string, params?: PaginationAndSearchOptions, options?: AxiosRequestConfig): Promise<T>;
 }
 
+type LoginResponse = { token: string; userID: string | undefined };
+
 export class ThreadsAPI {
   verbose: boolean;
   token?: string;
@@ -430,10 +444,10 @@ export class ThreadsAPI {
     };
   };
 
-  login = async () => {
+  login = async (onTwoFactorRequired?: () => void): Promise<LoginResponse> => {
     let retries = 0;
 
-    const _login = async () => {
+    const _login = async (): Promise<LoginResponse> => {
       if (this.verbose) {
         console.log('[LOGIN] Logging in...');
       }
@@ -464,38 +478,214 @@ export class ThreadsAPI {
         httpsAgent: this.httpsAgent,
         method: 'POST',
         headers: this._getAppHeaders(),
-        responseType: 'text',
+        responseType: 'json',
         data: `params=${params}&bk_client_context=${bkClientContext}&bloks_versioning_id=${BLOKS_VERSION}`,
       };
 
-      let { data } = await axios<string>(
+      type LoginRequestResponse = {
+        layout: {
+          bloks_payload: {
+            data: any[];
+            props: {
+              id: string;
+              name: string;
+            };
+            error_attribution: {
+              logging_id: 'string';
+            };
+            tree: {
+              㐟: {
+                '#': string;
+              };
+            };
+          };
+        };
+        status: string;
+      };
+
+      const { data } = await axios<LoginRequestResponse>(
         `${BASE_API_URL}/api/v1/bloks/apps/com.bloks.www.bloks.caa.login.async.send_login_request/`,
         requestConfig,
       );
 
-      data = JSON.stringify(data.replaceAll('\\', ''));
-
-      if (this.verbose) {
-        console.log('[LOGIN] Cleaned output', data);
-      }
-
       try {
-        const token = data.split('Bearer IGT:2:')[1].split('"')[0].replaceAll('\\', '');
-        const userID = data.match(/pk_id(.{18})/)?.[1].replaceAll(/[\\":]/g, '');
+        const rawBloks = data['layout']['bloks_payload']['tree']['㐟']['#'];
 
-        if (!this.noUpdateToken) {
-          if (this.verbose) {
-            console.debug('[token] UPDATED', token);
+        const bloks = parseBloks(rawBloks);
+
+        let result = 'unknown';
+
+        let relevantBlok!: BlokExpression;
+
+        visitBloks(bloks, (blok) => {
+          const [funcName, ...args] = blok;
+
+          switch (funcName) {
+            case 'ig.action.cdsdialog.OpenDialog':
+              if (this.verbose) {
+                console.log(
+                  '[login]: saw blok: ig.action.cdsdialog.OpenDialog',
+                  JSON.stringify(args, null, 2),
+                );
+              }
+              // wrong password...
+              result = 'wrong_password';
+              relevantBlok = blok;
+              return true;
+            case 'bk.action.caa.PresentTwoFactorAuthFlow':
+              if (this.verbose) {
+                console.log('[login]: saw blok: bk.action.caa.PresentTwoFactorAuthFlow');
+              }
+              // 2fa
+              result = '2fa';
+              relevantBlok = blok;
+
+              return true;
+            case 'bk.action.caa.HandleLoginResponse':
+              if (this.verbose) {
+                console.log('[login]: saw blok: bk.action.caa.HandleLoginResponse');
+              }
+              // success
+              result = 'success';
+              relevantBlok = blok;
+
+              return true;
+            default:
+              break;
           }
-          this.token = token;
-        }
 
-        this.userID = userID;
-        if (this.verbose) {
-          console.debug('[userID] UPDATED', this.userID);
-        }
+          return false;
+        });
 
-        return { token, userID };
+        switch (result) {
+          case 'wrong_password':
+            throw new Error('Wrong password');
+          case '2fa': {
+            const twoFactorBlok = relevantBlok as ThreadsLogin2FARequiredResponseBlok;
+
+            const twoFactorData = JSON.parse(
+              JSON.parse(`"${twoFactorBlok[2] as string}"`),
+            ) as ThreadsTwoFactorAuthFlowData;
+
+            if (onTwoFactorRequired) {
+              onTwoFactorRequired();
+            }
+
+            if (this.verbose) {
+              console.debug('[login] Please approve the login request on your Instagram');
+            }
+
+            const tokenFrom2fa = await new Promise<{ token: string; userID: string }>((resolve, reject) => {
+              const statusUrl = '/api/v1/two_factor/check_trusted_notification_status/';
+              const verifyUrl = '/api/v1/accounts/two_factor_login/';
+
+              if (this.verbose) {
+                console.debug('[login] Waiting for 2fa approval...');
+              }
+
+              const twoFactorIdentifier = twoFactorData.two_factor_info?.two_factor_identifier!;
+              const trusted_notification_polling_nonce =
+                twoFactorData.two_factor_info?.trusted_notification_polling_nonce!;
+
+              const intervalHandler = async () => {
+                requestConfig.responseType = 'json';
+                requestConfig.data = new URLSearchParams({
+                  two_factor_identifier: twoFactorIdentifier,
+                  username: this.username!,
+                  device_id: this.deviceID,
+                  trusted_notification_polling_nonces: JSON.stringify([trusted_notification_polling_nonce]),
+                }).toString();
+
+                let axiosResponse = await axios<{
+                  review_status: number;
+                  status: 'ok';
+                }>(`${BASE_API_URL}${statusUrl}`, requestConfig);
+
+                if (axiosResponse.data.review_status === 1) {
+                  requestConfig.data = new URLSearchParams({
+                    signed_body:
+                      'SIGNATURE.' +
+                      JSON.stringify({
+                        verification_code: '',
+                        two_factor_identifier: twoFactorIdentifier,
+                        username: this.username!,
+                        device_id: this.deviceID,
+                        trusted_notification_polling_nonces: JSON.stringify([
+                          trusted_notification_polling_nonce,
+                        ]),
+                        verification_method: '4',
+                      }),
+                  }).toString();
+
+                  const axiosResponse = await axios<LoginResponseData>(
+                    `${BASE_API_URL}${verifyUrl}`,
+                    requestConfig,
+                  );
+
+                  const headers = axiosResponse.headers as AxiosResponseHeaders;
+
+                  const token =
+                    (headers.get(authorizationHeader) as string)?.replace('Bearer IGT:2:', '') || '';
+
+                  resolve({
+                    token,
+                    userID: axiosResponse.data.logged_in_user.pk_id,
+                  });
+                } else {
+                  setTimeout(intervalHandler, 2_500);
+                }
+              };
+
+              intervalHandler();
+            });
+
+            if (!this.noUpdateToken) {
+              if (this.verbose) {
+                console.debug('[token] UPDATED', tokenFrom2fa.token);
+              }
+              this.token = tokenFrom2fa.token;
+            }
+
+            this.userID = tokenFrom2fa.userID;
+            if (this.verbose) {
+              console.debug('[userID] UPDATED', this.userID);
+            }
+
+            return tokenFrom2fa;
+          }
+          case 'success': {
+            const successBlok = relevantBlok as LoginResponseBlok;
+
+            const loginResponseData: ThreadsLoginResponseData = JSON.parse(
+              JSON.parse(`"${successBlok[1][3]}"`),
+            );
+
+            const actualLoginResponse: LoginResponseData = JSON.parse(loginResponseData.login_response);
+            const loginResponseHeaders: LoginHeaders = JSON.parse(loginResponseData.headers);
+
+            const authHeader = loginResponseHeaders[authorizationHeader];
+
+            const token = authHeader.split('Bearer IGT:2:')[1];
+            const userID = actualLoginResponse.logged_in_user.pk_id;
+
+            if (!this.noUpdateToken) {
+              if (this.verbose) {
+                console.debug('[token] UPDATED', token);
+              }
+              this.token = token;
+            }
+
+            this.userID = userID;
+            if (this.verbose) {
+              console.debug('[userID] UPDATED', this.userID);
+            }
+
+            return { token, userID };
+          }
+          case 'unknown':
+          default:
+            throw new Error('Unknown error');
+        }
       } catch (error) {
         if (this.verbose) {
           console.error('[LOGIN] Failed to login', error);
