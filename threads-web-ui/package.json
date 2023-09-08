@@ -2,7 +2,7 @@
   "name": "threads-web-ui",
   "version": "1.0.0",
   "private": true,
-  "repository": "",
+  "repository": "https://github.com/junhoyeo/threads-api",
   "author": "Junho Yeo <i@junho.io>",
   "scripts": {
     "dev": "next dev",
